@@ -1,0 +1,75 @@
+<div [className]="!syncService.synctubeComponent.displayFullscreen ? 'main' : 'main-fullscreen'">
+  <div (click)="triggerTogglePlay()" (dblclick)="toggleFullscreen()"
+    [className]="!syncService.synctubeComponent.displayFullscreen ? 'overlay-container' : 'overlay-container-fullscreen'">
+    
+    <div *ngIf="displayOptions" class="options-container">
+      <div class="repeat-container">
+        <div style="width:85%;">
+          Wiederholen
+        </div>
+        <label class="switch">
+          <input type="checkbox" checked>
+          <span class="slider round"></span>
+        </label>
+      </div>
+
+      <div class="subtitle-container">
+        <div style="width:88%;">
+          Untertitel
+        </div>
+
+        <span> aus > </span>
+      </div>
+      <div (click)="toggleDisplayPlaybackRates()" class="playback-speed-container">
+        <div style="width:78%;">
+          Wiedergabegeschwindigkeit
+        </div>
+
+        <span> Standard > </span>
+      </div>
+      <div class="quality-container">
+        <div style="width:58%;">
+          Qualität
+        </div>
+
+        <div>
+          Automatisch 1080p HD
+        </div>
+      </div>
+    </div>
+
+    <div class="playbackrates-container" *ngIf="displayPlaybackRatesOptions && !displayOptions">
+        <div class="videospeed">
+          <div (click)="returnToOptions()">
+              < Wiedergabegeschwindigkeit </div>
+          </div>
+          <hr width="100%" />
+          <div class="speed-row" *ngFor="let playbackRate of playbackRates">
+            <div class="check-container">
+              &#10003;
+            </div>
+            <div class="speed-text">
+                <span> {{playbackRate}} </span>
+            </div>
+      
+          </div>
+        </div>
+    
+
+    
+
+
+
+  </div>
+  <div [className]="!syncService.synctubeComponent.displayFullscreen ? 'video' : 'video-fullscreen'" id="player">
+  </div>
+</div>
+
+
+
+<!-- <div  class="options-container">
+          <select *ngIf="displayOptions" >
+            <option *ngFor="let rate of playbackRates"> {{rate}}
+            </option>
+          </select>
+        </div> -->
