@@ -67,6 +67,8 @@ export class SyncService {
     /*  this.http.get('http://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=FYH8DsU2WCk&format=json', {'Access-Control-Allow-Origin'})
       .subscribe(w => console.log(w));
   */
+
+    this.cookieService.set("1", "Hallo");
   }
 
   registerSyncTubeComponent(synctubeComponent: SyncTubeComponent) {
@@ -78,7 +80,7 @@ export class SyncService {
   }
 
   connect(user: User) {
-    this.ws = new SockJS('http://192.168.178.29:8080/socket');
+    this.ws = new SockJS('http://localhost:8080/socket');
     this.stompClient = Stomp.over(this.ws);
     let that = this;
     this.stompClient.connect({}, function () {
@@ -147,7 +149,10 @@ export class SyncService {
 
     if (message.type == 'request-sync-timestamp') {
       console.log(message);
-      this.sendCurrentTimeStamp(this.getUser(), this.getRaumId(), this.getVideo())
+      let v : Video = new Video();
+      v.videoId = this.getVideo().videoId;
+      v.timestamp = this.getCurrentTime();
+      this.sendCurrentTimeStamp(this.getUser(), this.getRaumId(), v)
       return;
     }
 
@@ -209,7 +214,17 @@ export class SyncService {
         videoId: message.video.videoId,
         startSeconds: message.video.timestamp,
         suggestedQuality: 'large'
-      })
+      });
+      //this.setVideoDuration(this.getVideoDuration());
+      //this.setPlaybackRates();
+      //this.togglePlayVideo(this.synctubeComponent.playerState);
+      let that = this;
+      let wait = setInterval(function() {
+        if (that.getPlayerState() == SyncService.playing) {
+        that.setVideoDuration(that.getVideoDuration());
+        clearInterval(wait);
+        }
+      }, 20);
 
       this.synctubeComponent.chatMessages.push(message.chatMessage)
       return;
@@ -259,11 +274,6 @@ export class SyncService {
   updateVideo(message: Message) {
     this.synctubeComponent.video = message.video;
     this.synctubeComponent.playerState = message.playerState;
-    /*this.loadVideoById({
-      videoId: message.video.videoId,
-      startSeconds: message.video.timestamp,
-      suggestedQuality: 'large'
-    });*/
   }
 
   updatePlaylist(playlist: Video[]) {
@@ -356,7 +366,7 @@ export class SyncService {
       console.log(response);
       let data: any = response;
       let items: any[] = data.items;
-      this.synctubeComponent.searchResults = items.filter(i => (i.id.videoId) ? true : false ).map(item => {
+      this.synctubeComponent.searchResults = items.filter(i => (i.id.videoId) ? true : false).map(item => {
         let video: Video = new Video();
         video.videoId = item.id.videoId;
         video.title = item.snippet.title;
@@ -462,6 +472,10 @@ export class SyncService {
     this.videoComponent.setVolume(value);
   }
 
+  setPlaybackRates() {
+    this.videoComponent.setPlaybackRates();
+  }
+
   getUserId(): number {
     return this.synctubeComponent.getUserId();
   }
@@ -522,6 +536,10 @@ export class SyncService {
     return this.synctubeComponent.getVideo();
   }
 
+  getVideoDuration(): number {
+    return this.videoComponent.getVideoDuration();
+  }
+
   getAvailablePlaybackRates(): Array<number> {
     return this.videoComponent.getAvailablePlaybackRates();
   }
@@ -545,10 +563,6 @@ export class SyncService {
   setOption(_module, option, value) {
     this.videoComponent.setOption(_module, option, value);
 
-  }
-
-  setPlaybackRates(rates: number[]) {
-    this.synctubeComponent.setPlaybackRates(rates);
   }
 
   toggleDisplayOptions() {

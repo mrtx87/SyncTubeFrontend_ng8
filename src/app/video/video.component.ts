@@ -71,7 +71,9 @@ export class VideoComponent implements OnInit {
               if (that.getPlayerState() == SyncService.playing) {
                 that.setVideoDuration();
                 that.togglePlayVideo(that.syncService.synctubeComponent.playerState);
-                that.sendRequestSyncTimestamp();
+                if(that.syncService.synctubeComponent.users.length > 1) {
+                  that.sendRequestSyncTimestamp();
+                }
                 that.setPlaybackRates();
                 clearInterval(wait);
               }
@@ -221,11 +223,6 @@ export class VideoComponent implements OnInit {
 
   isMuted(): Boolean {
     return this.player.isMuted();
-  }
-
-  getDuration(): number {
-
-    return this.player.getDuration();
   }
 
   sendRequestSyncTimestamp() {
