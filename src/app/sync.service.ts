@@ -11,6 +11,7 @@ import { User } from './sync-tube/user';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Video } from './video/video';
+import { CookieService } from 'ngx-cookie-service';
 
 
 @Injectable({
@@ -61,7 +62,7 @@ export class SyncService {
   synctubeComponent: SyncTubeComponent;
   videoComponent: VideoComponent
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private cookieService: CookieService) {
 
     /*  this.http.get('http://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=FYH8DsU2WCk&format=json', {'Access-Control-Allow-Origin'})
       .subscribe(w => console.log(w));

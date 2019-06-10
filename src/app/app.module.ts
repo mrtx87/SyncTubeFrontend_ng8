@@ -10,6 +10,8 @@ import { SyncTubeComponent } from './sync-tube/sync-tube.component';
 import { HttpClientModule } from '@angular/common/http';
 import { NoFloatPipe } from './noFloat.pipe';
 import { ChatMessagePipe } from './chatmessage.pipe';
+import { CookieService } from 'ngx-cookie-service';
+
 
 
 @NgModule({
@@ -29,7 +31,7 @@ import { ChatMessagePipe } from './chatmessage.pipe';
     HttpClientModule
   
   ],
-  providers: [],
+  providers: [CookieService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
