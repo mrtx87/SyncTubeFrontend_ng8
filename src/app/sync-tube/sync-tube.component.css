@@ -6,6 +6,12 @@
   .page-title {
     font-size: 2em;
   }
+
+  .raum-toggle-startpage {
+    display:flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
   
   .button {
     min-width:400px;
@@ -25,14 +31,25 @@
     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
   }
   
+  .button2 {
+    width:100px;
+    height: 50px;
+    background-color: #66A182; /* Green */
+    border: none;
+    border-radius: 9px;
+    color: white;
+    cursor: pointer;
+    margin: 5px;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    padding: 5px 0px;
+  }
+
   .create, .join{
-    width:600px;
     display:flex;
     background-color: #17183Ba1;
-    flex-direction: column;
     border-radius: 15px;
     border: 2px solid #73AD21;
-    align-items: center;  
   }
   
   [hidden] {
@@ -47,6 +64,11 @@
     display: flex;
     width: 100%;
     justify-content: center;
+  }
+
+  .config-raumstatus-container {
+    font-size: 20px;
+    color: white;
   }
 
   .raum-container-cinema {
@@ -173,12 +195,28 @@
     width: 40%;
     align-items: center;
   }
+
+  .room-status-panel {
+    position: fixed;
+    right: 5px;
+    font-size: 35px;
+    color: #ffffff;
+  }
+  
+  .rsp-lock {
+    height: 30px;
+    -webkit-filter: invert(1);
+    filter: invert(1);
+  }
   
   .content-container {
     width:100%;
     display:flex;
     flex-direction: column;
     align-items: center;
+    align-content: center;
+    
+    
   }
 
   .raum-users {
@@ -412,10 +450,11 @@ label {
 }
 
 .public-rooms-container {
-  width:95%;
+  width:100%;
   display:flex;
-  justify-content: flex-start;
+  justify-content: center;
   flex-wrap: wrap;
+  
 }
 
 .playlist-video {
@@ -431,8 +470,50 @@ label {
 .playlist-controls {
   display: flex;
   align-items: center;
-  align-content: flex-start;
+  align-content: center;
+  justify-content: center;
   height:25px;
+  width: 100%;
+}
+
+.inorder-container {
+  height: 25px;
+  margin: 0 15px;
+}
+
+.inorder-container img {
+  height: 25px;
+  padding: 5px;
+}
+
+.random-container {
+  height: 25px;
+  margin: 0 15px;
+}
+
+.random-container img {
+  height: 25px;
+  padding: 5px;
+}
+
+.repeat-container {
+  height: 25px;
+  margin: 0 15px;
+}
+
+.repeat-container img {
+  height: 25px;
+  padding: 5px;
+}
+
+.next-playlist-video-container {
+  height: 25px;
+  margin: 0 15px;
+}
+
+.next-playlist-video-container img {
+  height: 25px;
+  padding: 5px;
 }
 
 .playlist-infos {
@@ -611,6 +692,7 @@ label {
   width: 16px;
   top:1px;
   bottom: 1px;
+  right: 20px;
   background-color: white;
   -webkit-transition: .4s;
   transition: .4s;

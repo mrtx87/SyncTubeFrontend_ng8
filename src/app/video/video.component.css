@@ -27,7 +27,7 @@
 
 .options-container {
     z-index:8888888;
-    bottom:20px;
+    bottom:62px;
     right:5px;
     position:absolute;
     display: flex;
@@ -155,7 +155,7 @@
 
   .playbackrates-container {
     z-index: 8888999;
-    bottom: 20px;
+    bottom: 62px;
     right: 5px;
     position: absolute;
     display: flex;

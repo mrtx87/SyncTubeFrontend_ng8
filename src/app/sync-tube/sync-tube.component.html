@@ -5,18 +5,20 @@
     <input *ngIf="raumId && user.admin" (keyup.enter)="search()" [(ngModel)]="query" class="custom-yt-link" type="text">
     <div *ngIf="raumId && user.admin" (click)="sendAddVideoToPlaylist()"><img class="add-video-to-playlist"
         src="assets/add.svg"> </div>
+    <div class="room-status-panel">
+        <label *ngIf="raumId && raumStatus">Private <img class="rsp-lock" src="assets/padlock.svg"></label>
+        <label *ngIf="raumId && !raumStatus">Public <img class="rsp-lock" src="assets/padlock-unlock.svg"></label>
+    </div>
   </div>
 
   <div class="top-panel-right">
 
   </div>
-  
-
 </div>
 
 <div *ngIf="revealContent" class="content-container">
   <!--  Visible when no room is created or joined -->
-  <div *ngIf="!raumId">
+  <div *ngIf="!raumId" class="content-container">
     <h2>Create a new Room</h2>
 
     <div class="create">
@@ -25,7 +27,7 @@
 
       </button>
       <!--<div class="raum-toggle"><label>Private</label><input [(ngModel)]="raumStatus" type="checkbox"></div>-->
-      <div class="raum-toggle">
+      <div class="raum-toggle-startpage">
         <div class="config-raumstatus-container">
           <label *ngIf="configRaumStatus">Private</label>
           <label *ngIf="!configRaumStatus">Public</label>
@@ -97,8 +99,25 @@
       </div>
 
       <div *ngIf="!user.admin" class="left-create-raum-container">
-        @TODO
-          <div (click)="createNewRaumWhileInRaum()"><img class="add-room" src="assets/add.svg"> </div>
+        <div class="create">
+          <button (click)="createNewRaumWhileInRaum()" class="button2">
+            Create your own Room
+    
+          </button>
+          <!--<div class="raum-toggle"><label>Private</label><input [(ngModel)]="raumStatus" type="checkbox"></div>-->
+          <div class="raum-toggle-startpage">
+            <div class="config-raumstatus-container">
+              <label *ngIf="configRaumStatus">Private</label>
+              <label *ngIf="!configRaumStatus">Public</label>
+            </div>
+            <label class="switch">
+              <input (click)="displayConfigToggle()" class="toggle-input" [(ngModel)]="configRaumStatus" type="checkbox">
+              <span class="slider round"></span>
+            </label>
+    
+          </div>
+        </div>
+          <!--<div (click)="createNewRaumWhileInRaum()"><img class="add-room" src="assets/add.svg"> </div>-->
       </div>
 
       <div class="controls-panel-container">
@@ -113,10 +132,10 @@
       <div class="playlist-container">
         <div class="playlist-panel-title"> <span>Playlist</span></div>
         <div class="playlist-controls">
-          <div class="inorder-container"></div>
-          <div class="random-container"></div>
-          <div class="next-playlist-video-container"></div>
-
+          <div class="inorder-container"> <img src="assets/playlist.svg"> </div>
+          <div class="random-container"> <img src="assets/shuffle.svg"> </div>
+          <div class="repeat-container"> <img src="assets/repeat.svg"> </div>
+          <div class="next-playlist-video-container"> <img src="assets/play-next-button.svg"> </div>
         </div>
 
         <div class="playlist-video" title="{{pvideo_.description}}" *ngFor="let pvideo_ of playlist">
