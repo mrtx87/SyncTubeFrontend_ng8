@@ -92,7 +92,7 @@
   padding: 5px;
 }
 
-  .admin-panel-container, .controls-panel-container , .left-create-raum-container{
+  .admin-panel-container, .controls-panel-container , .left-create-raum-container {
     width:100%;
     display: flex;
     flex-direction: column;
@@ -110,6 +110,18 @@
     min-height: 15%;
     align-items: center;
     border-bottom: 1px solid black;
+  }
+
+  .create-room-title-container , .create-room-description-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 7px;
+  }
+  
+  .input-room-title , .input-description {
+    width: 90%;
+    margin:0 auto;
+    resize: none;
   }
 
   .admin-panel-title, .controls-panel-title, .playlist-panel-title {

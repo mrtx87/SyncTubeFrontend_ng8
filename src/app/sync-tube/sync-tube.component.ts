@@ -97,7 +97,6 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   //personen die vom admin gekickt oder zum admin ernannt werden
   designatedAdmin: User;
   kickingUser: User;
-
   revealContent: Boolean = false;
   constructor(private syncService: SyncService, private route: ActivatedRoute) {
 
@@ -176,6 +175,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   sendNewVideoLink(video: Video) {
     this.syncService.sendNewVideoAndGetTitleFirst(this.user, this.raumId, video);
   }
+  
 
   getPathId(): number {
     return parseInt(this.route.snapshot.paramMap.get('id'));
