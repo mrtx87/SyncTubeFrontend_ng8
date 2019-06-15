@@ -133,6 +133,10 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.syncService.sendAddVideoToPlaylist(this.raumId, this.user, video_);
   }
 
+  sendUpdateTitleAndDescription() {
+    this.syncService.sendUpdateTitleAndDescription();
+  }
+
   createNewRaumWhileInRaum() {
     this.syncService.sendDisconnectMessage(this.user, this.raumId);
     this.createRaum();

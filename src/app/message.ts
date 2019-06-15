@@ -18,4 +18,8 @@ export class Message {
     assignedUser: User;
     playlist : Video[];
 
+    description:string;
+    raumTitle: string;
+    createdAt: string;
+
 }

@@ -372,6 +372,10 @@ export class SyncService {
     }
   }
 
+  sendUpdateTitleAndDescription(user: User, raumId: number, raumDescription: string, raumTitle: string) {
+    this.stompClient.send("/app/send/update-title-and-description", {}, JSON.stringify({ 'user': user, 'raumId': raumId, 'raumDescription': raumDescription, 'raumTitle': raumTitle }));
+  }
+
   sendNewVideoAndGetTitleFirst(user: User, raumId: number, video: Video) {
     let that = this;
     this.http.get('https://noembed.com/embed?url=https://www.youtube.com/watch?v=' + video.videoId).subscribe(data => {

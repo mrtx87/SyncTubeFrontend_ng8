@@ -10,6 +10,10 @@ video: Video;
 
 description:string;
 
+raumTitle: string;
+
 createdAt: string;
+
+raumStatus: boolean;
 
 }
