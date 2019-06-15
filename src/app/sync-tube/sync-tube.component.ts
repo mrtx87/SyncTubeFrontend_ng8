@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, AfterViewInit, ElementRef } from '@angular/core';
+import { Component, OnInit, HostListener, ElementRef, ViewChild, AfterViewChecked } from '@angular/core';
 import { SyncService } from '../sync.service';
 import { Raum } from '../raum';
 import { ActivatedRoute } from '@angular/router';
@@ -15,11 +15,30 @@ import $ from 'jquery';
 })
 
 
-export class SyncTubeComponent implements OnInit,AfterViewInit {
- 
-  ngAfterViewInit(): void {
-    let scroll = document.getElementById("scrollable-chat")
-    console.log(scroll)
+export class SyncTubeComponent implements OnInit, AfterViewChecked {
+
+  ngAfterViewChecked(): void {
+    if (!this.scrollChat) {
+      this.scrollChat = document.getElementById("scrollChat")
+    }
+
+    if (!this.scrollContent) {
+      this.scrollContent = document.getElementById("scrollContent")
+    }
+
+    this.scrollToBottomOfChat()
+    if(this.scrollToBottom) {
+      this.scrollToSearchResults();
+      this.scrollToBottom = false;
+    }
+  }
+
+  scrollToBottomOfChat() {
+    this.scrollChat.scrollTop = this.scrollChat.scrollHeight;
+  }
+
+  scrollToSearchResults() {
+    this.scrollContent.scrollTop = this.scrollContent.scrollHeight * 0.3;
   }
 
   @HostListener('window:beforeunload', ['$event'])
@@ -33,6 +52,9 @@ export class SyncTubeComponent implements OnInit,AfterViewInit {
   privateRaum: boolean = true;
 
 
+  scrollContent: any;
+  scrollChat: any;
+
   /* controls vars */
   showRaum: boolean = false;
   query: string;
@@ -44,23 +66,35 @@ export class SyncTubeComponent implements OnInit,AfterViewInit {
 
   title = 'SyncTube';
 
+  //currentUser
   user: User;
+
+  //currentRaum Information
   raumId: number;
-  users: User[];
+  raumDescription: string;
+  raumTitle: string;
+  createdAt: string;
+  raumStatus: Boolean = true;
+
+
+  //currentVideo
   video: Video;
+
+  //restliche daten die wir brauchen vom server z.B. users in raum, playlist etc
+  users: User[];
   playbackRates: number[];
   chatMessages: ChatMessage[] = [];
   searchResults: Video[];
   playlist: Video[] = [];
   videoDuration: number;
-  raumStatus: Boolean = true;
   receivedPlayerState: number;
+  publicRaeume: Raum[];
 
 
   configRaumStatus: Boolean = true;
   isMuted: Boolean = false;
 
-  publicRaeume: Raum[];
+  //personen die vom admin gekickt oder zum admin ernannt werden
   designatedAdmin: User;
   kickingUser: User;
 
@@ -70,10 +104,10 @@ export class SyncTubeComponent implements OnInit,AfterViewInit {
     this.syncService.registerSyncTubeComponent(this);
     // this.syncService.parseYoutubeUrl('https://www.youtube.com/watch?v=luQ0JWcrsWg&feature=youtu.be&list=PLuUrokoVSxlfUJuJB_D8j_wsFR4exaEmy&t=81');
     // this.syncService.parseYoutubeUrl('https://youtu.be/AmAy0KABoX0');
-    if(this.syncService.hasCookie()) {
+    if (this.syncService.hasCookie()) {
       this.setLocalUser(new User());
       this.user.userId = parseInt(this.syncService.getCookie())
-    }else{
+    } else {
       this.syncService.generateUserId();
       this.syncService.setCookie(this.user.userId);
     }
@@ -95,9 +129,9 @@ export class SyncTubeComponent implements OnInit,AfterViewInit {
 
   }
 
-  sendAddVideoToPlaylist() {
+  sendAddVideoToPlaylist(video_ :Video) {
     console.log("SEND VIDEO TO PLAYLIST")
-    this.syncService.sendAddVideoToPlaylist(this.raumId, this.user, this.query);
+    this.syncService.sendAddVideoToPlaylist(this.raumId, this.user, video_);
   }
 
   createNewRaumWhileInRaum() {
@@ -117,17 +151,22 @@ export class SyncTubeComponent implements OnInit,AfterViewInit {
     this.syncService.sendJoinRaum(this.user, raumId);
   }
 
+  scrollToBottom: boolean; 
+
   search() {
-    
+
     let video: Video = this.syncService.parseYoutubeUrl(this.query);
-    if(video) {
+    if (video) {
       //this.sendNewVideoLink(video);
       this.syncService.search(this.query, false, video.timestamp);
+      this.scrollToBottom = true;
       return;
     }
-    
+
 
     this.syncService.search(this.query, true);
+    this.scrollToBottom = true;
+
   }
 
   getReceivedPlayerState(): number {
@@ -156,6 +195,7 @@ export class SyncTubeComponent implements OnInit,AfterViewInit {
 
   addChatMessage(chatMessage: ChatMessage) {
     this.chatMessages.push(chatMessage);
+
   }
 
   addAllChatMessages(allChatMessages: ChatMessage[]) {

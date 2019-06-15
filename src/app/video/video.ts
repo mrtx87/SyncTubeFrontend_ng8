@@ -5,6 +5,7 @@ export class Video {
     title: string;
     description: string;
     publishedAt: Date;
+    playlistNr: number;
 
     clone(): Video {
         let v: Video = new Video();
@@ -13,6 +14,7 @@ export class Video {
         v.title = this.title;
         v.description = this.description;
         v.publishedAt = this.publishedAt;
+        v.playlistNr = this.playlistNr;
         return v;
     }
 

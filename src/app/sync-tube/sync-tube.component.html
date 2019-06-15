@@ -125,7 +125,7 @@
         </div>
       </div>
     </div>
-    <div [className]="!displayFullscreen ? 'video-content' : 'display-fullscreen'">
+    <div #scrollContent id="scrollContent" [className]="!displayFullscreen ? 'video-content' : 'display-fullscreen'">
       <app-video></app-video>
 
       <div *ngIf="raumId && !displayFullscreen" class="raum-users">
@@ -167,14 +167,14 @@
             <span (click)="sendNewVideoLink(video_)">{{video_.title}} </span>
             <span class="search-result-date"> published @{{video_.publishedAt | date: 'dd.MM.yyyy'}}</span>
           </div>
-          <img (click)="addToPlaylist(video_)" class="add-to-playlist-button" src="assets/add2.svg">
+          <img (click)="sendAddVideoToPlaylist(video_)" class="add-to-playlist-button" src="assets/add2.svg">
         </div>
       </div>
 
     </div>
 
     <div *ngIf="!displayCinemaMode && !displayFullscreen" class="chat-messages-container">
-      <div class="scrollable-content" id="scrollable-chat">
+      <div #scrollChat class="scrollable-content" id="scrollChat">
         <div class="chat-row" *ngFor="let chatMessage of chatMessages">
           <div class="message-row-container" *ngIf="chatMessage.type != 'insert-video'">
             <div class="userid-container"> <span> {{chatMessage.user.userName}} </span><img

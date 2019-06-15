@@ -410,8 +410,6 @@ export class SyncService {
         }
         this.synctubeComponent.searchResults = [vid];
       }
-    
-
     });
   }
 
@@ -458,9 +456,8 @@ export class SyncService {
     this.stompClient.send("/app/send/refresh-raumid", {}, JSON.stringify({ 'raumId': raumId, 'user': user }));
   }
 
-  sendAddVideoToPlaylist(raumId: number, user: User, url: string) {
-    console.log("[add-video-to-playlist:] " + user + " | video: " + url);
-    let video: Video = this.parseYoutubeUrl(url);
+  sendAddVideoToPlaylist(raumId: number, user: User, video: Video) {
+    console.log("[add-video-to-playlist:] " + user + " | video: " + video.videoId);
     if (video) {
       this.stompClient.send("/app/send/add-video-to-playlist", {}, JSON.stringify({ 'raumId': raumId, 'user': user, 'video': video }));
     }

@@ -458,6 +458,7 @@ label {
 
 .search-results-container {
   width: 100%;
+  min-height: 400px;
   display:flex;
   align-items: flex-start;
   flex-wrap: wrap;
