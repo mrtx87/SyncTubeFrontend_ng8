@@ -134,7 +134,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
   sendUpdateTitleAndDescription() {
-    this.syncService.sendUpdateTitleAndDescription();
+    this.syncService.sendUpdateTitleAndDescription(this.user, this.raumId, this.raumTitle, this.raumDescription);
   }
 
   createNewRaumWhileInRaum() {

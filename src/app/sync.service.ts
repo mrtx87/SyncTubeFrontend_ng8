@@ -372,7 +372,7 @@ export class SyncService {
     }
   }
 
-  sendUpdateTitleAndDescription(user: User, raumId: number, raumDescription: string, raumTitle: string) {
+  sendUpdateTitleAndDescription(user: User, raumId: number,  raumTitle: string, raumDescription: string) {
     this.stompClient.send("/app/send/update-title-and-description", {}, JSON.stringify({ 'user': user, 'raumId': raumId, 'raumDescription': raumDescription, 'raumTitle': raumTitle }));
   }
 
