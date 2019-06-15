@@ -472,7 +472,7 @@ label {
   align-items: center;
   align-content: center;
   justify-content: center;
-  height:25px;
+  height:35px;
   width: 100%;
 }
 
@@ -482,7 +482,7 @@ label {
 }
 
 .inorder-container img {
-  height: 25px;
+  height: 20px;
   padding: 5px;
 }
 
@@ -492,7 +492,7 @@ label {
 }
 
 .random-container img {
-  height: 25px;
+  height: 20px;
   padding: 5px;
 }
 
@@ -502,7 +502,7 @@ label {
 }
 
 .repeat-container img {
-  height: 25px;
+  height: 20px;
   padding: 5px;
 }
 
@@ -512,7 +512,7 @@ label {
 }
 
 .next-playlist-video-container img {
-  height: 25px;
+  height: 20px;
   padding: 5px;
 }
 
