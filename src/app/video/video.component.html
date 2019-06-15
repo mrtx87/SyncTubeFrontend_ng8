@@ -60,11 +60,11 @@
   </div>
 
   <!-- Video Controls-->
-  <div class ="controls-all" *ngIf="displayAllControls && syncService.synctubeComponent.user.admin" (mousemove)="time = 0">
-    <input [(ngModel)]="currentTimeProgressbar" (click) ="onChangeProgressBar()" type="range" min="0"
+  <div class ="controls-all" *ngIf="displayAllControls" (mousemove)="time = 0">
+    <input [(ngModel)]="currentTimeProgressbar" *ngIf="syncService.synctubeComponent.user.admin" (click) ="onChangeProgressBar()" type="range" min="0"
       max="{{videoDuration | noFloat}}" class="bar-slider" id="myRange">
-    <div class="controls">
-      <div (click)="triggerTogglePlay()" class="play-button">
+    <div  class="controls">
+      <div *ngIf="syncService.synctubeComponent.user.admin" (click)="triggerTogglePlay()" class="play-button">
         <div *ngIf="!isPlaying"> <img src="assets/play-button.svg"></div>
         <div *ngIf="isPlaying"> <img src="assets/pause.svg"></div>
       </div>

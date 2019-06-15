@@ -1,40 +1,16 @@
 <div class="top-panel">
 
   <div class="top-panel-left">
-    <h2> <a href="http://localhost:4200"> SyncTube</a></h2>
+    <label class="page-title"> <a href="http://localhost:4200"> SyncTube</a></label>
     <input *ngIf="raumId && user.admin" (keyup.enter)="search()" [(ngModel)]="query" class="custom-yt-link" type="text">
     <div *ngIf="raumId && user.admin" (click)="sendAddVideoToPlaylist()"><img class="add-video-to-playlist"
         src="assets/add.svg"> </div>
   </div>
 
   <div class="top-panel-right">
-    <div class="infos">
-      <div *ngIf="user.admin" class="admin-info">
-        <span style="height:25px;">You're Admin</span>
-        <img class="star" src="assets/star.svg">
-      </div>
-      <div *ngIf="raumId" class="raum-toggle">
-        <div class="config-raumstatus-container">
-          <label *ngIf="raumStatus">Private</label>
-          <label *ngIf="!raumStatus">Public</label>
-        </div>
-        <label *ngIf="user.admin" class="switch">
-          <input (click)="sendToggleRaumStatus($event)" class="toggle-input" [(ngModel)]="raumStatus" type="checkbox">
-          <span class="slider round"></span>
-        </label>
-
-      </div>
-    </div>
-
-    <div *ngIf="user.admin && raumStatus">
-      <img (click)="refreshJoinUrl()" title="refreshes the join url" class="refresh-img" src="assets/refresh.svg">
-    </div>
-    <div *ngIf="user.admin" (click)="copyUrlToClipboard()">
-      <img class="copy-img" src="assets/copy.svg">
-    </div>
 
   </div>
-  <div (click)="createNewRaumWhileInRaum()"><img class="add-room" src="assets/add.svg"> </div>
+  
 
 </div>
 
@@ -78,7 +54,7 @@
         <table (click)="joinRaumById(pRoom.raumId)">
           <tr>
             <td>
-              Raum {{pRoom.raumId}}
+              #{{pRoom.raumId}}
             </td>
             <td>
 
@@ -101,43 +77,56 @@
 
   <!-- Visible when room is created or joined -->
   <div *ngIf="raumId" [className]="!displayCinemaMode ? 'raum-container' : 'raum-container-cinema'">
+    <div class="left-container" *ngIf="!displayCinemaMode && !displayFullscreen">
 
-    <div *ngIf="!displayCinemaMode && !displayFullscreen" class="playlist-container">
-      <div class="playlist-video" title="{{pvideo_.description}}" *ngFor="let pvideo_ of playlist">
-        <div><img class="playlist-thumbnail" src="https://img.youtube.com/vi/{{pvideo_.videoId}}/0.jpg"> </div>
-        <div class="playlist-infos"> {{pvideo_.title}}</div>
+      <div *ngIf="user.admin" class="admin-panel-container">
+        <div class="admin-panel-title"> <span>Admin Panel</span></div>
+
+        <div *ngIf="raumId" class="raum-toggle">
+          <label class="w-60" *ngIf="raumStatus">Private</label>
+          <label class="w-60" *ngIf="!raumStatus">Public</label>
+          <label *ngIf="user.admin" class="switch">
+            <input (click)="sendToggleRaumStatus($event)" class="toggle-input" [(ngModel)]="raumStatus" type="checkbox">
+            <span class="slider round"></span>
+          </label>
+        </div>
+        <div class="admin-panel-row" *ngIf="user.admin && raumStatus">
+          <label class="w-90">Reset Url</label>
+          <img (click)="refreshJoinUrl()" title="refreshes the join url" class="refresh-img" src="assets/refresh.svg">
+        </div>
+      </div>
+
+      <div *ngIf="!user.admin" class="left-create-raum-container">
+        @TODO
+          <div (click)="createNewRaumWhileInRaum()"><img class="add-room" src="assets/add.svg"> </div>
+      </div>
+
+      <div class="controls-panel-container">
+        <div class="controls-panel-title"> <span>Controls Panel</span></div>
+
+        <div (click)="copyLinkToClipboard()" class="admin-panel-row">
+          <label class="w-90">Copy URL</label>
+          <img title="refreshes the join url" class="refresh-img" src="assets/copy.svg">
+        </div>
+      </div>
+
+      <div class="playlist-container">
+        <div class="playlist-panel-title"> <span>Playlist</span></div>
+        <div class="playlist-controls">
+          <div class="inorder-container"></div>
+          <div class="random-container"></div>
+          <div class="next-playlist-video-container"></div>
+
+        </div>
+
+        <div class="playlist-video" title="{{pvideo_.description}}" *ngFor="let pvideo_ of playlist">
+          <div><img class="playlist-thumbnail" src="https://img.youtube.com/vi/{{pvideo_.videoId}}/0.jpg"> </div>
+          <div class="playlist-infos"> {{pvideo_.title}}</div>
+        </div>
       </div>
     </div>
-
     <div [className]="!displayFullscreen ? 'video-content' : 'display-fullscreen'">
       <app-video></app-video>
-       <!-- <input [(ngModel)]="video.timestamp" (change)="onChangeProgressBar()" type="range" min="0"
-        max="{{videoDuration | noFloat}}" class="bar-slider" id="myRange">
-      <div class="controls">
-        <div (click)="triggerTogglePlay()" class="play-button">
-          <div *ngIf="!isPlaying"> <img src="assets/play-button.svg"></div>
-          <div *ngIf="isPlaying"> <img src="assets/pause.svg"></div>
-        </div>
-
-        <div (mouseover)="mouseOverSound()" (click)="toggleMute()" class="controls-sound">
-          <div *ngIf="isMuted"><img src="assets/mute.svg"></div>
-          <div *ngIf="!isMuted"><img src="assets/unmute.svg"></div>
-        </div>
-        <div class="controls-volume">
-          <input [(ngModel)]="volumeValue" (change)="setVolume()" min="0" max="100" type="range" class="volume"
-            orient="horizontal" />
-        </div>
-
-        <div class="controls-time"> {{video.timestamp | hhMMss}}/ {{videoDuration | hhMMss}}</div>
-        <div class="controls-spacer">space</div>
-        <div class="controls-subtitle" (click)="toggleSubtitle()"><img src="assets/subtitles.svg"></div>
-        <div (click)="toggleDisplayOptions()" class="controls-options"><img src="assets/settings.svg">
-        </div>
-        <div (click)="toggleDisplayCinemaMode()" class="controls-cinema">
-          <div class="cinema-box"></div>
-        </div>
-        <div (click)="toggleDisplayFullscreen()" class="controls-fullscreen"><img src="assets/fullscreen.svg"></div>
-      </div> -->
 
       <div *ngIf="raumId && !displayFullscreen" class="raum-users">
         <ng-template ngFor let-anyuser [ngForOf]="users">
@@ -169,10 +158,23 @@
           </div>
         </ng-template>
       </div>
+
+      <div *ngIf="raumId && user.admin && !displayFullscreen && !displayCinemaMode" class="search-results-container">
+        <div class="search-result-video" title="{{video_.description}}" *ngFor="let video_ of searchResults">
+          <div (click)="sendNewVideoLink(video_)"><img class="search-result-thumbnail"
+              src="https://img.youtube.com/vi/{{video_.videoId}}/0.jpg"> </div>
+          <div class="search-result-infos">
+            <span (click)="sendNewVideoLink(video_)">{{video_.title}} </span>
+            <span class="search-result-date"> published @{{video_.publishedAt | date: 'dd.MM.yyyy'}}</span>
+          </div>
+          <img (click)="addToPlaylist(video_)" class="add-to-playlist-button" src="assets/add2.svg">
+        </div>
+      </div>
+
     </div>
 
     <div *ngIf="!displayCinemaMode && !displayFullscreen" class="chat-messages-container">
-      <div  class="scrollable-content" id="scrollable-chat">
+      <div class="scrollable-content" id="scrollable-chat">
         <div class="chat-row" *ngFor="let chatMessage of chatMessages">
           <div class="message-row-container" *ngIf="chatMessage.type != 'insert-video'">
             <div class="userid-container"> <span> {{chatMessage.user.userName}} </span><img
@@ -189,10 +191,13 @@
               <img *ngIf="chatMessage.user.admin" src="assets/star.svg" class="star-img">
             </div>
             <div>
-              <a target="_blank" href="https://www.youtube.com/watch?v={{chatMessage.video.videoId}}"> <img class="thumbnail-chat" src="https://img.youtube.com/vi/{{chatMessage.video.videoId}}/0.jpg"></a>
+              <a target="_blank" href="https://www.youtube.com/watch?v={{chatMessage.video.videoId}}"> <img
+                  class="thumbnail-chat" src="https://img.youtube.com/vi/{{chatMessage.video.videoId}}/0.jpg"></a>
             </div>
-            <div class="text-container"><a target="_blank" href="https://www.youtube.com/watch?v={{chatMessage.video.videoId}}">
-              <div class="video-title"> {{chatMessage.video.title}}</div></a>
+            <div class="text-container"><a target="_blank"
+                href="https://www.youtube.com/watch?v={{chatMessage.video.videoId}}">
+                <div class="video-title"> {{chatMessage.video.title}}</div>
+              </a>
               <div class="timestamp"> <span> {{chatMessage.timestamp}} </span></div>
             </div>
           </div>
@@ -204,17 +209,7 @@
     </div>
   </div>
 
-  <div *ngIf="raumId && user.admin && !displayFullscreen && !displayCinemaMode" class="search-results-container">
-    <div class="search-result-video" title="{{video_.description}}" *ngFor="let video_ of searchResults">
-      <div (click)="sendNewVideoLink(video_)"><img class="search-result-thumbnail"
-          src="https://img.youtube.com/vi/{{video_.videoId}}/0.jpg"> </div>
-      <div class="search-result-infos">
-        <span (click)="sendNewVideoLink(video_)">{{video_.title}} </span>
-        <span class="search-result-date"> published @{{video_.publishedAt | date: 'dd.MM.yyyy'}}</span>
-      </div>
-      <img (click)="addToPlaylist(video_)" class="add-to-playlist-button" src="assets/add2.svg">
-    </div>
-  </div>
+
 </div>
 
 <div *ngIf="designatedAdmin" class="prompt">

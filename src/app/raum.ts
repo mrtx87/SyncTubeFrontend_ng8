@@ -8,4 +8,8 @@ size: number;
 
 video: Video;
 
+description:string;
+
+createdAt: string;
+
 }
