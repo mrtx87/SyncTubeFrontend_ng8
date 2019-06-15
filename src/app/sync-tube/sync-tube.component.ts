@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, AfterViewInit, ElementRef } from '@angular/core';
 import { SyncService } from '../sync.service';
 import { Raum } from '../raum';
 import { ActivatedRoute } from '@angular/router';
@@ -6,6 +6,7 @@ import { Message } from '../message';
 import { ChatMessage } from '../chat-message';
 import { User } from './user';
 import { Video } from '../video/video';
+import $ from 'jquery';
 
 @Component({
   selector: 'app-sync-tube',
@@ -14,8 +15,12 @@ import { Video } from '../video/video';
 })
 
 
-export class SyncTubeComponent implements OnInit {
-
+export class SyncTubeComponent implements OnInit,AfterViewInit {
+ 
+  ngAfterViewInit(): void {
+    let scroll = document.getElementById("scrollable-chat")
+    console.log(scroll)
+  }
 
   @HostListener('window:beforeunload', ['$event'])
   beforeunloadHandler($event: any) {
@@ -34,7 +39,8 @@ export class SyncTubeComponent implements OnInit {
   raumIdText: string;
   chatMessageText: String;
 
-  playerState: number;
+  displayCinemaMode: Boolean = false;
+  displayFullscreen: Boolean = false;
 
   title = 'SyncTube';
 
@@ -46,24 +52,17 @@ export class SyncTubeComponent implements OnInit {
   chatMessages: ChatMessage[] = [];
   searchResults: Video[];
   playlist: Video[] = [];
-  videoTime: number;
-  volumeValue: number;
   videoDuration: number;
   raumStatus: Boolean = true;
-  displaySubtitle: Boolean = false;
-  displayOptions: Boolean = false;
-  displayCinemaMode: Boolean = false;
-  displayFullscreen: Boolean = false;
+  receivedPlayerState: number;
+
 
   configRaumStatus: Boolean = true;
   isMuted: Boolean = false;
-  isPlaying: Boolean = false;
 
   publicRaeume: Raum[];
   designatedAdmin: User;
   kickingUser: User;
-
-  iframe: any;
 
   revealContent: Boolean = false;
   constructor(private syncService: SyncService, private route: ActivatedRoute) {
@@ -71,7 +70,13 @@ export class SyncTubeComponent implements OnInit {
     this.syncService.registerSyncTubeComponent(this);
     // this.syncService.parseYoutubeUrl('https://www.youtube.com/watch?v=luQ0JWcrsWg&feature=youtu.be&list=PLuUrokoVSxlfUJuJB_D8j_wsFR4exaEmy&t=81');
     // this.syncService.parseYoutubeUrl('https://youtu.be/AmAy0KABoX0');
-    this.generateUserId();
+    if(this.syncService.hasCookie()) {
+      this.setLocalUser(new User());
+      this.user.userId = parseInt(this.syncService.getCookie())
+    }else{
+      this.syncService.generateUserId();
+      this.syncService.setCookie(this.user.userId);
+    }
     this.connect();
     //this.syncService.getVideoTitle("dQw4w9WgXcQ");
   }
@@ -84,13 +89,6 @@ export class SyncTubeComponent implements OnInit {
     this.videoDuration = duration;
   }
 
-  generateUserId() {
-    if (!this.user) {
-      this.user = new User();
-    }
-    this.user.userId = Math.floor(Date.now() / 1000);
-  }
-
   addToPlaylist(video: Video) {
     this.playlist.push(video);
     console.log(this.playlist.length)
@@ -100,10 +98,6 @@ export class SyncTubeComponent implements OnInit {
   sendAddVideoToPlaylist() {
     console.log("SEND VIDEO TO PLAYLIST")
     this.syncService.sendAddVideoToPlaylist(this.raumId, this.user, this.query);
-  }
-
-  onChangeProgressBar() {
-    this.syncService.sendSeekToTimestamp(this.user, this.raumId, this.video.videoId, this.video.timestamp);
   }
 
   createNewRaumWhileInRaum() {
@@ -124,16 +118,21 @@ export class SyncTubeComponent implements OnInit {
   }
 
   search() {
+    
     let video: Video = this.syncService.parseYoutubeUrl(this.query);
-
     if(video) {
-      this.sendNewVideoLink(video);
+      //this.sendNewVideoLink(video);
+      this.syncService.search(this.query, false, video.timestamp);
       return;
     }
+    
 
-    this.syncService.search(this.query);
+    this.syncService.search(this.query, true);
   }
 
+  getReceivedPlayerState(): number {
+    return this.receivedPlayerState;
+  }
 
   sendNewVideoLink(video: Video) {
     this.syncService.sendNewVideoAndGetTitleFirst(this.user, this.raumId, video);
@@ -152,10 +151,6 @@ export class SyncTubeComponent implements OnInit {
   }
 
   ngOnInit() {
-  }
-
-  toggleMute() {
-    this.syncService.toggleMute();
   }
 
 
@@ -185,26 +180,8 @@ export class SyncTubeComponent implements OnInit {
     return chatMessage;
   }
 
-  triggerTogglePlay(): void {
-    console.log("PS: " + this.getPlayerState());
-    let slider = document.getElementById('myRange')
-    console.log(slider)
-    if (this.getPlayerState() == SyncService.paused || this.getPlayerState() == SyncService.placed || this.getPlayerState() == SyncService.finished) {
-      console.log("playvideo")
-      this.syncService.sendTogglePlay(this.syncService.getUser(), this.syncService.getRaumId(), SyncService.playing, this.getVideo());
-    }
-    if (this.getPlayerState() == SyncService.playing) {
-      console.log("pausevideo")
-      this.syncService.sendTogglePlay(this.syncService.getUser(), this.syncService.getRaumId(), SyncService.paused, this.getVideo());
-    }
-  }
-
   pauseVideo() {
     this.syncService.pauseVideo();
-  }
-
-  setVolume() {
-    this.syncService.setVolume(this.volumeValue);
   }
 
   getUserId(): number {
@@ -292,10 +269,6 @@ export class SyncTubeComponent implements OnInit {
     return this.video;
   }
 
-  mouseOverSound() {
-    console.log("tesetetet")
-  }
-
   onChangeChat() {
     console.log("dsfsdf")
     let objDiv = document.getElementById("scrollable-content");
@@ -318,11 +291,6 @@ export class SyncTubeComponent implements OnInit {
     return this.syncService.getOptions();
   }
 
-  toggleSubtitle(_module, option, value) {
-    this.displaySubtitle = !this.displaySubtitle;
-    console.log("testestset")
-    this.syncService.toggleSubtitle('cc', 'reload', this.displaySubtitle);
-  }
 
   setOption(_module, option, value) {
     this.syncService.setOption(_module, option, value);
@@ -339,26 +307,6 @@ export class SyncTubeComponent implements OnInit {
 
   setSize(width: number, height: number) {
     this.syncService.setSize(width, height);
-  }
-
-  toggleDisplayCinemaMode() {
-    this.displayCinemaMode = !this.displayCinemaMode;
-    this.iframe.className = 'video'
-    this.displayFullscreen = false;
-  }
-
-  toggleDisplayFullscreen() {
-    this.displayFullscreen = !this.displayFullscreen;
-    this.displayCinemaMode = false;
-    if(this.displayFullscreen) {
-      this.iframe.className = 'video-fullscreen'
-    }else{
-      this.iframe.className = 'video'
-    }
-  }
-
-  setIframe(iframe: any) {
-    this.iframe = iframe;
   }
 
 }

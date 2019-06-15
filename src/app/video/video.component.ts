@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import reframe from 'reframe.js';
 import { SyncService } from '../sync.service';
 import { Video } from './video';
+import { User } from '../sync-tube/user';
 @Component({
   selector: 'app-video',
   templateUrl: './video.component.html',
@@ -20,6 +21,24 @@ export class VideoComponent implements OnInit {
   displayOptions: Boolean = false;
   displayPlaybackRatesOptions: Boolean = false;
   playbackRates: number[];
+
+  displayAllControls: boolean = false;
+
+  displaySubtitle: Boolean = false;
+
+  isPlaying: Boolean = false;
+
+  iframe: any;
+
+  currentTimestamp: number = 0;
+  currentTime: number;
+  currentTimeProgressbar: number;
+  currentDisplayedTime: number;
+
+  volumeValue: number;
+
+  videoDuration: number;
+
 
   //iframe: any;
 
@@ -58,26 +77,17 @@ export class VideoComponent implements OnInit {
               reframe(e.target.a);
             }
 
+            that.processVideoIfLoaded(that);
 
-            this.setIframe(e.target.a);
+            that.setIframe(e.target.a);
             console.log("!!! " + e.target.a.className + " !!!")
-
+            that.currentTimeProgressbar = this.syncService.getVideo().timestamp;
             that.loadVideoById({
               videoId: this.syncService.getVideo().videoId,
               startSeconds: this.syncService.getVideo().timestamp,
               suggestedQuality: 'large'
             });
-            let wait = setInterval(function () {
-              if (that.getPlayerState() == SyncService.playing) {
-                that.setVideoDuration();
-                that.togglePlayVideo(that.syncService.synctubeComponent.playerState);
-                if(that.syncService.synctubeComponent.users.length > 1) {
-                  that.sendRequestSyncTimestamp();
-                }
-                that.setPlaybackRates();
-                clearInterval(wait);
-              }
-            }, 5)
+
             /*
             
             that.togglePlayVideo(this.syncService.synctubeComponent.playerState);*/
@@ -90,15 +100,29 @@ export class VideoComponent implements OnInit {
   }
 
   setIframe(iframe: any) {
-    this.syncService.setIframe(iframe);
+    this.iframe = iframe;
   }
 
+  processVideoIfLoaded(that: VideoComponent) {
+    let wait = setInterval(function () {
+      if (that.player.getPlayerState() == SyncService.playing) {
+        that.setVideoDuration();
+        that.togglePlayVideo(that.getReceivedPlayerState());
+        if (that.syncService.synctubeComponent.users.length > 1) {
+          that.sendRequestSyncTimestamp();
+        }
+        that.setPlaybackRates();
+        clearInterval(wait);
+      }
+    }, 3)
+  }
 
   getVideoDuration(): number {
     return this.player.getDuration();
   }
   setVideoDuration() {
-    this.syncService.setVideoDuration(this.getVideoDuration());
+    //this.syncService.setVideoDuration();
+    this.videoDuration = this.getVideoDuration();
   }
   onPlayerStateChange(event) {
     console.log(event)
@@ -160,64 +184,117 @@ export class VideoComponent implements OnInit {
     this.player.stopVideo();
   }
 
+  getReceivedPlayerState(): number {
+    return this.syncService.getReceivedPlayerState();
+  }
+
+  updateVideoContinously(that: VideoComponent) {
+    that.timer = setInterval(function () {
+      that.currentTimeProgressbar += 0.1;;
+      that.currentDisplayedTime = that.getCurrentTime();
+      that.syncService.synctubeComponent.video.timestamp = that.currentTime;
+    }, 100);
+  }
+
+  stopUpdatingVideo() {
+    clearInterval(this.timer);
+  }
+
   playVideo() {
     this.player.playVideo();
   }
+
   timer: any;
   togglePlayVideo(playerState: number) {
     if (playerState == SyncService.playing) {
       this.playVideo();
-      this.syncService.synctubeComponent.isPlaying = true;
+      this.isPlaying = true;
       let that = this;
-      this.timer = setInterval(function () {
-        that.syncService.synctubeComponent.video.timestamp = that.getCurrentTime();
-      }, 500);
+      this.updateVideoContinously(that);
       return;
     }
     if (playerState == SyncService.paused) {
       this.pauseVideo();
-      this.syncService.synctubeComponent.isPlaying = false;
+      this.isPlaying = false;
       clearInterval(this.timer);
       return;
     }
   }
 
+  isLocalUserAdmin() {
+    return this.getLocalUser().admin;
+  }
+
   triggerTogglePlay(): void {
-    if (this.getPlayerState() == SyncService.paused || this.getPlayerState() == SyncService.placed || this.getPlayerState() == SyncService.finished) {
-      console.log("playvideo")
-      this.syncService.sendTogglePlay(this.syncService.getUser(), this.syncService.getRaumId(), SyncService.playing, this.getVideo());
-    }
-    if (this.getPlayerState() == SyncService.playing) {
-      console.log("pausevideo")
-      this.syncService.sendTogglePlay(this.syncService.getUser(), this.syncService.getRaumId(), SyncService.paused, this.getVideo());
+    if (this.isLocalUserAdmin()) {
+      if (this.getPlayerState() == SyncService.paused || this.getPlayerState() == SyncService.placed || this.getPlayerState() == SyncService.finished) {
+        console.log("playvideo")
+        this.syncService.sendTogglePlay(this.syncService.getLocalUser(), this.syncService.getRaumId(), SyncService.playing, this.getVideo(), this.getCurrentTime());
+      }
+      if (this.getPlayerState() == SyncService.playing) {
+        console.log("pausevideo")
+        this.syncService.sendTogglePlay(this.syncService.getLocalUser(), this.syncService.getRaumId(), SyncService.paused, this.getVideo(), this.getCurrentTime());
+      }
     }
   }
 
   loadVideoById(urlObject: any): void {
     this.player.loadVideoById(urlObject);
   }
-  loadVideoFromSettings() {
+
+  onChangeProgressBar() {
+    console.log(":::::::: " + this.currentTime)
+    this.currentTimeProgressbar;
+    this.stopUpdatingVideo();
+    this.syncService.sendSeekToTimestamp(this.getLocalUser(), this.getRaumId(), this.getCurrentVideo().videoId, this.currentTimeProgressbar);
+  }
+
+  /*loadVideoFromSettings() {
     this.player.loadVideoById({
       videoId: this.syncService.synctubeComponent.video.videoId,
       startSeconds: this.syncService.synctubeComponent.video.timestamp,
       suggestedQuality: 'large'
     })
+  }*/
+
+  getCurrentTimestamp(): number {
+    return this.currentTimestamp;
   }
 
-  setVolume(value: number) {
-    this.unMute();
-    this.player.setVolume(value);
+  getLocalUser(): User {
+    return this.syncService.getLocalUser();
   }
+
+  getRaumId(): number {
+    return this.syncService.getRaumId();
+  }
+
+  getCurrentVideo(): Video {
+    return this.syncService.getVideo();
+  }
+
+  setVolume() {
+    if (this.volumeValue <= 1) {
+      this.mute();
+      this.player.setVolume(0);
+    } else {
+      this.unMute();
+      this.player.setVolume(this.volumeValue);
+    }
+  }
+
   setFullscreen() {
     console.log("hallo")
   }
 
 
   mute(): void {
+    this.syncService.synctubeComponent.isMuted = true;
     this.player.mute();
   }
 
   unMute(): void {
+    this.syncService.synctubeComponent.isMuted = false;
     this.player.unMute();
   }
 
@@ -245,8 +322,20 @@ export class VideoComponent implements OnInit {
     return this.player.getOptions();
   }
 
-  toggleSubtitle(_module, option, value) {
-    this.setOption(_module, option, value);
+  toggleDisplayCinemaMode() {
+    this.syncService.synctubeComponent.displayCinemaMode = !this.syncService.synctubeComponent.displayCinemaMode;
+    //this.iframe.className = 'video'
+    this.syncService.synctubeComponent.displayFullscreen = false;
+  }
+
+  toggleDisplayFullscreen() {
+    this.syncService.synctubeComponent.displayFullscreen = !this.syncService.synctubeComponent.displayFullscreen;
+    this.syncService.synctubeComponent.displayCinemaMode = false;
+    /* if (this.syncService.synctubeComponent.displayFullscreen) {
+       this.iframe.className = 'video-fullscreen'
+     } else {
+       this.iframe.className = 'video'
+     }*/
   }
 
   setOption(_module, option, value) {
@@ -283,4 +372,38 @@ export class VideoComponent implements OnInit {
     this.displayPlaybackRatesOptions = false;
     this.displayOptions = true;
   }
+  time: number = 0;
+
+  startDisplayingAllControls() {
+    if (!this.displayAllControls) {
+      this.displayAllControls = true;
+      let that = this;
+      let toastControls = setInterval(function () {
+        if (that.time >= 3000) {
+          that.displayAllControls = false;
+          clearInterval(toastControls);
+          that.time = 0;
+        }
+        that.time += 25;
+      }, 25)
+    }
+  }
+
+  /* Video Controls
+  */
+  mouseOverSound() {
+    console.log("tesetetet")
+  }
+
+  toggleSubtitle(_module, option, value) {
+    this.displaySubtitle = !this.displaySubtitle;
+    console.log("testestset")
+    this.syncService.toggleSubtitle('cc', 'reload', this.displaySubtitle);
+  }
+
+  toggleMute() {
+    this.syncService.toggleMute();
+  }
+
 }
+

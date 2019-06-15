@@ -1,75 +1,97 @@
 <div [className]="!syncService.synctubeComponent.displayFullscreen ? 'main' : 'main-fullscreen'">
-  <div (click)="triggerTogglePlay()" (dblclick)="toggleFullscreen()"
+  <!-- OverLay for Click and DblClick-->
+  <div (mousemove)="startDisplayingAllControls()" (click)="triggerTogglePlay()" (dblclick)="toggleFullscreen()"
     [className]="!syncService.synctubeComponent.displayFullscreen ? 'overlay-container' : 'overlay-container-fullscreen'">
-    
-    <div *ngIf="displayOptions" class="options-container">
-      <div class="repeat-container">
-        <div style="width:85%;">
-          Wiederholen
-        </div>
-        <label class="switch">
-          <input type="checkbox" checked>
-          <span class="slider round"></span>
-        </label>
-      </div>
+  </div>
 
-      <div class="subtitle-container">
-        <div style="width:88%;">
-          Untertitel
-        </div>
-
-        <span> aus > </span>
+  <!-- Options Container-->
+  <div *ngIf="displayOptions" class="options-container">
+    <div class="repeat-container">
+      <div style="width:85%;">
+        Wiederholen
       </div>
-      <div (click)="toggleDisplayPlaybackRates()" class="playback-speed-container">
-        <div style="width:78%;">
-          Wiedergabegeschwindigkeit
-        </div>
-
-        <span> Standard > </span>
-      </div>
-      <div class="quality-container">
-        <div style="width:58%;">
-          Qualität
-        </div>
-
-        <div>
-          Automatisch 1080p HD
-        </div>
-      </div>
+      <label class="switch">
+        <input type="checkbox" checked>
+        <span class="slider round"></span>
+      </label>
     </div>
 
-    <div class="playbackrates-container" *ngIf="displayPlaybackRatesOptions && !displayOptions">
-        <div class="videospeed">
-          <div (click)="returnToOptions()">
-              < Wiedergabegeschwindigkeit </div>
-          </div>
-          <hr width="100%" />
-          <div class="speed-row" *ngFor="let playbackRate of playbackRates">
-            <div class="check-container">
-              &#10003;
-            </div>
-            <div class="speed-text">
-                <span> {{playbackRate}} </span>
-            </div>
-      
-          </div>
-        </div>
-    
+    <div class="subtitle-container">
+      <div style="width:88%;">
+        Untertitel
+      </div>
 
-    
+      <span> aus > </span>
+    </div>
+    <div (click)="toggleDisplayPlaybackRates()" class="playback-speed-container">
+      <div style="width:78%;">
+        Wiedergabegeschwindigkeit
+      </div>
 
+      <span> Standard > </span>
+    </div>
+    <div class="quality-container">
+      <div style="width:58%;">
+        Qualität
+      </div>
 
-
+      <div>
+        Automatisch 1080p HD
+      </div>
+    </div>
   </div>
+
+  <!-- Options -> PlaybackRates Controls-->
+  <div class="playbackrates-container" *ngIf="displayPlaybackRatesOptions && !displayOptions">
+    <div class="videospeed">
+      <div (click)="returnToOptions()">
+        Wiedergabegeschwindigkeit </div>
+    </div>
+    <hr width="100%" />
+    <div class="speed-row" *ngFor="let playbackRate of playbackRates">
+      <div class="check-container">
+        &#10003;
+      </div>
+      <div class="speed-text">
+        <span> {{playbackRate}} </span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Video Controls-->
+  <div class ="controls-all" *ngIf="displayAllControls && syncService.synctubeComponent.user.admin" (mousemove)="time = 0">
+    <input [(ngModel)]="currentTimeProgressbar" (click) ="onChangeProgressBar()" type="range" min="0"
+      max="{{videoDuration | noFloat}}" class="bar-slider" id="myRange">
+    <div class="controls">
+      <div (click)="triggerTogglePlay()" class="play-button">
+        <div *ngIf="!isPlaying"> <img src="assets/play-button.svg"></div>
+        <div *ngIf="isPlaying"> <img src="assets/pause.svg"></div>
+      </div>
+
+      <div (mouseover)="mouseOverSound()" (click)="toggleMute()" class="controls-sound">
+        <div *ngIf="syncService.synctubeComponent.isMuted"><img src="assets/mute.svg"></div>
+        <div *ngIf="!syncService.synctubeComponent.isMuted"><img src="assets/unmute.svg"></div>
+      </div>
+      <div class="controls-volume">
+        <input [(ngModel)]="volumeValue" (change)="setVolume()" min="0" max="100" type="range" class="volume"
+          orient="horizontal" />
+      </div>
+
+      <div class="controls-time"> {{currentDisplayedTime | hhMMss}}/ {{videoDuration | hhMMss}}</div>
+      <div class="controls-spacer">space</div>
+      <div class="controls-subtitle" (click)="toggleSubtitle()"><img src="assets/subtitles.svg"></div>
+      <div (click)="toggleDisplayOptions()" class="controls-options"><img src="assets/settings.svg">
+      </div>
+      <div (click)="toggleDisplayCinemaMode()" class="controls-cinema">
+        <div class="cinema-box"></div>
+      </div>
+      <div (click)="toggleDisplayFullscreen()" class="controls-fullscreen"><img src="assets/fullscreen.svg"></div>
+    </div>
+  </div>
+
+  <!-- Youtube video -->
   <div [className]="!syncService.synctubeComponent.displayFullscreen ? 'video' : 'video-fullscreen'" id="player">
   </div>
+
 </div>
-
-
-
-<!-- <div  class="options-container">
-          <select *ngIf="displayOptions" >
-            <option *ngFor="let rate of playbackRates"> {{rate}}
-            </option>
-          </select>
-        </div> -->

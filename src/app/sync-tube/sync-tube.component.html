@@ -111,7 +111,7 @@
 
     <div [className]="!displayFullscreen ? 'video-content' : 'display-fullscreen'">
       <app-video></app-video>
-      <input [(ngModel)]="video.timestamp" (change)="onChangeProgressBar()" type="range" min="0"
+       <!-- <input [(ngModel)]="video.timestamp" (change)="onChangeProgressBar()" type="range" min="0"
         max="{{videoDuration | noFloat}}" class="bar-slider" id="myRange">
       <div class="controls">
         <div (click)="triggerTogglePlay()" class="play-button">
@@ -137,7 +137,7 @@
           <div class="cinema-box"></div>
         </div>
         <div (click)="toggleDisplayFullscreen()" class="controls-fullscreen"><img src="assets/fullscreen.svg"></div>
-      </div>
+      </div> -->
 
       <div *ngIf="raumId && !displayFullscreen" class="raum-users">
         <ng-template ngFor let-anyuser [ngForOf]="users">
@@ -172,7 +172,7 @@
     </div>
 
     <div *ngIf="!displayCinemaMode && !displayFullscreen" class="chat-messages-container">
-      <div class="scrollable-content" id="scrollable-chat">
+      <div  class="scrollable-content" id="scrollable-chat">
         <div class="chat-row" *ngFor="let chatMessage of chatMessages">
           <div class="message-row-container" *ngIf="chatMessage.type != 'insert-video'">
             <div class="userid-container"> <span> {{chatMessage.user.userName}} </span><img
@@ -189,10 +189,10 @@
               <img *ngIf="chatMessage.user.admin" src="assets/star.svg" class="star-img">
             </div>
             <div>
-              <img class="thumbnail-chat" src="https://img.youtube.com/vi/{{chatMessage.video.videoId}}/0.jpg">
+              <a target="_blank" href="https://www.youtube.com/watch?v={{chatMessage.video.videoId}}"> <img class="thumbnail-chat" src="https://img.youtube.com/vi/{{chatMessage.video.videoId}}/0.jpg"></a>
             </div>
-            <div class="text-container">
-              <div class="video-title"> {{chatMessage.video.title}}</div>
+            <div class="text-container"><a target="_blank" href="https://www.youtube.com/watch?v={{chatMessage.video.videoId}}">
+              <div class="video-title"> {{chatMessage.video.title}}</div></a>
               <div class="timestamp"> <span> {{chatMessage.timestamp}} </span></div>
             </div>
           </div>
