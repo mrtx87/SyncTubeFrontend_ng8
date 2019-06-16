@@ -64,7 +64,8 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   raumIdText: string;
   chatMessageText: String;
 
-  displayPlaylist: boolean = false;
+  displayTab : number = 1;
+  
 
   displayCinemaMode: Boolean = false;
   displayFullscreen: Boolean = false;

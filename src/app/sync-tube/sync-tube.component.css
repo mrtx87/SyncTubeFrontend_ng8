@@ -63,7 +63,6 @@
   .raum-container {
     display: flex;
     width: 100%;
-    justify-content: center;
   }
 
   .config-raumstatus-container {
@@ -137,25 +136,18 @@
     width:100%;
     display: flex;
     flex-direction: column;
-    height: 70%;
-
     overflow-x: hidden;
     overflow-y: auto;
     scroll-behavior: smooth;
   }
 
   .left-container {
-    width: 12%;
+    width: 60%;
     background-color: rgb(46, 48, 117);
+    margin: 0 auto;
     max-height:93vh;
   }
   
-  .playlist-element-container{
-    width: 95%;
-    display: flex;
-    flex-direction: row;
-    margin:1px 0;
-  }
 
   .playlist-image {
     width: 30%;
@@ -165,7 +157,7 @@
   .video-content {
     display:flex;
     flex-direction: column;
-    width:70%;
+    width:80%;
     height:93vh;
 
     overflow-x: hidden;
@@ -241,7 +233,9 @@
   .tab {
     width:50%;
     height:4vh;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center; 
   }
 
   .tab:hover {
@@ -495,7 +489,7 @@ label {
   background-color: #17183B;
   font-size: 14px;
   color:white;
-  margin-bottom:1px;
+  margin: 1px 5px ;
 }
 
 .playlist-controls {
@@ -507,43 +501,12 @@ label {
   width: 100%;
 }
 
-.inorder-container {
-  height: 25px;
-  margin: 0 15px;
+.inorder-container, .random-container, .repeat-container, .next-playlist-video-container  {
+  margin: auto 15px;
 }
 
-.inorder-container img {
-  height: 20px;
-  padding: 5px;
-}
-
-.random-container {
-  height: 25px;
-  margin: 0 15px;
-}
-
-.random-container img {
-  height: 20px;
-  padding: 5px;
-}
-
-.repeat-container {
-  height: 25px;
-  margin: 0 15px;
-}
-
-.repeat-container img {
-  height: 20px;
-  padding: 5px;
-}
-
-.next-playlist-video-container {
-  height: 25px;
-  margin: 0 15px;
-}
-
-.next-playlist-video-container img {
-  height: 20px;
+.inorder-container img, .random-container img, .repeat-container img, .next-playlist-video-container img {
+  height: 30px;
   padding: 5px;
 }
 

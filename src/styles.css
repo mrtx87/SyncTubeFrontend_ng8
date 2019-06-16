@@ -11,10 +11,18 @@ app-root {
 
 body {
   background-color: #4E5166;
-  font-family: 'Roboto Condensed', sans-serif;
+  font-family: 'Reem Kufi', sans-serif;
   overflow-x: hidden;
   overflow-y: hidden;
  }
+
+ /* 
+ font-family: 'Reem Kufi', sans-serif;
+ font-family: 'Puritan', sans-serif;
+ font-family: 'Alef', sans-serif;
+ font-family: 'Meera Inimai', sans-serif;
+ font-family: 'Cabin', sans-serif;
+ */
 
   h1  {
    font-size:3.755em;
