@@ -12,6 +12,8 @@ app-root {
 body {
   background-color: #4E5166;
   font-family: 'Roboto Condensed', sans-serif;
+  overflow-x: hidden;
+  overflow-y: hidden;
  }
 
   h1  {

@@ -3,16 +3,14 @@
   <div class="top-panel-left">
     <label class="page-title"> <a href="http://localhost:4200"> SyncTube</a></label>
     <input *ngIf="raumId && user.admin" (keyup.enter)="search()" [(ngModel)]="query" class="custom-yt-link" type="text">
-    <div *ngIf="raumId && user.admin" (click)="sendAddVideoToPlaylist()"><img class="add-video-to-playlist"
-        src="assets/add.svg"> </div>
     <div class="room-status-panel">
-        <label *ngIf="raumId && raumStatus">Private <img class="rsp-lock" src="assets/padlock.svg"></label>
-        <label *ngIf="raumId && !raumStatus">Public <img class="rsp-lock" src="assets/padlock-unlock.svg"></label>
+      <label *ngIf="raumId && raumStatus">Private <img class="rsp-lock" src="assets/padlock.svg"></label>
+      <label *ngIf="raumId && !raumStatus">Public <img class="rsp-lock" src="assets/padlock-unlock.svg"></label>
     </div>
   </div>
 
   <div class="top-panel-right">
-    <h2>{{raumTitle}}</h2>
+    <span class="raumTitle-container">{{raumTitle}}</span>
   </div>
 </div>
 
@@ -96,22 +94,24 @@
           <label class="w-90">Reset Url</label>
           <img (click)="refreshJoinUrl()" title="refreshes the join url" class="refresh-img" src="assets/refresh.svg">
         </div>
-        <div  class="create-room-title-container">
+        <div class="create-room-title-container">
           <label>Raumtitel</label>
-          <input [(ngModel)]="raumTitle" class="input-room-title" type="text"> 
+          <input [(ngModel)]="raumTitle" class="input-room-title" type="text">
         </div>
-        <div  class="create-room-description-container">
-            <label>Beschreibung</label>
-            <textarea rows="4" [(ngModel)]="raumDescription" class="input-description"></textarea> 
-          </div>
-          <div (click)="sendUpdateTitleAndDescription()" style="margin:0 auto; border: 1px solid black; border-radius:4px; padding: 3px; background-color:aquamarine;">Ändern</div>
+        <div class="create-room-description-container">
+          <label>Beschreibung</label>
+          <textarea rows="4" [(ngModel)]="raumDescription" class="input-description"></textarea>
+        </div>
+        <div (click)="sendUpdateTitleAndDescription()"
+          style="margin:0 auto; border: 1px solid black; border-radius:4px; padding: 3px; background-color:aquamarine;">
+          Ändern</div>
       </div>
 
       <div *ngIf="!user.admin" class="left-create-raum-container">
         <div class="create">
           <button (click)="createNewRaumWhileInRaum()" class="button2">
             Create your own Room
-    
+
           </button>
           <!--<div class="raum-toggle"><label>Private</label><input [(ngModel)]="raumStatus" type="checkbox"></div>-->
           <div class="raum-toggle-startpage">
@@ -120,13 +120,14 @@
               <label *ngIf="!configRaumStatus">Public</label>
             </div>
             <label class="switch">
-              <input (click)="displayConfigToggle()" class="toggle-input" [(ngModel)]="configRaumStatus" type="checkbox">
+              <input (click)="displayConfigToggle()" class="toggle-input" [(ngModel)]="configRaumStatus"
+                type="checkbox">
               <span class="slider round"></span>
             </label>
-    
+
           </div>
         </div>
-          <!--<div (click)="createNewRaumWhileInRaum()"><img class="add-room" src="assets/add.svg"> </div>-->
+        <!--<div (click)="createNewRaumWhileInRaum()"><img class="add-room" src="assets/add.svg"> </div>-->
       </div>
 
       <div class="controls-panel-container">
@@ -138,20 +139,8 @@
         </div>
       </div>
 
-      <div class="playlist-container">
-        <div class="playlist-panel-title"> <span>Playlist</span></div>
-        <div class="playlist-controls">
-          <div class="inorder-container"> <img src="assets/playlist.svg"> </div>
-          <div class="random-container"> <img src="assets/shuffle.svg"> </div>
-          <div class="repeat-container"> <img src="assets/repeat.svg"> </div>
-          <div class="next-playlist-video-container"> <img src="assets/play-next-button.svg"> </div>
-        </div>
 
-        <div class="playlist-video" title="{{pvideo_.description}}" *ngFor="let pvideo_ of playlist">
-          <div><img class="playlist-thumbnail" src="https://img.youtube.com/vi/{{pvideo_.videoId}}/0.jpg"> </div>
-          <div class="playlist-infos"> {{pvideo_.title}}</div>
-        </div>
-      </div>
+
     </div>
     <div #scrollContent id="scrollContent" [className]="!displayFullscreen ? 'video-content' : 'display-fullscreen'">
       <app-video></app-video>
@@ -201,40 +190,67 @@
 
     </div>
 
-    <div *ngIf="!displayCinemaMode && !displayFullscreen" class="chat-messages-container">
-      <div #scrollChat class="scrollable-content" id="scrollChat">
-        <div class="chat-row" *ngFor="let chatMessage of chatMessages">
-          <div class="message-row-container" *ngIf="chatMessage.type != 'insert-video'">
-            <div class="userid-container"> <span> {{chatMessage.user.userName}} </span><img
-                *ngIf="chatMessage.user.admin" src="assets/star.svg" class="star-img"> </div>
-            <div class="text-container">
-              <div> {{chatMessage.messageText}}</div>
-              <div class="timestamp"> <span> {{chatMessage.timestamp}} </span></div>
-            </div>
-          </div>
+    <div class="chat-playlist-container">
+      <div class="chat-playlist-tabs">
+        <div (click) = "displayPlaylist=false" class="tab"><span>Chat</span></div>
+        <div (click) = "displayPlaylist=true" class="tab"><span>Playlist</span></div>
+      </div>
 
-          <div class="message-row-container" *ngIf="chatMessage.type == 'insert-video'">
-            <div class="userid-container">
-              <span> {{chatMessage.user.userName}} </span>
-              <img *ngIf="chatMessage.user.admin" src="assets/star.svg" class="star-img">
+      <div *ngIf="!displayPlaylist" class="chat-messages-container">
+        <div #scrollChat class="scrollable-content" id="scrollChat">
+          <div class="chat-row" *ngFor="let chatMessage of chatMessages">
+            <div class="message-row-container" *ngIf="chatMessage.type != 'insert-video'">
+              <div class="userid-container"> <span> {{chatMessage.user.userName}} </span><img
+                  *ngIf="chatMessage.user.admin" src="assets/star.svg" class="star-img"> </div>
+              <div class="text-container">
+                <div> {{chatMessage.messageText}}</div>
+                <div class="timestamp"> <span> {{chatMessage.timestamp}} </span></div>
+              </div>
             </div>
-            <div>
-              <a target="_blank" href="https://www.youtube.com/watch?v={{chatMessage.video.videoId}}"> <img
-                  class="thumbnail-chat" src="https://img.youtube.com/vi/{{chatMessage.video.videoId}}/0.jpg"></a>
-            </div>
-            <div class="text-container"><a target="_blank"
-                href="https://www.youtube.com/watch?v={{chatMessage.video.videoId}}">
-                <div class="video-title"> {{chatMessage.video.title}}</div>
-              </a>
-              <div class="timestamp"> <span> {{chatMessage.timestamp}} </span></div>
+
+            <div class="message-row-container" *ngIf="chatMessage.type == 'insert-video'">
+              <div class="userid-container">
+                <span> {{chatMessage.user.userName}} </span>
+                <img *ngIf="chatMessage.user.admin" src="assets/star.svg" class="star-img">
+              </div>
+              <div>
+                <a target="_blank" href="https://www.youtube.com/watch?v={{chatMessage.video.videoId}}"> <img
+                    class="thumbnail-chat" src="https://img.youtube.com/vi/{{chatMessage.video.videoId}}/0.jpg"></a>
+              </div>
+              <div class="text-container"><a target="_blank"
+                  href="https://www.youtube.com/watch?v={{chatMessage.video.videoId}}">
+                  <div class="video-title"> {{chatMessage.video.title}}</div>
+                </a>
+                <div class="timestamp"> <span> {{chatMessage.timestamp}} </span></div>
+              </div>
             </div>
           </div>
         </div>
+        <div class="footer">
+          <input class="w-100" (keyup.enter)="sendChatMessage()" [(ngModel)]="chatMessageText" type="text">
+        </div>
       </div>
-      <div class="footer">
-        <input class="w-100" (keyup.enter)="sendChatMessage()" [(ngModel)]="chatMessageText" type="text">
-      </div>
+
+
+      <div *ngIf="displayPlaylist" class="playlist-container">
+          <div class="playlist-panel-title"> <span>Playlist</span></div>
+          <div class="playlist-controls">
+            <div class="inorder-container"> <img src="assets/playlist.svg"> </div>
+            <div class="random-container"> <img src="assets/shuffle.svg"> </div>
+            <div class="repeat-container"> <img src="assets/repeat.svg"> </div>
+            <div class="next-playlist-video-container"> <img src="assets/play-next-button.svg"> </div>
+          </div>
+  
+          <div class="playlist-video" title="{{pvideo_.description}}" *ngFor="let pvideo_ of playlist">
+            <div><img class="playlist-thumbnail" src="https://img.youtube.com/vi/{{pvideo_.videoId}}/0.jpg"> </div>
+            <div class="playlist-infos"> {{pvideo_.title}}</div>
+          </div>
+        </div>
+
+
     </div>
+
+
   </div>
 
 

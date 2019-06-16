@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, ElementRef, ViewChild, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, HostListener, AfterViewChecked } from '@angular/core';
 import { SyncService } from '../sync.service';
 import { Raum } from '../raum';
 import { ActivatedRoute } from '@angular/router';
@@ -26,7 +26,10 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
       this.scrollContent = document.getElementById("scrollContent")
     }
 
-    this.scrollToBottomOfChat()
+    if(this.scrollChat) {
+      this.scrollToBottomOfChat()
+    }
+    
     if(this.scrollToBottom) {
       this.scrollToSearchResults();
       this.scrollToBottom = false;
@@ -60,6 +63,8 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   query: string;
   raumIdText: string;
   chatMessageText: String;
+
+  displayPlaylist: boolean = false;
 
   displayCinemaMode: Boolean = false;
   displayFullscreen: Boolean = false;
