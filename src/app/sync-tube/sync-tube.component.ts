@@ -18,26 +18,29 @@ import $ from 'jquery';
 export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   ngAfterViewChecked(): void {
-    if (!this.scrollChat) {
-      this.scrollChat = document.getElementById("scrollChat")
-    }
-
-    if (!this.scrollContent) {
-      this.scrollContent = document.getElementById("scrollContent")
-    }
-
-    if(this.scrollChat) {
-      this.scrollToBottomOfChat()
-    }
+      
+    this.scrollChat = document.getElementById("scrollChat")
+    this.scrollContent = document.getElementById("scrollContent")
     
-    if(this.scrollToBottom) {
+    if(this.forceScrollToSearch) {
       this.scrollToSearchResults();
-      this.scrollToBottom = false;
+      this.forceScrollToSearch = false;
+    }
+
+    if(this.scrollChat && this.scrollChat.scrollTop < 10){
+      this.scrollChat.scrollTop = this.scrollChat.scrollHeight;
+    }
+
+    if(this.scrollChat && this.forceScrollToChatBottom) {
+      this.scrollToBottomOfChat();
+      this.forceScrollToChatBottom = false;
     }
   }
 
   scrollToBottomOfChat() {
-    this.scrollChat.scrollTop = this.scrollChat.scrollHeight;
+    if(Math.abs(this.scrollChat.scrollHeight - this.scrollChat.scrollTop) < 100) {
+      this.scrollChat.scrollTop = this.scrollChat.scrollHeight;
+    }
   }
 
   scrollToSearchResults() {
@@ -57,6 +60,9 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   scrollContent: any;
   scrollChat: any;
+
+  forceScrollToSearch: boolean = false;
+  forceScrollToChatBottom: boolean = true;
 
   /* controls vars */
   showRaum: boolean = false;
@@ -160,21 +166,23 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.syncService.sendJoinRaum(this.user, raumId);
   }
 
-  scrollToBottom: boolean; 
+  sendRemoveVideoFromPlaylist(pvideo_: Video)  {
 
+  }
+  
   search() {
 
     let video: Video = this.syncService.parseYoutubeUrl(this.query);
     if (video) {
       //this.sendNewVideoLink(video);
       this.syncService.search(this.query, false, video.timestamp);
-      this.scrollToBottom = true;
+      this.forceScrollToSearch = true;
       return;
     }
 
 
     this.syncService.search(this.query, true);
-    this.scrollToBottom = true;
+    this.forceScrollToSearch = true;
 
   }
 

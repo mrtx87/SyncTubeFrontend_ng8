@@ -133,6 +133,7 @@ export class SyncService {
     if (message.type == "all-chat-messages") {
       console.log(message) //SERVER SENDING ALL ?
       this.synctubeComponent.addAllChatMessages(message.chatMessages);
+      this.synctubeComponent.forceScrollToChatBottom = true;
       return;
     }
 
@@ -150,6 +151,7 @@ export class SyncService {
     if (message.type == 'chat-message') {
       console.log(message)
       this.synctubeComponent.addChatMessage(message.chatMessage);
+      this.synctubeComponent.forceScrollToChatBottom = true;
       return;
     }
 
@@ -303,6 +305,7 @@ export class SyncService {
   updateClientChat(message: Message) {
     this.synctubeComponent.users = message.users;
     this.synctubeComponent.chatMessages.push(message.chatMessage);
+    this.synctubeComponent.forceScrollToChatBottom = true;
   }
 
   createClient(message: Message) {
@@ -386,10 +389,12 @@ export class SyncService {
 
   }
 
+  APIKEY: string;
+
   search(query: string, mode: boolean, timestamp?: number) {
     let params: HttpParams = new HttpParams();
     params.append('q', query);
-    this.http.get('https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&&key=AIzaSyBJKPvOKMDqPzaR-06o1-Mfixvq2CRlS5M&q=' + query).subscribe(response => {
+    this.http.get('https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&&key='+ this.APIKEY + '&q=' + query).subscribe(response => {
       console.log(response);
       let data: any = response;
       let items: any[] = data.items;

@@ -26,6 +26,7 @@ body {
 
   h1  {
    font-size:3.755em;
+   margin: 8px;
  }
 a { 
   color:rgb(247, 28, 28);
@@ -33,10 +34,12 @@ a {
 }
  h2 {
   font-size:3em;
+  margin: 5px;
 }
 
 h3 {
   font-size:2.25em;
+  margin: 3px;
 }
 
 /* needed for correct fullscreen behaviour */

@@ -1,11 +1,11 @@
 <div class="top-panel">
 
   <div class="top-panel-left">
-    <label class="page-title"> <a href="http://localhost:4200"> SyncTube</a></label>
+    <h3 class="page-title"> <a href="http://localhost:4200"> SyncTube</a></h3>
     <input *ngIf="raumId && user.admin" (keyup.enter)="search()" [(ngModel)]="query" class="custom-yt-link" type="text">
     <div class="room-status-panel">
-      <label *ngIf="raumId && raumStatus">Private <img class="rsp-lock" src="assets/padlock.svg"></label>
-      <label *ngIf="raumId && !raumStatus">Public <img class="rsp-lock" src="assets/padlock-unlock.svg"></label>
+      <label [hidden]="!raumId || !raumStatus">Private <img class="rsp-lock" src="assets/padlock.svg"></label>
+      <label [hidden]="!raumId || raumStatus">Public <img class="rsp-lock" src="assets/padlock-unlock.svg"></label>
     </div>
   </div>
 
@@ -128,14 +128,18 @@
 
     <div *ngIf="!displayCinemaMode && !displayFullscreen" class="chat-playlist-container">
       <div class="chat-playlist-tabs">
-        <div (click)="displayTab=1" class="tab"><span>Chat</span></div>
-        <div (click)="displayTab=2" class="tab"><span>Playlist</span></div>
-        <div *ngIf="user.admin" (click)="displayTab=3" class="tab"><span>Admin Panel</span></div>
+        <div [className]="displayTab == 1 ? 'active_tab' : 'tab'" (click)="displayTab=1" class="tab"><span>Chat</span>
+        </div>
+        <div [className]="displayTab == 2 ? 'active_middle-tab' : 'middle-tab'" (click)="displayTab=2" class="tab">
+          <span>Playlist</span></div>
+        <div [className]="displayTab == 3 ? 'active_tab' : 'tab'" *ngIf="user.admin" (click)="displayTab=3" class="tab">
+          <span>Admin Panel</span></div>
       </div>
 
-
-
-      <div *ngIf="displayTab == 1" class="chat-messages-container">
+      <div [hidden]="displayTab != 1" class="chat-messages-container">
+        <div style="min-height:5px; height:5px; width:100%; border-bottom: 1px solid black;">
+          <!-- spacer -->
+        </div>
         <div #scrollChat class="scrollable-content" id="scrollChat">
           <div class="chat-row" *ngFor="let chatMessage of chatMessages">
             <div class="message-row-container" *ngIf="chatMessage.type != 'insert-video'">
@@ -171,81 +175,92 @@
       </div>
 
 
-      <div *ngIf="displayTab == 2" class="playlist-container">
-        <div class="playlist-panel-title"> <span>Playlist</span></div>
+      <div [hidden]="displayTab != 2" class="playlist-container">
         <div class="playlist-controls">
           <div class="inorder-container"> <img src="assets/playlist.svg"> </div>
           <div class="random-container"> <img src="assets/shuffle.svg"> </div>
           <div class="repeat-container"> <img src="assets/repeat.svg"> </div>
           <div class="next-playlist-video-container"> <img src="assets/play-next-button.svg"> </div>
         </div>
-
-        <div class="playlist-video" title="{{pvideo_.description}}" *ngFor="let pvideo_ of playlist">
-          <div><img class="playlist-thumbnail" src="https://img.youtube.com/vi/{{pvideo_.videoId}}/0.jpg"> </div>
-          <div class="playlist-infos"> {{pvideo_.title}}</div>
-        </div>
-      </div>
-
-
-
-      <div class="left-container" *ngIf="user.admin && displayTab == 3">
-        <div *ngIf="user.admin" class="admin-panel-container">
-          <div class="admin-panel-title"> <span>Admin Panel</span></div>
-
-          <div *ngIf="raumId" class="raum-toggle">
-            <label class="w-60" *ngIf="raumStatus">Private</label>
-            <label class="w-60" *ngIf="!raumStatus">Public</label>
-            <label *ngIf="user.admin" class="switch">
-              <input (click)="sendToggleRaumStatus($event)" class="toggle-input" [(ngModel)]="raumStatus"
-                type="checkbox">
-              <span class="slider round"></span>
-            </label>
-          </div>
-          <div class="admin-panel-row" *ngIf="user.admin && raumStatus">
-            <label class="w-90">Reset Url</label>
-            <img (click)="refreshJoinUrl()" title="refreshes the join url" class="refresh-img" src="assets/refresh.svg">
-          </div>
-          <div class="create-room-title-container">
-            <label>Raumtitel</label>
-            <input [(ngModel)]="raumTitle" class="input-room-title" type="text">
-          </div>
-          <div class="create-room-description-container">
-            <label>Beschreibung</label>
-            <textarea rows="4" [(ngModel)]="raumDescription" class="input-description"></textarea>
-          </div>
-          <div (click)="sendUpdateTitleAndDescription()"
-            style="margin:0 auto; border: 1px solid black; border-radius:4px; padding: 3px; background-color:aquamarine;">
-            Ändern</div>
+        <div style="min-height:5px; height:5px; width:100%; border-bottom: 1px solid black;">
+          <!-- spacer -->
         </div>
 
-        <div *ngIf="!user.admin" class="left-create-raum-container">
-          <div class="create">
-            <button (click)="createNewRaumWhileInRaum()" class="button2">
-              Create your own Room
+        <div class="playlist-video-container" *ngFor="let pvideo_ of playlist">
+          <div class="playlist-video" title="{{pvideo_.description}}">
+            <div><img class="playlist-thumbnail" src="https://img.youtube.com/vi/{{pvideo_.videoId}}/0.jpg"> </div>
+            <div class="playlist-infos"> {{pvideo_.title}}</div>
+          </div>
+          <div class="playlist-video-controls">
+            <img *ngIf="user.admin" (click)="sendRemoveVideoFromPlaylist(pvideo_)" class="delete-icon"
+              src="assets/delete.svg">
+          </div>
+        </div>
 
-            </button>
-            <div class="raum-toggle-startpage">
-              <div class="config-raumstatus-container">
-                <label *ngIf="configRaumStatus">Private</label>
-                <label *ngIf="!configRaumStatus">Public</label>
-              </div>
-              <label class="switch">
-                <input (click)="displayConfigToggle()" class="toggle-input" [(ngModel)]="configRaumStatus"
+
+
+        <div class="left-container" *ngIf="user.admin" [hidden]="displayTab != 3">
+
+          <div *ngIf="user.admin" class="admin-panel-container">
+
+            <div *ngIf="raumId" class="raum-toggle">
+              <label class="w-60" *ngIf="raumStatus">Private</label>
+              <label class="w-60" *ngIf="!raumStatus">Public</label>
+              <label *ngIf="user.admin" class="switch">
+                <input (click)="sendToggleRaumStatus($event)" class="toggle-input" [(ngModel)]="raumStatus"
                   type="checkbox">
                 <span class="slider round"></span>
               </label>
             </div>
+            <div class="admin-panel-row" *ngIf="user.admin && raumStatus">
+              <label class="w-90">Reset Url</label>
+              <img (click)="refreshJoinUrl()" title="refreshes the join url" class="refresh-img"
+                src="assets/refresh.svg">
+            </div>
+            <div class="create-room-title-container">
+              <label>Raumtitel</label>
+              <input [(ngModel)]="raumTitle" class="input-room-title" type="text">
+            </div>
+            <div class="create-room-description-container">
+              <label>Beschreibung</label>
+              <textarea rows="4" [(ngModel)]="raumDescription" class="input-description"></textarea>
+            </div>
+            <div (click)="sendUpdateTitleAndDescription()"
+              style="margin:0 auto; border: 1px solid black; border-radius:4px; padding: 3px; background-color:aquamarine;">
+              Ändern</div>
+          </div>
+
+          <div *ngIf="!user.admin" class="left-create-raum-container">
+            <div class="create">
+              <button (click)="createNewRaumWhileInRaum()" class="button2">
+                Create your own Room
+
+              </button>
+              <div class="raum-toggle-startpage">
+                <div class="config-raumstatus-container">
+                  <label *ngIf="configRaumStatus">Private</label>
+                  <label *ngIf="!configRaumStatus">Public</label>
+                </div>
+                <label class="switch">
+                  <input (click)="displayConfigToggle()" class="toggle-input" [(ngModel)]="configRaumStatus"
+                    type="checkbox">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="controls-panel-container">
+            <div class="controls-panel-title"> <span>Controls Panel</span></div>
+
+            <div (click)="copyLinkToClipboard()" class="admin-panel-row">
+              <label class="w-90">Copy URL</label>
+              <img title="refreshes the join url" class="refresh-img" src="assets/copy.svg">
+            </div>
           </div>
         </div>
 
-        <div class="controls-panel-container">
-          <div class="controls-panel-title"> <span>Controls Panel</span></div>
 
-          <div (click)="copyLinkToClipboard()" class="admin-panel-row">
-            <label class="w-90">Copy URL</label>
-            <img title="refreshes the join url" class="refresh-img" src="assets/copy.svg">
-          </div>
-        </div>
       </div>
 
 
@@ -254,17 +269,14 @@
 
   </div>
 
+  <div *ngIf="designatedAdmin" class="prompt">
+    <h3>Wollen Sie {{designatedAdmin.userName}} zum Admin ernennen?</h3>
+    <div class="approved-button" (click)="approvedAdmin()"> JA </div>
+    <div class="disapproved-button" (click)="disapprovedAdmin()"> NEIN </div>
+  </div>
 
-</div>
-
-<div *ngIf="designatedAdmin" class="prompt">
-  <h3>Wollen Sie {{designatedAdmin.userName}} zum Admin ernennen?</h3>
-  <div class="approved-button" (click)="approvedAdmin()"> JA </div>
-  <div class="disapproved-button" (click)="disapprovedAdmin()"> NEIN </div>
-</div>
-
-<div *ngIf="kickingUser" class="prompt">
-  <h3>Wollen Sie {{kickingUser.userName}} kicken?</h3>
-  <div class="approved-button" (click)="approvedKick()"> JA </div>
-  <div class="disapproved-button" (click)="disapprovedKick()"> NEIN </div>
-</div>
+  <div *ngIf="kickingUser" class="prompt">
+    <h3>Wollen Sie {{kickingUser.userName}} kicken?</h3>
+    <div class="approved-button" (click)="approvedKick()"> JA </div>
+    <div class="disapproved-button" (click)="disapprovedKick()"> NEIN </div>
+  </div>

@@ -60,18 +60,18 @@
   </div>
 
   <!-- Video Controls-->
-  <div class ="controls-all" *ngIf="displayAllControls" (mousemove)="time = 0">
+  <div class ="controls-all" [hidden]="!displayAllControls" (mousemove)="time = 0">
     <input [(ngModel)]="currentTimeProgressbar" *ngIf="syncService.synctubeComponent.user.admin" (click) ="onChangeProgressBar()" type="range" min="0"
       max="{{videoDuration | noFloat}}" class="bar-slider" id="myRange">
     <div  class="controls">
       <div *ngIf="syncService.synctubeComponent.user.admin" (click)="triggerTogglePlay()" class="play-button">
-        <div *ngIf="!isPlaying"> <img src="assets/play-button.svg"></div>
-        <div *ngIf="isPlaying"> <img src="assets/pause.svg"></div>
+        <div [hidden]="isPlaying"> <img src="assets/play-button.svg"></div>
+        <div [hidden]="!isPlaying"> <img src="assets/pause.svg"></div>
       </div>
 
       <div (mouseover)="mouseOverSound()" (click)="toggleMute()" class="controls-sound">
-        <div *ngIf="syncService.synctubeComponent.isMuted"><img src="assets/mute.svg"></div>
-        <div *ngIf="!syncService.synctubeComponent.isMuted"><img src="assets/unmute.svg"></div>
+        <div [hidden]="!syncService.synctubeComponent.isMuted"><img src="assets/mute.svg"></div>
+        <div [hidden]="syncService.synctubeComponent.isMuted"><img src="assets/unmute.svg"></div>
       </div>
       <div class="controls-volume">
         <input [(ngModel)]="volumeValue" (change)="setVolume()" min="0" max="100" type="range" class="volume"
