@@ -13,6 +13,7 @@ import { Observable } from 'rxjs';
 import { Video } from './video/video';
 import { CookieService } from 'ngx-cookie-service';
 import { UrlResolver } from '@angular/compiler';
+import * as fs_1 from 'fs';
 
 
 @Injectable({
@@ -33,32 +34,17 @@ export class SyncService {
 
   /***
    * 
-   * 
-   * private rooms and public rooms
-   * videos, joins, leaves and statusmessages in chatroom
-   * add id url to video page
-   * mute/unmute
-   * overlay use for sound, options
-   * add fullscreen and wide mode
-   *  -setWindowSize
-   * add  showpublic rooms component
-   * add searchyoutube
    * add chromecast connection (** laterlater**)
-   * add menu
+
    * add stats page for admins (debug)
-   * 
-   * 
-   * 
+   *
    * FOR GORAN
    * kinomodus : player.setSize() iframe api
    * zeit anzeige in "controls" fertig 
    * 
    */
 
-
   v: any;
-
-
   ws: SockJS;
   private stompClient;
 
@@ -67,12 +53,13 @@ export class SyncService {
   cookie: string;
 
   constructor(private http: HttpClient, private cookieService: CookieService) {
-
+    this.loadDocument();
     /*  this.http.get('http://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=FYH8DsU2WCk&format=json', {'Access-Control-Allow-Origin'})
       .subscribe(w => console.log(w));
   */
-  if(this.cookieService.check(SyncService.cookieKey))
-    this.cookie = this.cookieService.get(SyncService.cookieKey);
+
+    if (this.cookieService.check(SyncService.cookieKey))
+      this.cookie = this.cookieService.get(SyncService.cookieKey);
   }
 
   registerSyncTubeComponent(synctubeComponent: SyncTubeComponent) {
@@ -163,7 +150,7 @@ export class SyncService {
 
     if (message.type == 'request-sync-timestamp') {
       console.log(message);
-      let v : Video = new Video();
+      let v: Video = new Video();
       v.videoId = this.getVideo().videoId;
       v.timestamp = this.getCurrentTime();
       this.sendCurrentTimeStamp(this.getLocalUser(), this.getRaumId(), v)
@@ -237,11 +224,11 @@ export class SyncService {
       //this.setPlaybackRates();
       //this.togglePlayVideo(this.synctubeComponent.playerState);
       let that = this;
-      let wait = setInterval(function() {
+      let wait = setInterval(function () {
         if (that.getPlayerState() == SyncService.playing) {
-        that.setVideoDuration();
-        that.togglePlayVideo(that.getReceivedPlayerState())
-        clearInterval(wait);
+          that.setVideoDuration();
+          that.togglePlayVideo(that.getReceivedPlayerState())
+          clearInterval(wait);
         }
       }, 20);
 
@@ -284,8 +271,8 @@ export class SyncService {
     this.synctubeComponent.videoDuration = 0;
   }
 
-  getReceivedPlayerState() : number {
-     return this.synctubeComponent.getReceivedPlayerState();
+  getReceivedPlayerState(): number {
+    return this.synctubeComponent.getReceivedPlayerState();
   }
 
   replaceUrl(raumId: number) {
@@ -323,7 +310,7 @@ export class SyncService {
   }
 
   generateUserId() {
-    if(!this.getLocalUser()) {
+    if (!this.getLocalUser()) {
       this.setLocalUser(new User());
     }
     this.getLocalUser().userId = parseInt(Math.floor(Date.now() / 1000) + "" + Math.floor(Math.random() * 10000));
@@ -375,7 +362,7 @@ export class SyncService {
     }
   }
 
-  sendUpdateTitleAndDescription(user: User, raumId: number,  raumTitle: string, raumDescription: string) {
+  sendUpdateTitleAndDescription(user: User, raumId: number, raumTitle: string, raumDescription: string) {
     this.stompClient.send("/app/send/update-title-and-description", {}, JSON.stringify({ 'user': user, 'raumId': raumId, 'raumDescription': raumDescription, 'raumTitle': raumTitle }));
   }
 
@@ -389,16 +376,25 @@ export class SyncService {
 
   }
 
+  loadDocument() {
+
+    fs_1.readFile('apikey.apikey', (err, data) => {
+      if (err) throw err;
+
+      console.log(data.toString());
+    })
+  }
+
   APIKEY: string;
 
   search(query: string, mode: boolean, timestamp?: number) {
     let params: HttpParams = new HttpParams();
     params.append('q', query);
-    this.http.get('https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&&key='+ this.APIKEY + '&q=' + query).subscribe(response => {
+    this.http.get('https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&&key=' + this.APIKEY + '&q=' + query).subscribe(response => {
       console.log(response);
       let data: any = response;
       let items: any[] = data.items;
-      let vids : Video[] =  items.filter(i => (i.id.videoId) ? true : false).map(item => {
+      let vids: Video[] = items.filter(i => (i.id.videoId) ? true : false).map(item => {
         let video: Video = new Video();
         video.videoId = item.id.videoId;
         video.title = item.snippet.title;
@@ -410,11 +406,11 @@ export class SyncService {
         });*/
         return video;
       });
-      if(mode) {
-       this.synctubeComponent.searchResults = vids;
-      }else{
-        let vid : Video = vids[0];
-        if(timestamp) {
+      if (mode) {
+        this.synctubeComponent.searchResults = vids;
+      } else {
+        let vid: Video = vids[0];
+        if (timestamp) {
           vid.timestamp = timestamp;
         }
         this.synctubeComponent.searchResults = [vid];
@@ -615,11 +611,11 @@ export class SyncService {
     this.videoComponent.setIframe(iframe);
   }
 
-  getCookie() : string {
+  getCookie(): string {
     return this.cookie;
   }
 
-  hasCookie() : boolean {
+  hasCookie(): boolean {
     return (this.cookie) ? true : false;
   }
 
