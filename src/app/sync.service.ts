@@ -13,7 +13,6 @@ import { Observable } from 'rxjs';
 import { Video } from './video/video';
 import { CookieService } from 'ngx-cookie-service';
 import { UrlResolver } from '@angular/compiler';
-import * as fs_1 from 'fs';
 
 
 @Injectable({
@@ -53,10 +52,6 @@ export class SyncService {
   cookie: string;
 
   constructor(private http: HttpClient, private cookieService: CookieService) {
-    this.loadDocument();
-    /*  this.http.get('http://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=FYH8DsU2WCk&format=json', {'Access-Control-Allow-Origin'})
-      .subscribe(w => console.log(w));
-  */
 
     if (this.cookieService.check(SyncService.cookieKey))
       this.cookie = this.cookieService.get(SyncService.cookieKey);
