@@ -870,9 +870,12 @@ label {
 }
 
 .add-to-playlist-button {
-  position: absolute;
-  bottom: 0px;
-  right: 0px;
   width: 25px;
-  z-index: 1000;
+  z-index: 100;
+}
+
+.search-result-video-controls {
+  width:100%;
+  display:flex;
+  align-items: flex-end;
 }
