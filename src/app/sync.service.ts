@@ -371,7 +371,6 @@ export class SyncService {
 
   }
 
-  loadDocument() {
 
     fs_1.readFile('apikey.apikey', (err, data) => {
       if (err) throw err;
@@ -380,7 +379,6 @@ export class SyncService {
     })
   }
 
-  APIKEY: string;
 
   search(query: string, mode: boolean, timestamp?: number) {
     let params: HttpParams = new HttpParams();

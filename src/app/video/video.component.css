@@ -226,8 +226,14 @@
   
   .controls-spacer {
     width:65%;
+    display: flex;
   }
   
+  .control-back-forward {
+    width: 10px;
+    height: 10px;
+  }
+
   .controls-subtitle {
     width:5%;
     padding: 5px;
