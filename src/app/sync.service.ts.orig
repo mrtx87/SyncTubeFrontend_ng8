@@ -370,7 +370,17 @@ export class SyncService {
 
   }
 
-  APIKEY: string;
+<<<<<<< HEAD
+=======
+
+    fs_1.readFile('apikey.apikey', (err, data) => {
+      if (err) throw err;
+
+      console.log(data.toString());
+    })
+  }
+>>>>>>> 7e80cc1e9a969dfa924fbb34231214d117846611
+
 
   search(query: string, mode: boolean, timestamp?: number) {
     let params: HttpParams = new HttpParams();
