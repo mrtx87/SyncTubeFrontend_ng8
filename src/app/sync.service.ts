@@ -404,6 +404,35 @@ export class SyncService {
     });
   }
 
+
+  searchPlaylist(query: string, mode: boolean, timestamp?: number) {
+    let params: HttpParams = new HttpParams();
+    params.append('q', query);
+    this.http.get('GET https://www.googleapis.com/youtube/v3/playlists?part=snippet' + this.APIKEY + '&id=' + query).subscribe(response => {
+      console.log("PL:" + response);
+      let data: any = response;
+      let items: any[] = data.items;
+      let vids: Video[] = items.filter(i => (i.id.videoId) ? true : false).map(item => {
+        let video: Video = new Video();
+        video.videoId = item.id.videoId;
+        video.title = item.snippet.title;
+        video.description = item.snippet.description;
+        video.publishedAt = item.snippet.publishedAt;
+        return video;
+      });
+      if (mode) {
+        this.synctubeComponent.searchResults = vids;
+      } else {
+        let vid: Video = vids[0];
+        if (timestamp) {
+          vid.timestamp = timestamp;
+        }
+        this.synctubeComponent.searchResults = [vid];
+      }
+    });
+  }
+
+
   sendDisconnectMessage(user: User, raumId: number) {
     console.log("[disconnect-client:] " + user);
     this.stompClient.send("/app/send/disconnect-client", {}, JSON.stringify({ 'user': user, 'raumId': raumId }));
@@ -650,14 +679,14 @@ export class SyncService {
           } else {
             timestamp = parseInt(youtubeTimeStamp);
           }
-          console.log("YTS:" + timestamp)
+          console.log("YTTS:" + timestamp)
         }
 
 
 
       } else {
         videoId = youtubeUrl.substring(urlIndex + 2);
-        console.log('!!!2 ' + videoId);
+        console.log('!!! ' + videoId);
       }
     } else {
 
@@ -675,10 +704,11 @@ export class SyncService {
       }
     }
 
-    if (videoId || timestamp) {
+    if (videoId || timestamp || listlink) {
       let video: Video = new Video();
       video.videoId = videoId;
       video.timestamp = timestamp;
+      video.playlistId = listlink;
       return video;
     }
     return null;

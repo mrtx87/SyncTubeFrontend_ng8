@@ -7,6 +7,9 @@ export class Video {
     publishedAt: Date;
     playlistNr: number;
 
+    //Debug
+    playlistId: string;
+
     clone(): Video {
         let v: Video = new Video();
         v.videoId = this.videoId;

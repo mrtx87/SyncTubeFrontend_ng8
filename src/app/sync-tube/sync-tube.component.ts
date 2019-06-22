@@ -174,12 +174,17 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
     let video: Video = this.syncService.parseYoutubeUrl(this.query);
     if (video) {
+
+      if(video.playlistId) {
+        this.syncService.searchPlaylist(this.video.playlistId, false, video.timestamp);
+        this.forceScrollToSearch = true;
+        return;
+      }
       //this.sendNewVideoLink(video);
       this.syncService.search(this.query, false, video.timestamp);
       this.forceScrollToSearch = true;
       return;
     }
-
 
     this.syncService.search(this.query, true);
     this.forceScrollToSearch = true;
