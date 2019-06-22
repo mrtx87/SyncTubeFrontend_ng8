@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
-import $ from 'jquery';
 import { Raum } from './raum';
 import { Message } from './message';
 import { VideoComponent } from './video/video.component';
@@ -371,14 +370,6 @@ export class SyncService {
 
   }
 
-  loadDocument() {
-
-    fs_1.readFile('apikey.apikey', (err, data) => {
-      if (err) throw err;
-
-      console.log(data.toString());
-    })
-  }
 
   APIKEY: string;
 
@@ -527,6 +518,8 @@ export class SyncService {
   isMuted(): Boolean {
     return this.videoComponent.isMuted();
   }
+
+  
 
   togglePlay() {
 

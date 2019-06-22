@@ -47,6 +47,41 @@
     opacity: 0.9;
   }
   
+  .left-back-overlay {
+    z-index: 500;
+    left: 0px;
+    top: 0px;
+    bottom: 0px;
+    position: absolute;
+    width: 350px;
+    background-image:linear-gradient(90deg, white 0%, rgba(255, 255, 255, 0) 100%);
+    opacity: 0.0;
+    transition: 0.3s;
+  }
+
+  .left-back-overlay:hover {
+    opacity: 0.5;
+  }
+
+  
+
+  .right-forward-overlay {
+    z-index: 500;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    position: absolute;
+    width: 350px;
+    background-image:linear-gradient(270deg, white 0%, rgba(255, 255, 255, 0) 100%);
+    opacity: 0.0;
+    transition: 0.3s;
+  }
+
+  .right-forward-overlay:hover {
+    opacity: 0.5;
+  }
+
+ 
   .subtitle-container {
     display: flex;
     flex-direction: row;
@@ -197,8 +232,7 @@
 
   .controls {
     display:flex;
-    background-color: rgba(255, 255, 255, 0.183);
-    
+    background-color: rgba(255, 255, 255, 0.644);
     align-items: center;
     height: 5vh;
   }
@@ -226,13 +260,26 @@
   
   .controls-spacer {
     width:65%;
+    display: flex;
+  }
+
+  .control-back img {
+    width: 40px;
+    vertical-align: middle;
+    padding: 5px;
+  }
+
+  .control-forward img {
+    width: 40px;
+    vertical-align: middle;
+    padding: 5px;
   }
   
   .controls-subtitle {
     width:5%;
     padding: 5px;
     max-width:5vh;
-  
+    
   }
   .controls-options {
     width:5%;
@@ -264,8 +311,9 @@
   
    .controls-fullscreen {
      width:5%;
-     max-width:5vh;
+     max-width:4vh;
      padding: 5px;
+     
    }
   
    .slidecontainer {

@@ -6,7 +6,7 @@ import { Message } from '../message';
 import { ChatMessage } from '../chat-message';
 import { User } from './user';
 import { Video } from '../video/video';
-import $ from 'jquery';
+//import $ from 'jquery';
 
 @Component({
   selector: 'app-sync-tube',
