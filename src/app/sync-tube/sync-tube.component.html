@@ -2,7 +2,7 @@
 
   <div class="top-panel-left">
     <h3 class="page-title"> <a href="http://localhost:4200"> SyncTube</a></h3>
-    <input *ngIf="raumId && user.admin" (keyup.enter)="search()" [(ngModel)]="query" class="custom-yt-link" type="text">
+    <input *ngIf="raumId && user.admin" (keyup.enter)="search()" [(ngModel)]="searchInput" class="custom-yt-link" type="text">
     <div class="room-status-panel">
       <label [hidden]="!raumId || !raumStatus">Private <img class="rsp-lock" src="assets/padlock.svg"></label>
       <label [hidden]="!raumId || raumStatus">Public <img class="rsp-lock" src="assets/padlock-unlock.svg"></label>

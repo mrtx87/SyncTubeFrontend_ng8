@@ -12,6 +12,7 @@ import { Observable } from 'rxjs';
 import { Video } from './video/video';
 import { CookieService } from 'ngx-cookie-service';
 import { UrlResolver } from '@angular/compiler';
+import { SearchQuery } from './sync-tube/search-query';
 
 
 @Injectable({
@@ -375,7 +376,7 @@ export class SyncService {
   search(query: string, mode: boolean, timestamp?: number) {
     let params: HttpParams = new HttpParams();
     params.append('q', query);
-    this.http.get('https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&&key=' + this.APIKEY + '&q=' + query).subscribe(response => {
+    this.http.get('https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&key=' + this.APIKEY + '&q=' + query).subscribe(response => {
       console.log(response);
       let data: any = response;
       let items: any[] = data.items;
@@ -407,10 +408,10 @@ export class SyncService {
   searchPlaylist(query: string, mode: boolean, timestamp?: number) {
     let params: HttpParams = new HttpParams();
     params.append('q', query);
-    this.http.get('GET https://www.googleapis.com/youtube/v3/playlists?part=snippet' + this.APIKEY + '&id=' + query).subscribe(response => {
-      console.log("PL:" + response);
+    this.http.get('https://www.googleapis.com/youtube/v3/playlists?part=snippet&key=' + this.APIKEY + '&id=' + query).subscribe(response => {
       let data: any = response;
       let items: any[] = data.items;
+      console.log(data);
       let vids: Video[] = items.filter(i => (i.id.videoId) ? true : false).map(item => {
         let video: Video = new Video();
         video.videoId = item.id.videoId;
@@ -547,7 +548,7 @@ export class SyncService {
     return this.videoComponent.isMuted();
   }
 
-  
+
 
   togglePlay() {
 
@@ -637,6 +638,36 @@ export class SyncService {
 
   setCookie(userId: number) {
     this.cookieService.set(SyncService.cookieKey, "" + userId);
+  }
+
+
+  processInput(input: string) : SearchQuery{
+
+
+    //if(input.lastIndexOf('/') != -1)
+
+    let paramsIndex: number = input.indexOf("?") + 1;
+    let paramsString: string = input.substring(paramsIndex);
+    let paramsList: string[] = paramsString.split('&');
+
+    let query: SearchQuery =  new SearchQuery();
+    query.query = input;
+    for (let param_ of paramsList) {
+      if(param_.startsWith("v=")) {
+        query.videoId = param_.substring(2);
+      }else if(param_.startsWith("t=")) {
+        query.timestamp = parseInt(param_.substring(2));
+      }else if(param_.startsWith("list=")) {
+        query.playlistId = param_.substring(5);
+      }else if(param_.startsWith("start_radio=")) {
+        query.startPlaylistIndex = parseInt(param_.substring(12));
+      }else{
+        console.log("_unkownParam_");
+      }
+    }
+    console.log("parsedVIDEO: " + query);
+    return query;
+
   }
 
   parseYoutubeUrl(url: string): Video {

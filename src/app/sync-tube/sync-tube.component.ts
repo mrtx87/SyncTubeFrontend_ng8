@@ -6,6 +6,7 @@ import { Message } from '../message';
 import { ChatMessage } from '../chat-message';
 import { User } from './user';
 import { Video } from '../video/video';
+import { SearchQuery } from './search-query';
 //import $ from 'jquery';
 
 @Component({
@@ -18,27 +19,27 @@ import { Video } from '../video/video';
 export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   ngAfterViewChecked(): void {
-      
+
     this.scrollChat = document.getElementById("scrollChat")
     this.scrollContent = document.getElementById("scrollContent")
-    
-    if(this.forceScrollToSearch) {
+
+    if (this.forceScrollToSearch) {
       this.scrollToSearchResults();
       this.forceScrollToSearch = false;
     }
 
-    if(this.scrollChat && this.scrollChat.scrollTop < 10){
+    if (this.scrollChat && this.scrollChat.scrollTop < 10) {
       this.scrollChat.scrollTop = this.scrollChat.scrollHeight;
     }
 
-    if(this.scrollChat && this.forceScrollToChatBottom) {
+    if (this.scrollChat && this.forceScrollToChatBottom) {
       this.scrollToBottomOfChat();
       this.forceScrollToChatBottom = false;
     }
   }
 
   scrollToBottomOfChat() {
-    if(Math.abs(this.scrollChat.scrollHeight - this.scrollChat.scrollTop) < 100) {
+    if (Math.abs(this.scrollChat.scrollHeight - this.scrollChat.scrollTop) < 100) {
       this.scrollChat.scrollTop = this.scrollChat.scrollHeight;
     }
   }
@@ -66,12 +67,12 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   /* controls vars */
   showRaum: boolean = false;
-  query: string;
+  searchInput: string;
   raumIdText: string;
   chatMessageText: String;
 
-  displayTab : number = 1;
-  
+  displayTab: number = 1;
+
 
   displayCinemaMode: Boolean = false;
   displayFullscreen: Boolean = false;
@@ -140,7 +141,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   }
 
-  sendAddVideoToPlaylist(video_ :Video) {
+  sendAddVideoToPlaylist(video_: Video) {
     console.log("SEND VIDEO TO PLAYLIST")
     this.syncService.sendAddVideoToPlaylist(this.raumId, this.user, video_);
   }
@@ -166,27 +167,30 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.syncService.sendJoinRaum(this.user, raumId);
   }
 
-  sendRemoveVideoFromPlaylist(pvideo_: Video)  {
+  sendRemoveVideoFromPlaylist(pvideo_: Video) {
 
   }
-  
+
   search() {
 
-    let video: Video = this.syncService.parseYoutubeUrl(this.query);
-    if (video) {
+    let searchQuery: SearchQuery = this.syncService.processInput(this.searchInput);
+    if (searchQuery) {
 
-      if(video.playlistId) {
-        this.syncService.searchPlaylist(this.video.playlistId, false, video.timestamp);
+      if (searchQuery.playlistId) {
+        console.log("playlist-ID: " + searchQuery.playlistId)
+        this.syncService.searchPlaylist(searchQuery.playlistId, false, searchQuery.timestamp);
         this.forceScrollToSearch = true;
         return;
       }
-      //this.sendNewVideoLink(video);
-      this.syncService.search(this.query, false, video.timestamp);
-      this.forceScrollToSearch = true;
-      return;
+      if (searchQuery.videoId) {
+        //this.sendNewVideoLink(video);
+        this.syncService.search(searchQuery.videoId, false, searchQuery.timestamp);
+        this.forceScrollToSearch = true;
+        return;
+      }
     }
 
-    this.syncService.search(this.query, true);
+    this.syncService.search(searchQuery.query, true);
     this.forceScrollToSearch = true;
 
   }
@@ -198,7 +202,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   sendNewVideoLink(video: Video) {
     this.syncService.sendNewVideoAndGetTitleFirst(this.user, this.raumId, video);
   }
-  
+
 
   getPathId(): number {
     return parseInt(this.route.snapshot.paramMap.get('id'));
