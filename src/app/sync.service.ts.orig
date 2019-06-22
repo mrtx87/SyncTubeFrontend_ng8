@@ -370,7 +370,17 @@ export class SyncService {
 
   }
 
-  APIKEY: string = "AIzaSyBJKPvOKMDqPzaR-06o1-Mfixvq2CRlS5M";
+<<<<<<< HEAD
+=======
+
+    fs_1.readFile('apikey.apikey', (err, data) => {
+      if (err) throw err;
+
+      console.log(data.toString());
+    })
+  }
+>>>>>>> 7e80cc1e9a969dfa924fbb34231214d117846611
+
 
   search(query: string, mode: boolean, timestamp?: number) {
     let params: HttpParams = new HttpParams();
@@ -402,35 +412,6 @@ export class SyncService {
       }
     });
   }
-
-
-  searchPlaylist(query: string, mode: boolean, timestamp?: number) {
-    let params: HttpParams = new HttpParams();
-    params.append('q', query);
-    this.http.get('GET https://www.googleapis.com/youtube/v3/playlists?part=snippet' + this.APIKEY + '&id=' + query).subscribe(response => {
-      console.log("PL:" + response);
-      let data: any = response;
-      let items: any[] = data.items;
-      let vids: Video[] = items.filter(i => (i.id.videoId) ? true : false).map(item => {
-        let video: Video = new Video();
-        video.videoId = item.id.videoId;
-        video.title = item.snippet.title;
-        video.description = item.snippet.description;
-        video.publishedAt = item.snippet.publishedAt;
-        return video;
-      });
-      if (mode) {
-        this.synctubeComponent.searchResults = vids;
-      } else {
-        let vid: Video = vids[0];
-        if (timestamp) {
-          vid.timestamp = timestamp;
-        }
-        this.synctubeComponent.searchResults = [vid];
-      }
-    });
-  }
-
 
   sendDisconnectMessage(user: User, raumId: number) {
     console.log("[disconnect-client:] " + user);
@@ -680,14 +661,14 @@ export class SyncService {
           } else {
             timestamp = parseInt(youtubeTimeStamp);
           }
-          console.log("YTTS:" + timestamp)
+          console.log("YTS:" + timestamp)
         }
 
 
 
       } else {
         videoId = youtubeUrl.substring(urlIndex + 2);
-        console.log('!!! ' + videoId);
+        console.log('!!!2 ' + videoId);
       }
     } else {
 
@@ -705,11 +686,10 @@ export class SyncService {
       }
     }
 
-    if (videoId || timestamp || listlink) {
+    if (videoId || timestamp) {
       let video: Video = new Video();
       video.videoId = videoId;
       video.timestamp = timestamp;
-      video.playlistId = listlink;
       return video;
     }
     return null;

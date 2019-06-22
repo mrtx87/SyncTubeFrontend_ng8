@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import $ from 'jquery';
+//import $ from 'jquery';
 
 import {  ActivatedRoute } from '@angular/router';
 

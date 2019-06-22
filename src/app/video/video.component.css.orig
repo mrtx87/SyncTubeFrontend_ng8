@@ -261,6 +261,7 @@
   .controls-spacer {
     width:65%;
     display: flex;
+<<<<<<< HEAD
   }
 
   .control-back img {
@@ -273,6 +274,13 @@
     width: 40px;
     vertical-align: middle;
     padding: 5px;
+=======
+>>>>>>> 7e80cc1e9a969dfa924fbb34231214d117846611
+  }
+  
+  .control-back-forward {
+    width: 10px;
+    height: 10px;
   }
 
   .controls-subtitle {

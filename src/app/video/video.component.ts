@@ -30,6 +30,8 @@ export class VideoComponent implements OnInit {
 
   iframe: any;
 
+  
+
   currentTimestamp: number = 0;
   currentTime: number;
   currentTimeProgressbar: number;
@@ -404,6 +406,22 @@ export class VideoComponent implements OnInit {
   toggleMute() {
     this.syncService.toggleMute();
   }
+ 
+  jumpBySeconds(offset : number) {
+    let raumId : number = this.getRaumId();
+    let user : User = this.getLocalUser();
+    let videoId : string = this.getVideo().videoId;
+    let currentTime : number = this.getCurrentTime();
+    this.syncService.sendSeekToTimestamp(user,raumId,videoId,currentTime + offset);
+  }
 
+  tenSecBack() {
+    this.jumpBySeconds(-10);
+    
+  }
+
+  tenSecForward() {
+    this.jumpBySeconds(10);
+  }
 }
 

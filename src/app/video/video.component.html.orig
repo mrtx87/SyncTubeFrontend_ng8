@@ -80,12 +80,18 @@
 
       <div class="controls-time"> {{currentDisplayedTime | hhMMss}}/ {{videoDuration | hhMMss}}</div>
       <div class="controls-spacer">
+<<<<<<< HEAD
       <div class="control-back" (click)="tenSecBack()">
-        <img src="assets/back10sec.png">
+        <img src="assets/Back10sec.png">
       </div>
       <div class="control-forward" (click)="tenSecForward()">
         <img src="assets/foward10.png">
       </div>      
+=======
+        <div class="control-back-forward">
+            <img src="assets/back10sec.png">
+        </div>     
+>>>>>>> 7e80cc1e9a969dfa924fbb34231214d117846611
       </div>
       <div class="controls-subtitle" (click)="toggleSubtitle()"><img src="assets/subtitles.svg"></div>
       <div (click)="toggleDisplayOptions()" class="controls-options"><img src="assets/settings.svg">
