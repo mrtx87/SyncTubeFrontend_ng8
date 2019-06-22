@@ -371,7 +371,6 @@ export class SyncService {
   }
 
 
-  APIKEY: string;
 
   search(query: string, mode: boolean, timestamp?: number) {
     let params: HttpParams = new HttpParams();
