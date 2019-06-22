@@ -3,6 +3,7 @@ import reframe from 'reframe.js';
 import { SyncService } from '../sync.service';
 import { Video } from './video';
 import { User } from '../sync-tube/user';
+import { interval } from 'rxjs';
 @Component({
   selector: 'app-video',
   templateUrl: './video.component.html',
@@ -20,6 +21,8 @@ export class VideoComponent implements OnInit {
 
   displayOptions: Boolean = false;
   displayPlaybackRatesOptions: Boolean = false;
+  displaySecondsBack: Boolean = false;
+  displaySecondsForward: Boolean = false;
   playbackRates: number[];
 
   displayAllControls: boolean = false;
@@ -413,11 +416,28 @@ export class VideoComponent implements OnInit {
 
   tenSecBack() {
     this.jumpBySeconds(-10);
-    
+    this.secondsBack();
   }
 
   tenSecForward() {
     this.jumpBySeconds(10);
+    this.secondsForward();
+  }
+
+  intervalSeconds: number = 0;
+  secondsBack() {
+    this.displaySecondsBack = true;
+    let that = this;
+    let secondsTimer = setInterval(function() {
+      that.intervalSeconds += 25;
+        if(that.intervalSeconds >= 1000) {
+          that.displaySecondsBack = false;          
+          clearInterval(secondsTimer);
+        }
+    }, 25);
+  }
+  secondsForward() {
+    this.displaySecondsForward = true;
   }
 }
 

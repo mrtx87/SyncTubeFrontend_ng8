@@ -63,7 +63,27 @@
     opacity: 0.5;
   }
 
-  
+  .middle-back-seconds-overlay img {
+    position: absolute;
+    left: 44.5%;
+    top: 40%;
+    z-index: 500;
+    width: 10%;
+    -webkit-filter: invert(1);
+    filter: invert(1);
+    opacity: 0.5;
+  }
+
+  .middle-forward-seconds-overlay img {
+    position: absolute;
+    left: 45.6%;
+    top: 40%;
+    z-index: 550;
+    width: 10%;
+    -webkit-filter: invert(1);
+    filter: invert(1);
+    opacity: 0.5;
+  }
 
   .right-forward-overlay {
     z-index: 500;
