@@ -640,8 +640,15 @@ export class SyncService {
     this.cookieService.set(SyncService.cookieKey, "" + userId);
   }
 
+  jumpBySeconds(offset: number) {
+    let raumId: number = this.getRaumId();
+    let user: User = this.getLocalUser();
+    let videoId: string = this.getVideo().videoId;
+    let currentTime: number = this.getCurrentTime();
+    this.sendSeekToTimestamp(user, raumId, videoId, currentTime + offset);
+  }
 
-  processInput(input: string) : SearchQuery{
+  processInput(input: string): SearchQuery {
 
 
     //if(input.lastIndexOf('/') != -1)
@@ -650,18 +657,18 @@ export class SyncService {
     let paramsString: string = input.substring(paramsIndex);
     let paramsList: string[] = paramsString.split('&');
 
-    let query: SearchQuery =  new SearchQuery();
+    let query: SearchQuery = new SearchQuery();
     query.query = input;
     for (let param_ of paramsList) {
-      if(param_.startsWith("v=")) {
+      if (param_.startsWith("v=")) {
         query.videoId = param_.substring(2);
-      }else if(param_.startsWith("t=")) {
+      } else if (param_.startsWith("t=")) {
         query.timestamp = parseInt(param_.substring(2));
-      }else if(param_.startsWith("list=")) {
+      } else if (param_.startsWith("list=")) {
         query.playlistId = param_.substring(5);
-      }else if(param_.startsWith("start_radio=")) {
+      } else if (param_.startsWith("start_radio=")) {
         query.startPlaylistIndex = parseInt(param_.substring(12));
-      }else{
+      } else {
         console.log("_unkownParam_");
       }
     }

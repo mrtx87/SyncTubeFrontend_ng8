@@ -408,11 +408,7 @@ export class VideoComponent implements OnInit {
   }
  
   jumpBySeconds(offset : number) {
-    let raumId : number = this.getRaumId();
-    let user : User = this.getLocalUser();
-    let videoId : string = this.getVideo().videoId;
-    let currentTime : number = this.getCurrentTime();
-    this.syncService.sendSeekToTimestamp(user,raumId,videoId,currentTime + offset);
+    this.syncService.jumpBySeconds(offset)
   }
 
   tenSecBack() {

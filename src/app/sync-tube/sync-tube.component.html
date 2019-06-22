@@ -76,9 +76,9 @@
   </div>
 
   <!-- Visible when room is created or joined -->
-  <div *ngIf="raumId" [className]="!displayCinemaMode ? 'raum-container' : 'raum-container-cinema'">
+  <div *ngIf="raumId" [className]="!displayCinemaMode ? 'raum-container' : 'raum-container-cinema'" > <!-- (keyup.arrowleft)="tenSecBack()" -->
 
-    <div #scrollContent id="scrollContent" [className]="!displayFullscreen ? 'video-content' : 'display-fullscreen'">
+    <div #scrollContent id="scrollContent" [className]="!displayFullscreen ? 'video-content' : 'display-fullscreen'" >
       <app-video></app-video>
 
       <div *ngIf="raumId && !displayFullscreen" class="raum-users">
@@ -144,9 +144,16 @@
         </div>
         <div #scrollChat class="scrollable-content" id="scrollChat">
           <div class="chat-row" *ngFor="let chatMessage of chatMessages">
-            <div class="message-row-container" *ngIf="chatMessage.type != 'insert-video'">
+            <div class="message-row-container" *ngIf="chatMessage.type != 'insert-video' && chatMessage.user.userId != user.userId">
               <div class="userid-container"> <span> {{chatMessage.user.userName}} </span><img
                   *ngIf="chatMessage.user.admin" src="assets/star.svg" class="star-img"> </div>
+              <div class="text-container">
+                <div> {{chatMessage.messageText}}</div>
+                <div class="timestamp"> <span> {{chatMessage.timestamp}} </span></div>
+              </div>
+            </div>
+
+            <div class="message-row-container-user" *ngIf="chatMessage.type != 'insert-video' && chatMessage.user.userId == user.userId">
               <div class="text-container">
                 <div> {{chatMessage.messageText}}</div>
                 <div class="timestamp"> <span> {{chatMessage.timestamp}} </span></div>
@@ -178,7 +185,7 @@
 
 
       <div [hidden]="displayTab != 2" class="playlist-container">
-        <div class="playlist-controls">
+        <div *ngIf="user.admin" class="playlist-controls">
           <div class="inorder-container"> <img src="assets/playlist.svg"> </div>
           <div class="random-container"> <img src="assets/shuffle.svg"> </div>
           <div class="repeat-container"> <img src="assets/repeat.svg"> </div>

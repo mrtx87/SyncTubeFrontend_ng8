@@ -116,13 +116,15 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.syncService.registerSyncTubeComponent(this);
     // this.syncService.parseYoutubeUrl('https://www.youtube.com/watch?v=luQ0JWcrsWg&feature=youtu.be&list=PLuUrokoVSxlfUJuJB_D8j_wsFR4exaEmy&t=81');
     // this.syncService.parseYoutubeUrl('https://youtu.be/AmAy0KABoX0');
-    if (this.syncService.hasCookie()) {
+    /*if (this.syncService.hasCookie()) {
       this.setLocalUser(new User());
       this.user.userId = parseInt(this.syncService.getCookie())
     } else {
       this.syncService.generateUserId();
       this.syncService.setCookie(this.user.userId);
-    }
+    }*/
+
+    this.syncService.generateUserId();
     this.connect();
     //this.syncService.getVideoTitle("dQw4w9WgXcQ");
   }
@@ -376,6 +378,19 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.syncService.setSize(width, height);
   }
 
+  jumpBySeconds(offset : number) {
+    this.syncService.jumpBySeconds(offset)
+  }
+
+  tenSecBack() {
+    console.log("HALLO")
+    this.jumpBySeconds(-10);
+    
+  }
+
+  tenSecForward() {
+    this.jumpBySeconds(10);
+  }
 }
 
 

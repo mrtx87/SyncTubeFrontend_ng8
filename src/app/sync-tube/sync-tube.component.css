@@ -301,7 +301,13 @@
 .message-row-container {
   display: flex;
   align-items: flex-start;
-  width: 100%;
+  background-color: white;
+  border-radius: 6px;
+}
+
+.message-row-container-user {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .text-container {
