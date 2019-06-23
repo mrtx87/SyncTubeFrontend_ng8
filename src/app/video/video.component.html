@@ -60,13 +60,17 @@
   </div>
 
   <!-- Video Controls-->
-  <div class ="controls-all" [hidden]="!displayAllControls" (mousemove)="time = 0">
-    <input [(ngModel)]="currentTimeProgressbar" *ngIf="syncService.synctubeComponent.user.admin" (click) ="onChangeProgressBar()" type="range" min="0"
-      max="{{videoDuration | noFloat}}" class="bar-slider" id="myRange">
-    <div  class="controls">
+  <div class="controls-all" [hidden]="!displayAllControls" (mousemove)="time = 0">
+    <input [(ngModel)]="currentTimeProgressbar" *ngIf="syncService.synctubeComponent.user.admin"
+      (click)="onChangeProgressBar()" type="range" min="0" max="{{videoDuration | noFloat}}" class="bar-slider"
+      id="myRange">
+    <div class="controls">
       <div *ngIf="syncService.synctubeComponent.user.admin" (click)="triggerTogglePlay()" class="play-button">
         <div [hidden]="isPlaying"> <img src="assets/play-button.svg"></div>
         <div [hidden]="!isPlaying"> <img src="assets/pause.svg"></div>
+      </div>
+      <div *ngIf="syncService.synctubeComponent.user.admin" class="next-button">
+          <img  src="assets/play-next-button.svg">
       </div>
 
       <div (mouseover)="mouseOverSound()" (click)="toggleMute()" class="controls-sound">
@@ -80,12 +84,12 @@
 
       <div class="controls-time"> {{currentDisplayedTime | hhMMss}}/ {{videoDuration | hhMMss}}</div>
       <div class="controls-spacer">
-      <div class="control-back" (click)="tenSecBack()">
-        <img src="assets/back10sec.png">
-      </div>
-      <div class="control-forward" (click)="tenSecForward()">
-        <img src="assets/foward10.png">
-      </div>      
+        <div class="control-back" (click)="tenSecBack()">
+          <img src="assets/back10sec.png">
+        </div>
+        <div class="control-forward" (click)="tenSecForward()">
+          <img src="assets/foward10.png">
+        </div>
       </div>
       <div class="controls-subtitle" (click)="toggleSubtitle()"><img src="assets/subtitles.svg"></div>
       <div (click)="toggleDisplayOptions()" class="controls-options"><img src="assets/settings.svg">
@@ -102,21 +106,21 @@
   </div>
 
   <div class="left-back-overlay" (click)="tenSecBack()">
-      
+
   </div>
 
   <div class="right-forward-overlay" (click)="tenSecForward()">
-      
+
   </div>
 
   <div *ngIf="displaySecondsBack" class="middle-back-seconds-overlay">
-      <img src="assets/back10sec.png">
+    <img src="assets/back10sec.png">
   </div>
-  
+
   <div *ngIf="displaySecondsForward" class="middle-forward-seconds-overlay">
-      <img src="assets/foward10.png">
+    <img src="assets/foward10.png">
   </div>
-  
+
 
 
 </div>

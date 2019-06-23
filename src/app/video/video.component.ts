@@ -15,7 +15,7 @@ export class VideoComponent implements OnInit {
 
 
   public YT: any;
-  public video: any;
+  //public video: any;
   public player: any;
   public reframed: Boolean = false;
 
@@ -33,7 +33,7 @@ export class VideoComponent implements OnInit {
 
   iframe: any;
 
-  
+
 
   currentTimestamp: number = 0;
   currentTime: number;
@@ -61,12 +61,12 @@ export class VideoComponent implements OnInit {
   ngOnInit() {
     let that = this;
     this.init();
-    this.video = this.syncService.synctubeComponent.video.videoId; //video id
+    //this.video = this.syncService.synctubeComponent.video.videoId; //video id
     window['onYouTubeIframeAPIReady'] = (e) => {
       this.YT = window['YT'];
       this.reframed = false;
       this.player = new window['YT'].Player('player', {
-        videoId: this.video,
+        videoId: null,
         playerVars: {
           'autoplay': 0,
           'controls': 0,
@@ -82,16 +82,19 @@ export class VideoComponent implements OnInit {
               reframe(e.target.a);
             }
 
-            that.processVideoIfLoaded(that);
+            if (this.syncService.getVideo()) {
 
-            that.setIframe(e.target.a);
-            console.log("!!! " + e.target.a.className + " !!!")
-            that.currentTimeProgressbar = this.syncService.getVideo().timestamp;
-            that.loadVideoById({
-              videoId: this.syncService.getVideo().videoId,
-              startSeconds: this.syncService.getVideo().timestamp,
-              suggestedQuality: 'large'
-            });
+              that.processVideoIfLoaded(that);
+
+              that.setIframe(e.target.a);
+              console.log("!!! " + e.target.a.className + " !!!")
+              that.currentTimeProgressbar = this.syncService.getVideo().timestamp;
+              that.loadVideoById({
+                videoId: this.syncService.getVideo().videoId,
+                startSeconds: this.syncService.getVideo().timestamp,
+                suggestedQuality: 'large'
+              });
+            }
 
             /*
             
@@ -156,7 +159,7 @@ export class VideoComponent implements OnInit {
   onPlayerError(event) {
     switch (event.data) {
       case 2:
-        console.log('' + this.video)
+        console.log('' + 'Video Error')
         break;
       case 100:
         break;
@@ -164,10 +167,6 @@ export class VideoComponent implements OnInit {
         break;
     };
   };
-
-  setVideo(id: string) {
-    this.video = id;
-  }
 
   getCurrentTime(): number {
     return this.player.getCurrentTime();
@@ -231,14 +230,13 @@ export class VideoComponent implements OnInit {
   }
 
   triggerTogglePlay(): void {
-    if (this.isLocalUserAdmin()) {
+    if (this.isLocalUserAdmin() && this.getCurrentVideo()) {
       if (this.getPlayerState() == SyncService.paused || this.getPlayerState() == SyncService.placed || this.getPlayerState() == SyncService.finished) {
         console.log("playvideo")
-        this.syncService.sendTogglePlay(this.syncService.getLocalUser(), this.syncService.getRaumId(), SyncService.playing, this.getVideo(), this.getCurrentTime());
-      }
-      if (this.getPlayerState() == SyncService.playing) {
+        this.syncService.sendTogglePlay(this.syncService.getLocalUser(), this.syncService.getRaumId(), SyncService.playing, this.getCurrentVideo(), this.getCurrentTime());
+      } else if (this.getPlayerState() == SyncService.playing) {
         console.log("pausevideo")
-        this.syncService.sendTogglePlay(this.syncService.getLocalUser(), this.syncService.getRaumId(), SyncService.paused, this.getVideo(), this.getCurrentTime());
+        this.syncService.sendTogglePlay(this.syncService.getLocalUser(), this.syncService.getRaumId(), SyncService.paused, this.getCurrentVideo(), this.getCurrentTime());
       }
     }
   }
@@ -360,9 +358,7 @@ export class VideoComponent implements OnInit {
     this.player.setSize(width, height);
   }
 
-  getVideo(): Video {
-    return this.syncService.getVideo();
-  }
+
 
   toggleFullscreen() {
     this.syncService.toggleFullscreen();
@@ -384,7 +380,7 @@ export class VideoComponent implements OnInit {
       this.displayAllControls = true;
       let that = this;
       let toastControls = setInterval(function () {
-        if (that.time >= 3000) {
+        if (that.time >= 2000000) {
           that.displayAllControls = false;
           clearInterval(toastControls);
           that.time = 0;
@@ -397,7 +393,7 @@ export class VideoComponent implements OnInit {
   /* Video Controls
   */
   mouseOverSound() {
-    console.log("tesetetet")
+    //@TODO
   }
 
   toggleSubtitle(_module, option, value) {
@@ -409,35 +405,45 @@ export class VideoComponent implements OnInit {
   toggleMute() {
     this.syncService.toggleMute();
   }
- 
-  jumpBySeconds(offset : number) {
+
+  jumpBySeconds(offset: number) {
     this.syncService.jumpBySeconds(offset)
   }
 
   tenSecBack() {
     this.jumpBySeconds(-10);
-    this.secondsBack();
+    this.startDisplaylingsecondsBack();
   }
 
   tenSecForward() {
     this.jumpBySeconds(10);
-    this.secondsForward();
+    this.startDisplaylingsecondsForward();
   }
 
   intervalSeconds: number = 0;
-  secondsBack() {
+  startDisplaylingsecondsBack() {
     this.displaySecondsBack = true;
     let that = this;
-    let secondsTimer = setInterval(function() {
+    let secondsBackTimer = setInterval(function () {
       that.intervalSeconds += 25;
-        if(that.intervalSeconds >= 1000) {
-          that.displaySecondsBack = false;          
-          clearInterval(secondsTimer);
-        }
+      if (that.intervalSeconds >= 1000) {
+        that.displaySecondsBack = false;
+        that.intervalSeconds = 0;
+        clearInterval(secondsBackTimer);
+      }
     }, 25);
   }
-  secondsForward() {
+  startDisplaylingsecondsForward() {
     this.displaySecondsForward = true;
+    let that = this;
+    let secondsForwardTimer = setInterval(function () {
+      that.intervalSeconds += 25;
+      if (that.intervalSeconds >= 1000) {
+        that.displaySecondsForward = false;
+        that.intervalSeconds = 0;
+        clearInterval(secondsForwardTimer);
+      }
+    }, 25);
   }
 }
 

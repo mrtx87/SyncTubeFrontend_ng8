@@ -213,6 +213,7 @@ export class SyncService {
       });
       this.videoComponent.currentTimeProgressbar = message.video.timestamp;
       this.videoComponent.currentDisplayedTime = message.video.timestamp;
+      this.synctubeComponent.forceScrollToChatBottom = true;
       this.synctubeComponent.chatMessages.push(message.chatMessage)
 
       //this.setVideoDuration(this.getVideoDuration());
@@ -293,7 +294,9 @@ export class SyncService {
   createClient(message: Message) {
     this.synctubeComponent.revealContent = true;
     this.synctubeComponent.user = message.user;
-    this.synctubeComponent.video = message.video;
+    if (message.video) {
+      this.synctubeComponent.video = message.video;
+    }
     this.synctubeComponent.raumId = message.raumId;
     this.synctubeComponent.users = message.users;
     this.synctubeComponent.chatMessages = <ChatMessage[]>message.chatMessages;
@@ -301,6 +304,7 @@ export class SyncService {
   }
 
   localCloseConnection() {
+    this.stompClient.disconnect();
     this.ws.close();
   }
 
@@ -640,12 +644,30 @@ export class SyncService {
     this.cookieService.set(SyncService.cookieKey, "" + userId);
   }
 
+  isLocalUserAdmin(): Boolean {
+    return this.getLocalUser().admin;
+  }
+
+  currentVideoExists() {
+    return (this.getVideo()) ? true : false;
+  }
+
   jumpBySeconds(offset: number) {
-    let raumId: number = this.getRaumId();
-    let user: User = this.getLocalUser();
-    let videoId: string = this.getVideo().videoId;
-    let currentTime: number = this.getCurrentTime();
-    this.sendSeekToTimestamp(user, raumId, videoId, currentTime + offset);
+    if (this.isLocalUserAdmin() && this.currentVideoExists()) {
+      let raumId: number = this.getRaumId();
+      let user: User = this.getLocalUser();
+      let videoId: string = this.getVideo().videoId;
+      let currentTime: number = this.getCurrentTime();
+      this.sendSeekToTimestamp(user, raumId, videoId, currentTime + offset);
+    }
+  }
+
+  startDisplaylingsecondsBack() {
+    this.videoComponent.startDisplaylingsecondsBack();
+  }
+
+  startDisplaylingsecondsForward() {
+    this.videoComponent.startDisplaylingsecondsForward();
   }
 
   processInput(input: string): SearchQuery {

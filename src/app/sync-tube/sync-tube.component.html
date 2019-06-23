@@ -2,7 +2,8 @@
 
   <div class="top-panel-left">
     <h3 class="page-title"> <a href="http://localhost:4200"> SyncTube</a></h3>
-    <input *ngIf="raumId && user.admin" (keyup.enter)="search()" [(ngModel)]="searchInput" class="custom-yt-link" type="text">
+    <input *ngIf="raumId && user.admin" (keyup.enter)="search()" [(ngModel)]="searchInput" class="custom-yt-link"
+      type="text">
     <div class="room-status-panel">
       <label [hidden]="!raumId || !raumStatus">Private <img class="rsp-lock" src="assets/padlock.svg"></label>
       <label [hidden]="!raumId || raumStatus">Public <img class="rsp-lock" src="assets/padlock-unlock.svg"></label>
@@ -76,9 +77,10 @@
   </div>
 
   <!-- Visible when room is created or joined -->
-  <div *ngIf="raumId" [className]="!displayCinemaMode ? 'raum-container' : 'raum-container-cinema'" > <!-- (keyup.arrowleft)="tenSecBack()" -->
+  <div *ngIf="raumId" [className]="!displayCinemaMode ? 'raum-container' : 'raum-container-cinema'">
+    <!-- (keyup.arrowleft)="tenSecBack()" -->
 
-    <div #scrollContent id="scrollContent" [className]="!displayFullscreen ? 'video-content' : 'display-fullscreen'" >
+    <div #scrollContent id="scrollContent" [className]="!displayFullscreen ? 'video-content' : 'display-fullscreen'">
       <app-video></app-video>
 
       <div *ngIf="raumId && !displayFullscreen" class="raum-users">
@@ -87,7 +89,7 @@
             <img class="user-icon" src="assets/user.svg">
             <img *ngIf="user.admin && !anyuser.admin" (click)="toKick(anyuser)" class="delete-icon"
               src="assets/delete.svg">
-            <div class="user-text-container">
+            <div class="username-container">
               <span>
                 {{anyuser.userName}}
               </span>
@@ -99,7 +101,7 @@
           </div>
           <div *ngIf="user.userId === anyuser.userId" class="user-container identity">
             <img class="user-icon" src="assets/user.svg">
-            <div class="user-text-container">
+            <div class="username-container">
               <span>
                 {{anyuser.userName}}
               </span>
@@ -118,9 +120,11 @@
               src="https://img.youtube.com/vi/{{video_.videoId}}/0.jpg"> </div>
           <div class="search-result-infos">
             <span (click)="sendNewVideoLink(video_)">{{video_.title}} </span>
-            <span class="search-result-date"> published @{{video_.publishedAt | date: 'dd.MM.yyyy'}}</span>
           </div>
-          <div class="search-result-video-controls"><img (click)="sendAddVideoToPlaylist(video_)" class="add-to-playlist-button" src="assets/add2.svg">
+          <div class="search-result-video-controls">
+            <span class="search-result-date"> {{video_.publishedAt | date: 'dd.MM.yyyy'}}</span>
+            <img (click)="sendNewVideoLink(video_)" class="instant-play-button" src="assets/playsmall.svg">
+            <img (click)="sendAddVideoToPlaylist(video_)" class="add-to-playlist-button" src="assets/add2.svg">
           </div>
 
         </div>
@@ -143,39 +147,65 @@
           <!-- spacer -->
         </div>
         <div #scrollChat class="scrollable-content" id="scrollChat">
-          <div class="chat-row" *ngFor="let chatMessage of chatMessages">
-            <div class="message-row-container" *ngIf="chatMessage.type != 'insert-video' && chatMessage.user.userId != user.userId">
+          <div [className]="chatMessage.user.userId != user.userId ? 'chat-row' : 'chat-row-user'"
+            *ngFor="let chatMessage of chatMessages">
+            <!-- Normal Messages Containers -->
+            <div class="message-row-container"
+              *ngIf="chatMessage.type != 'insert-video' && chatMessage.user.userId != user.userId">
               <div class="userid-container"> <span> {{chatMessage.user.userName}} </span><img
                   *ngIf="chatMessage.user.admin" src="assets/star.svg" class="star-img"> </div>
               <div class="text-container">
-                <div> {{chatMessage.messageText}}</div>
-                <div class="timestamp"> <span> {{chatMessage.timestamp}} </span></div>
+                <span>{{chatMessage.messageText}}</span>
               </div>
+              <div class="timestamp"> <span> {{chatMessage.timestamp}} </span></div>
             </div>
 
-            <div class="message-row-container-user" *ngIf="chatMessage.type != 'insert-video' && chatMessage.user.userId == user.userId">
+            <div class="message-row-container-user"
+              *ngIf="chatMessage.type !== 'insert-video' && chatMessage.user.userId == user.userId">
               <div class="text-container">
                 <div> {{chatMessage.messageText}}</div>
                 <div class="timestamp"> <span> {{chatMessage.timestamp}} </span></div>
               </div>
             </div>
 
-            <div class="message-row-container" *ngIf="chatMessage.type == 'insert-video'">
+            <!-- Insert Video Messages Containers -->
+            <div class="insert-video-row-container"
+              *ngIf="chatMessage.type == 'insert-video' && chatMessage.user.userId !== user.userId">
               <div class="userid-container">
                 <span> {{chatMessage.user.userName}} </span>
                 <img *ngIf="chatMessage.user.admin" src="assets/star.svg" class="star-img">
+                <span> started Video</span>
               </div>
-              <div>
-                <a target="_blank" href="https://www.youtube.com/watch?v={{chatMessage.video.videoId}}"> <img
-                    class="thumbnail-chat" src="https://img.youtube.com/vi/{{chatMessage.video.videoId}}/0.jpg"></a>
-              </div>
-              <div class="text-container"><a target="_blank"
-                  href="https://www.youtube.com/watch?v={{chatMessage.video.videoId}}">
-                  <div class="video-title"> {{chatMessage.video.title}}</div>
-                </a>
-                <div class="timestamp"> <span> {{chatMessage.timestamp}} </span></div>
+              <div class="insert-video-content">
+                <div>
+                  <a target="_blank" href="https://www.youtube.com/watch?v={{chatMessage.video.videoId}}"> <img
+                      class="thumbnail-chat" src="https://img.youtube.com/vi/{{chatMessage.video.videoId}}/0.jpg"></a>
+                </div>
+                <div class="text-container"><a target="_blank"
+                    href="https://www.youtube.com/watch?v={{chatMessage.video.videoId}}">
+                    <div class="video-title"> {{chatMessage.video.title}}</div>
+                  </a>
+                  <div class="timestamp"> <span> {{chatMessage.timestamp}} </span></div>
+                </div>
               </div>
             </div>
+
+            <div class="insert-video-row-container-user"
+              *ngIf="chatMessage.type == 'insert-video' && chatMessage.user.userId == user.userId">
+              <div class="insert-video-content">
+                <div>
+                  <a target="_blank" href="https://www.youtube.com/watch?v={{chatMessage.video.videoId}}"> <img
+                      class="thumbnail-chat" src="https://img.youtube.com/vi/{{chatMessage.video.videoId}}/0.jpg"></a>
+                </div>
+                <div class="text-container"><a target="_blank"
+                    href="https://www.youtube.com/watch?v={{chatMessage.video.videoId}}">
+                    <div class="video-title"> {{chatMessage.video.title}}</div>
+                  </a>
+                  <div class="timestamp"> <span> {{chatMessage.timestamp}} </span></div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
         <div class="footer">
@@ -191,20 +221,18 @@
           <div class="repeat-container"> <img src="assets/repeat.svg"> </div>
           <div class="next-playlist-video-container"> <img src="assets/play-next-button.svg"> </div>
         </div>
-        <div style="min-height:5px; height:5px; width:100%; border-bottom: 1px solid black;">
-          <!-- spacer -->
+
+        <div class="playlist-video-content" *ngFor="let pvideo_ of playlist">
+          <div><img class="playlist-thumbnail" src="https://img.youtube.com/vi/{{pvideo_.videoId}}/0.jpg"> </div>
+          <div class="playlist-video-data" title="{{pvideo_.description}}">
+
+            <div class="playlist-video-infos"> {{pvideo_.title}}</div>
+            <div class="playlist-video-controls">
+            <img src="assets/delete.svg">
+            </div>
+          </div>
         </div>
 
-        <div class="playlist-video-container" *ngFor="let pvideo_ of playlist">
-          <div class="playlist-video" title="{{pvideo_.description}}">
-            <div><img class="playlist-thumbnail" src="https://img.youtube.com/vi/{{pvideo_.videoId}}/0.jpg"> </div>
-            <div class="playlist-infos"> {{pvideo_.title}}</div>
-          </div>
-          <div class="playlist-video-controls">
-            <img *ngIf="user.admin" (click)="sendRemoveVideoFromPlaylist(pvideo_)" class="delete-icon"
-              src="assets/delete.svg">
-          </div>
-        </div>
       </div>
 
 

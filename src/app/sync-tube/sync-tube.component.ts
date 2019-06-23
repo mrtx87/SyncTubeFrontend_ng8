@@ -28,24 +28,36 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
       this.forceScrollToSearch = false;
     }
 
-    if (this.scrollChat && this.scrollChat.scrollTop < 10) {
-      this.scrollChat.scrollTop = this.scrollChat.scrollHeight;
+
+    if (this.forceScrollToVideo) {
+      this.scrollToSearchVideo();
+      this.forceScrollToVideo = false;
     }
 
+    /*
+    if (this.scrollChat && this.forceScrollToChatBottom) {
+      this.scrollChat.scrollTop = this.scrollChat.scrollHeight;
+    }*/
+
+    
     if (this.scrollChat && this.forceScrollToChatBottom) {
       this.scrollToBottomOfChat();
       this.forceScrollToChatBottom = false;
     }
   }
 
+  scrollToSearchVideo() {
+    this.scrollContent.scrollTop = 0;
+  }
+
   scrollToBottomOfChat() {
-    if (Math.abs(this.scrollChat.scrollHeight - this.scrollChat.scrollTop) < 100) {
-      this.scrollChat.scrollTop = this.scrollChat.scrollHeight;
-    }
+    //if (Math.abs(this.scrollChat.scrollHeight - this.scrollChat.scrollTop) < 100) {
+      this.scrollChat.scrollTop = this.scrollChat.scrollHeight +25;
+    //}
   }
 
   scrollToSearchResults() {
-    this.scrollContent.scrollTop = this.scrollContent.scrollHeight * 0.3;
+    this.scrollContent.scrollTop = this.scrollContent.scrollHeight * 0.4;
   }
 
   @HostListener('window:beforeunload', ['$event'])
@@ -63,6 +75,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   scrollChat: any;
 
   forceScrollToSearch: boolean = false;
+  forceScrollToVideo: boolean =  false;
   forceScrollToChatBottom: boolean = true;
 
   /* controls vars */
@@ -139,12 +152,10 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   addToPlaylist(video: Video) {
     this.playlist.push(video);
-    console.log(this.playlist.length)
 
   }
 
   sendAddVideoToPlaylist(video_: Video) {
-    console.log("SEND VIDEO TO PLAYLIST")
     this.syncService.sendAddVideoToPlaylist(this.raumId, this.user, video_);
   }
 
@@ -202,6 +213,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
   sendNewVideoLink(video: Video) {
+    this.forceScrollToVideo = true;
     this.syncService.sendNewVideoAndGetTitleFirst(this.user, this.raumId, video);
   }
 
@@ -383,13 +395,15 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
   tenSecBack() {
-    console.log("HALLO")
     this.jumpBySeconds(-10);
-    
+    this.syncService.startDisplaylingsecondsBack();
+
   }
 
   tenSecForward() {
     this.jumpBySeconds(10);
+    this.syncService.startDisplaylingsecondsForward();
+
   }
 }
 
