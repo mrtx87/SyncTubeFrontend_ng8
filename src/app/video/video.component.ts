@@ -61,7 +61,7 @@ export class VideoComponent implements OnInit {
   ngOnInit() {
     let that = this;
     this.init();
-    //this.video = this.syncService.synctubeComponent.video.videoId; //video id
+    // this.video = this.syncService.synctubeComponent.video.videoId; //video id
     window['onYouTubeIframeAPIReady'] = (e) => {
       this.YT = window['YT'];
       this.reframed = false;
