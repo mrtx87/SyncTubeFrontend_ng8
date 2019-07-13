@@ -536,42 +536,55 @@ label {
 .playlist-video-data {
   display: flex;
   flex-direction: row;
-  width:100%;
+  width: 100%;
   background-color: rgb(80, 80, 80);
-  color:white;
+  color: white;
   margin-bottom: 2px;
 }
 
 .playlist-video-infos {
   padding: 5px;
-  height:60px;
-  max-height:60px;
+  height: 60px;
+  max-height: 60px;
   overflow: hidden;
   font-size: 12px;
-  width:90%;
+  width: stretch;
 }
 
 .playlist-thumbnail {
-  height: 90px;
+  height: 80px;
 }
 
 .playlist-video-controls {
   display: flex;
+  flex-direction: column;
   justify-content: flex-start;
-  width:fit-content;
-  width:10%;
+  justify-content: center;
+  width:15%;
+  min-width:15%;
 }
 
 .playlist-video-controls img {
-  height: 15px;
-  min-height: 15px;
+  width:90%;
+  min-width:90%;
   margin: 2px auto;
+}
+
+.playlist-row-spacer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 5%;
+  min-width: 5%;
+}
+
+.playlist-row-spacer img {
+  width: 90%;
 }
 
 .playlist-video-content {
   display: flex;
-  border-bottom: 1px solid black;
-  height:92px;
+  height: 82px;
 }
 
 .playlist-controls {
@@ -579,10 +592,10 @@ label {
   align-items: center;
   justify-content: center;
   height: 30px;
-  min-height:30px;
+  min-height: 30px;
   width: 100%;
   border-bottom: 1px solid black;
-  margin-bottom:2px;
+  margin-bottom: 2px;
 }
 
 .inorder-container, .random-container, .repeat-container, .next-playlist-video-container {
@@ -656,7 +669,6 @@ label {
 .search-result-date {
   font-size: 10px;
   margin: auto 5px;
-
 }
 
 .user-container {
@@ -811,7 +823,6 @@ label {
 .toggle-input {
   display: none;
 }
-
 
 .w-90 {
   width: 90%;

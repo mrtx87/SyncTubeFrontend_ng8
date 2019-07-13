@@ -7,6 +7,7 @@ import { ChatMessage } from '../chat-message';
 import { User } from './user';
 import { Video } from '../video/video';
 import { SearchQuery } from './search-query';
+import { ImportedPlaylist } from '../video/playlist';
 //import $ from 'jquery';
 
 @Component({
@@ -39,7 +40,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
       this.scrollChat.scrollTop = this.scrollChat.scrollHeight;
     }*/
 
-    
+
     if (this.scrollChat && this.forceScrollToChatBottom) {
       this.scrollToBottomOfChat();
       this.forceScrollToChatBottom = false;
@@ -52,7 +53,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   scrollToBottomOfChat() {
     //if (Math.abs(this.scrollChat.scrollHeight - this.scrollChat.scrollTop) < 100) {
-      this.scrollChat.scrollTop = this.scrollChat.scrollHeight +25;
+    this.scrollChat.scrollTop = this.scrollChat.scrollHeight + 25;
     //}
   }
 
@@ -75,7 +76,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   scrollChat: any;
 
   forceScrollToSearch: boolean = false;
-  forceScrollToVideo: boolean =  false;
+  forceScrollToVideo: boolean = false;
   forceScrollToChatBottom: boolean = true;
 
   /* controls vars */
@@ -115,6 +116,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   videoDuration: number;
   receivedPlayerState: number;
   publicRaeume: Raum[];
+  importedPlaylist: ImportedPlaylist;
 
 
   configRaumStatus: Boolean = true;
@@ -159,6 +161,14 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.syncService.sendAddVideoToPlaylist(this.raumId, this.user, video_);
   }
 
+  sendAddVideoToPlaylistAsNext(video_: Video) {
+    this.syncService.sendAddVideoToPlaylistAsNext(this.raumId, this.user, video_);
+  }
+
+  sendAddVideoToPlaylistAsCurrent(video_: Video) {
+    this.syncService.sendAddVideoToPlaylistAsCurrent(this.raumId, this.user, video_);
+  }
+
   sendUpdateTitleAndDescription() {
     this.syncService.sendUpdateTitleAndDescription(this.user, this.raumId, this.raumTitle, this.raumDescription);
   }
@@ -180,8 +190,15 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.syncService.sendJoinRaum(this.user, raumId);
   }
 
-  sendRemoveVideoFromPlaylist(pvideo_: Video) {
+  sendRemovePlaylistVideo(pvideo_: Video) {
+    this.syncService.sendRemoveVideoFromPlaylist(this.raumId, this.user, pvideo_);
+  }
 
+  sendImportPlaylist() {
+    if (this.importedPlaylist && this.user.admin) {
+      this.importedPlaylist.mode = 0;
+      this.syncService.sendImportPlaylist(this.raumId, this.user, this.importedPlaylist);
+    }
   }
 
   search() {
@@ -212,9 +229,14 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     return this.receivedPlayerState;
   }
 
-  sendNewVideoLink(video: Video) {
+  sendNewVideo(video: Video) {
     this.forceScrollToVideo = true;
     this.syncService.sendNewVideoAndGetTitleFirst(this.user, this.raumId, video);
+  }
+
+  sendSwitchPlaylistVideo(pvideo_: Video) {
+    this.forceScrollToVideo = true;
+    this.syncService.sendSwitchPlaylistVideo(this.getUser(), this.getRaumId(), pvideo_);
   }
 
 
@@ -390,7 +412,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.syncService.setSize(width, height);
   }
 
-  jumpBySeconds(offset : number) {
+  jumpBySeconds(offset: number) {
     this.syncService.jumpBySeconds(offset)
   }
 
@@ -404,6 +426,10 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.jumpBySeconds(10);
     this.syncService.startDisplaylingsecondsForward();
 
+  }
+
+  getLocalPlaylist() : Video[] {
+    return this.playlist;
   }
 }
 

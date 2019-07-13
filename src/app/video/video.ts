@@ -1,11 +1,13 @@
 export class Video {
 
+    id: string;
+
     videoId: string;
     timestamp: number;
     title: string;
     description: string;
     publishedAt: Date;
-    playlistNr: number;
+    hover:boolean = false;
 
     //Debug
     playlistId: string;
@@ -17,7 +19,7 @@ export class Video {
         v.title = this.title;
         v.description = this.description;
         v.publishedAt = this.publishedAt;
-        v.playlistNr = this.playlistNr;
+        v.id = this.id;
         return v;
     }
 

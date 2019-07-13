@@ -1,8 +1,11 @@
-export class Playlist {
+import { Video } from './video';
 
-    playlistId : string;
-    timestamp : number;
-    videoId: string;
+export class ImportedPlaylist {
+
+    //0 override | 1 integrate 
+    mode:number;
+    title: string;
+    items: Video[]; 
     
     }
     

@@ -114,16 +114,17 @@
         </ng-template>
       </div>
 
+      <div [hidden]="!importedPlaylist"> <h3 (click)="sendImportPlaylist()"> Playlist importieren</h3> </div>
       <div *ngIf="raumId && user.admin && !displayFullscreen && !displayCinemaMode" class="search-results-container">
         <div class="search-result-video" title="{{video_.description}}" *ngFor="let video_ of searchResults">
-          <div (click)="sendNewVideoLink(video_)"><img class="search-result-thumbnail"
+          <div (click)="sendAddVideoToPlaylistAsNext(video_)"><img class="search-result-thumbnail"
               src="https://img.youtube.com/vi/{{video_.videoId}}/0.jpg"> </div>
           <div class="search-result-infos">
-            <span (click)="sendNewVideoLink(video_)">{{video_.title}} </span>
+            <span (click)="sendAddVideoToPlaylistAsNext(video_)">{{video_.title}} </span>
           </div>
           <div class="search-result-video-controls">
             <span class="search-result-date"> {{video_.publishedAt | date: 'dd.MM.yyyy'}}</span>
-            <img (click)="sendNewVideoLink(video_)" class="instant-play-button" src="assets/playsmall.svg">
+            <img (click)="sendAddVideoToPlaylistAsCurrent(video_)" class="instant-play-button" src="assets/playsmall.svg">
             <img (click)="sendAddVideoToPlaylist(video_)" class="add-to-playlist-button" src="assets/add2.svg">
           </div>
 
@@ -222,13 +223,14 @@
           <div class="next-playlist-video-container"> <img src="assets/play-next-button.svg"> </div>
         </div>
 
-        <div class="playlist-video-content" *ngFor="let pvideo_ of playlist">
+        <div class="playlist-video-content" (click)="sendSwitchPlaylistVideo(pvideo_)" (mouseenter)="pvideo_.hover=true" (mouseleave)="pvideo_.hover=false" *ngFor="let pvideo_ of playlist">
+          <div class="playlist-row-spacer"><img *ngIf="video.id === pvideo_.id " src="assets/play-button.svg"></div>
           <div><img class="playlist-thumbnail" src="https://img.youtube.com/vi/{{pvideo_.videoId}}/0.jpg"> </div>
-          <div class="playlist-video-data" title="{{pvideo_.description}}">
+          <div class="playlist-video-data"> <!-- title="{{pvideo_.description}}"> -->
 
             <div class="playlist-video-infos"> {{pvideo_.title}}</div>
             <div class="playlist-video-controls">
-            <img src="assets/delete.svg">
+            <img *ngIf="pvideo_.hover" (click)="sendRemovePlaylistVideo(pvideo_)" class="garbage" src="assets/garbage.svg">
             </div>
           </div>
         </div>

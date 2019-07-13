@@ -13,6 +13,7 @@ import { Video } from './video/video';
 import { CookieService } from 'ngx-cookie-service';
 import { UrlResolver } from '@angular/compiler';
 import { SearchQuery } from './sync-tube/search-query';
+import { ImportedPlaylist } from './video/playlist';
 
 
 @Injectable({
@@ -87,6 +88,8 @@ export class SyncService {
         that.sendRequestPublicRaeume(that.getLocalUser());
         that.synctubeComponent.revealContent = true;
       }
+
+      //this.getRaumPlaylist();
 
     });
   }
@@ -176,9 +179,39 @@ export class SyncService {
       this.setLocalUser(message.user);
       return;
     }
-    if (message.type == 'add-video-to-playlist') {
+
+    if (message.type == 'remove-video-playlist') {
+        this.synctubeComponent.playlist = this.getLocalPlaylist().filter(vid => (vid.id == message.video.id) ? false : true );
+    }
+    
+
+    if (message.type == 'update-playlist') {
       console.log(message.users);
-      this.updatePlaylist(message.playlist)
+      if (message.video) {
+        this.updateVideo(message);
+        this.loadVideoById({
+          videoId: message.video.videoId,
+          startSeconds: message.video.timestamp,
+          suggestedQuality: 'large'
+        });
+        this.videoComponent.currentTimeProgressbar = message.video.timestamp;
+        this.videoComponent.currentDisplayedTime = message.video.timestamp;
+        this.synctubeComponent.forceScrollToChatBottom = true;
+
+        let that = this;
+        let wait = setInterval(function () {
+          if (that.getPlayerState() == SyncService.playing) {
+            that.setVideoDuration();
+            that.togglePlayVideo(that.getReceivedPlayerState())
+            clearInterval(wait);
+          }
+        }, 20);
+
+      }
+      if (message.chatMessage) {
+        this.synctubeComponent.chatMessages.push(message.chatMessage)
+      }
+      this.getRaumPlaylist(this.getRaumId());
       return;
     }
 
@@ -186,9 +219,7 @@ export class SyncService {
       this.createClient(message);
       this.replaceUrl(message.raumId);
       this.updateVideo(message);
-      this.updatePlaylist(message.playlist);
-
-      //this.updateVideo(message);
+      this.getRaumPlaylist(this.getRaumId());
       console.log(message.users);
       return;
     }
@@ -198,8 +229,9 @@ export class SyncService {
       this.createClient(message);
       this.replaceUrl(message.raumId);
       this.updateVideo(message);
-      this.updatePlaylist(message.playlist);
-      // this.updateVideo(message);
+
+      this.getRaumPlaylist(this.getRaumId());
+
       console.log(message.users);
       return;
     }
@@ -276,14 +308,19 @@ export class SyncService {
     window.history.replaceState({}, '', url);
   }
 
+  clearVideo() {
+    this.videoComponent.clearVideo();
+  }
+
   updateVideo(message: Message) {
     this.synctubeComponent.video = message.video;
     this.synctubeComponent.receivedPlayerState = message.playerState;
   }
 
+  /*
   updatePlaylist(playlist: Video[]) {
-    this.synctubeComponent.updatePlaylist(playlist);
-  }
+    this.synctubeComponent.playlist = playlist;
+  }*/
 
   updateClientChat(message: Message) {
     this.synctubeComponent.users = message.users;
@@ -335,11 +372,6 @@ export class SyncService {
     this.stompClient.send("/app/send/join-room", {}, JSON.stringify({ 'user': user, 'raumId': raumId }));
   }
 
-  sendTimestamp(userId: number, raumId: number, video: Video) {
-    console.log("[sync-timestamp:] " + video.timestamp);
-    this.stompClient.send("/app/send/sync-timestamp", {}, JSON.stringify({ 'userId': userId, 'raumId': raumId, 'video': video }));
-  }
-
   sendSeekToTimestamp(user: User, raumId: number, videoId: string, timestamp: number) {
     console.log("[seekto-timestamp:] " + timestamp);
     let video: Video = new Video();
@@ -365,6 +397,12 @@ export class SyncService {
     this.stompClient.send("/app/send/update-title-and-description", {}, JSON.stringify({ 'user': user, 'raumId': raumId, 'raumDescription': raumDescription, 'raumTitle': raumTitle }));
   }
 
+  sendSwitchPlaylistVideo(user: User, raumId: number, playlistVideo: Video) {
+    if (playlistVideo) {
+      this.stompClient.send("/app/send/switch-playlist-video", {}, JSON.stringify({ 'user': user, 'raumId': raumId, 'playlistVideo': playlistVideo }));
+    }
+  }
+
   sendNewVideoAndGetTitleFirst(user: User, raumId: number, video: Video) {
     let that = this;
     this.http.get('https://noembed.com/embed?url=https://www.youtube.com/watch?v=' + video.videoId).subscribe(data => {
@@ -380,7 +418,7 @@ export class SyncService {
   search(query: string, mode: boolean, timestamp?: number) {
     let params: HttpParams = new HttpParams();
     params.append('q', query);
-    this.http.get('https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&key=' + this.APIKEY + '&q=' + query).subscribe(response => {
+    this.http.get('https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&key=' + this.APIKEY + '&q=' + query).subscribe(response => {
       console.log(response);
       let data: any = response;
       let items: any[] = data.items;
@@ -412,27 +450,25 @@ export class SyncService {
   searchPlaylist(query: string, mode: boolean, timestamp?: number) {
     let params: HttpParams = new HttpParams();
     params.append('q', query);
-    this.http.get('https://www.googleapis.com/youtube/v3/playlists?part=snippet&key=' + this.APIKEY + '&id=' + query).subscribe(response => {
+    this.http.get('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&key=' + this.APIKEY + '&playlistId=' + query).subscribe(response => {
       let data: any = response;
       let items: any[] = data.items;
       console.log(data);
-      let vids: Video[] = items.filter(i => (i.id.videoId) ? true : false).map(item => {
+      let vids: Video[] = items.filter(i => (i.snippet.resourceId.videoId) ? true : false).map(it => it.snippet).map(item => {
         let video: Video = new Video();
-        video.videoId = item.id.videoId;
-        video.title = item.snippet.title;
-        video.description = item.snippet.description;
-        video.publishedAt = item.snippet.publishedAt;
+        video.videoId = item.resourceId.videoId;
+        video.title = item.title;
+        video.description = item.description;
+        video.publishedAt = item.publishedAt;
         return video;
       });
-      if (mode) {
+      let pl: ImportedPlaylist = new ImportedPlaylist();
+      pl.items = vids;
+      if (pl.items) {
         this.synctubeComponent.searchResults = vids;
-      } else {
-        let vid: Video = vids[0];
-        if (timestamp) {
-          vid.timestamp = timestamp;
-        }
-        this.synctubeComponent.searchResults = [vid];
+        this.synctubeComponent.importedPlaylist = pl;
       }
+
     });
   }
 
@@ -480,10 +516,58 @@ export class SyncService {
     this.stompClient.send("/app/send/refresh-raumid", {}, JSON.stringify({ 'raumId': raumId, 'user': user }));
   }
 
-  sendAddVideoToPlaylist(raumId: number, user: User, video: Video) {
-    console.log("[add-video-to-playlist:] " + user + " | video: " + video.videoId);
-    if (video) {
-      this.stompClient.send("/app/send/add-video-to-playlist", {}, JSON.stringify({ 'raumId': raumId, 'user': user, 'video': video }));
+  getRaumPlaylist(raumId: number) {
+    // /room/{raumId}/playlist/ 
+    this.http.get('http://localhost:8080/room/' + raumId + '/playlist').subscribe((playlist: Video[]) => {
+      console.log(playlist);
+      this.synctubeComponent.playlist = playlist;
+      if (this.synctubeComponent.playlist.length == 0) {
+        this.stopVideo();
+      }
+    });
+  }
+
+  sendImportPlaylist(raumId: number, user: User, importedPlaylist: ImportedPlaylist) {
+    console.log("[import-playlist:] " + user + " | playlist: " + importedPlaylist);
+
+
+    if (importedPlaylist) {
+      // /room/{raumId}/playlist/
+      this.http.post('http://localhost:8080/room/' + raumId + '/playlist', importedPlaylist).subscribe(response => {
+        console.log(response);
+      });
+    }
+
+    /*if (importedPlaylist) {
+      this.stompClient.send("/app/send/import-playlist", {}, JSON.stringify({ 'raumId': raumId, 'user': user, 'importedPlaylist': importedPlaylist }));
+    }*/
+  }
+
+  sendRemoveVideoFromPlaylist(raumId: number, user: User, playlistVideo: Video) {
+    console.log("[remove-video-from-playlist:] " + user + " | video: " + playlistVideo);
+    if (playlistVideo) {
+      this.stompClient.send("/app/send/remove-video-from-playlist", {}, JSON.stringify({ 'raumId': raumId, 'user': user, 'playlistVideo': playlistVideo }));
+    }
+  }
+
+  sendAddVideoToPlaylist(raumId: number, user: User, playlistvideo: Video) {
+    console.log("[add-video-to-playlist:] " + user + " | video: " + playlistvideo.videoId);
+    if (playlistvideo) {
+      this.stompClient.send("/app/send/add-video-to-playlist", {}, JSON.stringify({ 'raumId': raumId, 'user': user, 'playlistVideo': playlistvideo }));
+    }
+  }
+
+  sendAddVideoToPlaylistAsNext(raumId: number, user: User, playlistvideo: Video) {
+    console.log("[add-video-to-playlist-asnext:] " + user + " | video: " + playlistvideo.videoId);
+    if (playlistvideo) {
+      this.stompClient.send("/app/send/add-video-to-playlist-asnext", {}, JSON.stringify({ 'raumId': raumId, 'user': user, 'playlistVideo': playlistvideo }));
+    }
+  }
+
+  sendAddVideoToPlaylistAsCurrent(raumId: number, user: User, playlistvideo: Video) {
+    console.log("[add-video-to-playlist-ascurrent:] " + user + " | video: " + playlistvideo.videoId);
+    if (playlistvideo) {
+      this.stompClient.send("/app/send/add-video-to-playlist-ascurrent", {}, JSON.stringify({ 'raumId': raumId, 'user': user, 'playlistVideo': playlistvideo }));
     }
   }
 
@@ -646,6 +730,10 @@ export class SyncService {
 
   isLocalUserAdmin(): Boolean {
     return this.getLocalUser().admin;
+  }
+
+  getLocalPlaylist() : Video[]{
+    return this.synctubeComponent.getLocalPlaylist();
   }
 
   currentVideoExists() {

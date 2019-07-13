@@ -193,6 +193,10 @@ export class VideoComponent implements OnInit {
   }
 
   updateVideoContinously(that: VideoComponent) {
+    if(that.timer) {
+      clearInterval(that.timer)
+      that.timer = null;
+    }
     that.timer = setInterval(function () {
       that.currentTimeProgressbar += 0.1;;
       that.currentDisplayedTime = that.getCurrentTime();
@@ -206,6 +210,10 @@ export class VideoComponent implements OnInit {
 
   playVideo() {
     this.player.playVideo();
+  }
+
+  clearVideo() {
+    this.player.clearVideo();
   }
 
   timer: any;
