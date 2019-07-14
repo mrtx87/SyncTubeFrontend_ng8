@@ -23,6 +23,8 @@ export class Message {
     loop: number; //0 noloop, 1 loop all, 2 loop single video
     randomOrder: boolean; //false sequentiell, true random
 
+    currentPlaybackRate: number; 
+
     description:string;
     raumTitle: string;
     createdAt: string;

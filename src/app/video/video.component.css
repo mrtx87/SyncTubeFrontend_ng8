@@ -142,16 +142,6 @@
   background-color: #636363;
 }
 
-.quality-container {
-  display: flex;
-  flex-direction: row;
-  padding-bottom: 10px;
-  width: 100%;
-  padding-top: 7px;
-  padding-bottom: 7px;
-  align-items: center;
-}
-
 .quality-container:hover {
   background-color: #636363;
 }
@@ -229,6 +219,12 @@ input:checked+.slider:before {
   opacity: 0.9;
 }
 
+.quality-container {
+  color: white;
+  font-size: 18px;
+  width: fit-content;
+}
+
 .speed-row {
   display: flex;
   flex-direction: row;
@@ -252,7 +248,7 @@ input:checked+.slider:before {
 
 .controls {
   display: flex;
-  background-color: rgba(26, 26, 26, 0.212);
+  background-color: #1a1a1ab3;
   align-items: center;
   height: 5vh;
 }
@@ -272,8 +268,7 @@ label {
   width: 2.5%;
   max-width: 4vh;
   filter: invert(1);
-  padding:0 1vh;
-
+  padding: 0 1vh;
 }
 
 .next-button img {
@@ -288,7 +283,6 @@ label {
 
 .controls-sound {
   width: 5%;
-  padding: 5px;
   max-width: 5vh;
   filter: invert(1);
 }
@@ -303,27 +297,18 @@ label {
 .control-back img {
   width: 40px;
   max-width: 5vh;
-  padding: 5px;
 }
 
 .control-forward img {
   width: 40px;
-  max-width:5vh;
-  padding: 5px;
+  max-width: 5vh;
 }
 
-.controls-subtitle {
-  width: 5%;
+.controls-playbackrates {
   padding: 5px;
   max-width: 5vh;
-  filter: invert(1);
-}
-
-.controls-options {
-  width: 5%;
-  padding: 5px;
-  max-width: 5vh;
-  filter: invert(1);
+  color: white;
+  font-size:25px;
 }
 
 .controls-volume {

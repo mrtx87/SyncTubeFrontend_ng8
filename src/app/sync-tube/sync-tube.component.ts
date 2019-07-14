@@ -117,6 +117,9 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   publicRaeume: Raum[];
   importedPlaylist: ImportedPlaylist;
 
+
+  initalPlaybackRate: number;
+
   //playlist controls
   loop: number = 0; //0 noloop, 1 loop all, 2 loop single video
   randomOrder: boolean; //false sequentiell, true random
@@ -433,6 +436,10 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   setPlaybackRate(rate: number) {
     this.syncService.setPlaybackRate(rate);
+  }
+
+  setInitalPlaybackRate(rate: number) {
+    this.initalPlaybackRate = rate;
   }
 
   getOptions() {

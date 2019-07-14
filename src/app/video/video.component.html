@@ -4,60 +4,24 @@
     [className]="!syncService.synctubeComponent.displayFullscreen ? 'overlay-container' : 'overlay-container-fullscreen'">
   </div>
 
-  <!-- Options Container-->
-  <div *ngIf="displayOptions" class="options-container">
-    <div class="repeat-container">
-      <div style="width:85%;">
-        Wiederholen
-      </div>
-      <label class="switch">
-        <input type="checkbox" checked>
-        <span class="slider round"></span>
-      </label>
-    </div>
-
-    <div class="subtitle-container">
-      <div style="width:88%;">
-        Untertitel
-      </div>
-
-      <span> aus > </span>
-    </div>
-    <div (click)="toggleDisplayPlaybackRates()" class="playback-speed-container">
-      <div style="width:78%;">
-        Wiedergabegeschwindigkeit
-      </div>
-
-      <span> Standard > </span>
-    </div>
-    <div class="quality-container">
-      <div style="width:58%;">
-        Qualität
-      </div>
-
-      <div>
-        Automatisch 1080p HD
-      </div>
-    </div>
-  </div>
-
   <!-- Options -> PlaybackRates Controls-->
   <div class="playbackrates-container" *ngIf="displayPlaybackRatesOptions && !displayOptions">
     <div class="videospeed">
-      <div (click)="returnToOptions()">
+      <div (click)="toggleDisplayPlaybackRates()">
         Wiedergabegeschwindigkeit </div>
     </div>
     <hr width="100%" />
-    <div class="speed-row" *ngFor="let playbackRate of playbackRates">
+    <div class="speed-row" *ngFor="let rate of playbackRates">
       <div class="check-container">
-        &#10003;
+        <span [hidden]="rate !== currentPlaybackRate">&#10003;</span>
       </div>
-      <div class="speed-text">
-        <span> {{playbackRate}} </span>
+      <div (click)="sendChangePlaybackRate(rate)" class="speed-text">
+        <span> {{rate}}x </span>
       </div>
 
     </div>
   </div>
+
 
   <!-- Video Controls-->
   <div class="controls-all" [hidden]="!displayAllControls" (mousemove)="time = 0">
@@ -70,7 +34,7 @@
         <div [hidden]="!isPlaying"> <img src="assets/pause.svg"></div>
       </div>
       <div *ngIf="syncService.synctubeComponent.user.admin" class="next-button">
-          <img  src="assets/play-next-button.svg">
+        <img src="assets/play-next-button.svg">
       </div>
 
       <div (mouseover)="mouseOverSound()" (click)="toggleMute()" class="controls-sound">
@@ -91,8 +55,8 @@
           <img src="assets/foward10.png">
         </div>
       </div>
-      <div class="controls-subtitle" (click)="toggleSubtitle()"><img src="assets/subtitles.svg"></div>
-      <div (click)="toggleDisplayOptions()" class="controls-options"><img src="assets/settings.svg">
+      <div class="quality-container">{{currentPlaybackQuality}}</div>
+      <div (click)="toggleDisplayPlaybackRates()" class="controls-playbackrates"> {{currentPlaybackRate}}x
       </div>
       <div (click)="toggleDisplayCinemaMode()" class="controls-cinema">
         <div class="cinema-box"></div>

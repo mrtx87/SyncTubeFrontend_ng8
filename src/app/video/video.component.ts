@@ -21,9 +21,11 @@ export class VideoComponent implements OnInit {
 
   displayOptions: Boolean = false;
   displayPlaybackRatesOptions: Boolean = false;
+  displayPlaybackQualityOptions: Boolean = false;
   displaySecondsBack: Boolean = false;
   displaySecondsForward: Boolean = false;
   playbackRates: number[];
+  currentPlaybackRate: number;
 
   displayAllControls: boolean = false;
 
@@ -40,10 +42,13 @@ export class VideoComponent implements OnInit {
   currentTimeProgressbar: number;
   currentDisplayedTime: number;
 
+  availableQualitys: string[];
+  currentPlaybackQuality: string;
+
   volumeValue: number;
 
   videoDuration: number;
-
+  captions: any[];
 
   //iframe: any;
 
@@ -55,12 +60,19 @@ export class VideoComponent implements OnInit {
     let that = this;
     setInterval(function () {
       var state = that.player.getPlayerState();
-      if(that.getReceivedPlayerState() !== state)
-      if (state === SyncService.FINISHED) {
-        console.log("FUCK OFF")
-        that.syncService.synctubeComponent.receivedPlayerState = state;
-        that.syncService.sendAutoNextPlaylistVideo(that.getLocalUser(), that.getRaumId(), state);
+      if (that.getReceivedPlayerState() !== state) {
+        if (state === SyncService.FINISHED) {
+          console.log("FUCK OFF")
+          that.syncService.synctubeComponent.receivedPlayerState = state;
+          that.syncService.sendAutoNextPlaylistVideo(that.getLocalUser(), that.getRaumId(), state);
+        }
       }
+
+      if(that.currentPlaybackQuality !== that.getPlaybackQuality()) {
+        that.currentPlaybackQuality = that.getPlaybackQuality();
+      }
+      that.currentPlaybackRate = that.getCurrentPlaybackRate();
+
     }, 10);
   }
 
@@ -97,7 +109,7 @@ export class VideoComponent implements OnInit {
             if (that.syncService.getVideo()) {
 
               that.processVideoIfLoaded(that);
-
+              //              that.getCaptions();
               that.setIframe(e.target.a);
               console.log("!!! " + e.target.a.className + " !!!")
               that.currentTimeProgressbar = this.syncService.getVideo().timestamp;
@@ -123,6 +135,10 @@ export class VideoComponent implements OnInit {
     this.iframe = iframe;
   }
 
+  getCaptions() {
+    this.syncService.getCaptions(this.getCurrentVideo());
+  }
+
   processVideoIfLoaded(that: VideoComponent) {
     let wait = setInterval(function () {
       if (that.player.getPlayerState() == SyncService.playing) {
@@ -132,6 +148,9 @@ export class VideoComponent implements OnInit {
           that.sendRequestSyncTimestamp();
         }
         that.setPlaybackRates();
+        that.availableQualitys = that.getAvailableQualityLevels();
+
+        that.currentPlaybackRate = that.getInitalPlaybackRate();
         clearInterval(wait);
       }
     }, 3)
@@ -145,6 +164,9 @@ export class VideoComponent implements OnInit {
     this.videoDuration = this.getVideoDuration();
   }
 
+  getInitalPlaybackRate(): number {
+    return this.syncService.getInitalPlaybackRate();
+  }
 
   addOnstateChangeListener() {
     this.player.addEventListener('onStateChange', function (e) {
@@ -234,6 +256,14 @@ export class VideoComponent implements OnInit {
 
   clearVideo() {
     this.player.clearVideo();
+  }
+
+  getCurrentPlaybackRate() {
+    return this.currentPlaybackRate;
+  }
+
+  getAvailableQualityLevels(): string[] {
+    return this.player.getAvailableQualityLevels();
   }
 
   timer: any;
@@ -337,16 +367,21 @@ export class VideoComponent implements OnInit {
     this.syncService.sendRequestSyncTimestamp();
   }
 
+  sendChangePlaybackRate(rate: number) {
+    this.syncService.sendChangePlaybackRate(this.getLocalUser(), this.getRaumId(), rate);
+  }
+
   getAvailablePlaybackRates(): Array<number> {
     return this.player.getAvailablePlaybackRates();
   }
 
-  getPlaybackRate(): number {
-    return this.player.getPlaybackRate();
-  }
-
   setPlaybackRate(rate: number) {
     this.player.setPlaybackRate(rate);
+    this.currentPlaybackRate = rate;
+  }
+
+  getPlaybackRate(): number {
+    return this.player.getPlaybackRate();
   }
 
   getOptions() {
@@ -386,21 +421,24 @@ export class VideoComponent implements OnInit {
     this.player.setSize(width, height);
   }
 
+  getPlaybackQuality() {
+    return this.player.getPlaybackQuality();
+  }
 
+  setPlaybackQuality(suggestedQuality: string) {
+    if (this.player) {
+      this.player.setPlaybackQuality(suggestedQuality);
+    }
+  }
 
   toggleFullscreen() {
     this.syncService.toggleFullscreen();
   }
 
   toggleDisplayPlaybackRates() {
-    this.displayOptions = false;
-    this.displayPlaybackRatesOptions = true;
+    this.displayPlaybackRatesOptions = !this.displayPlaybackRatesOptions;
   }
 
-  returnToOptions() {
-    this.displayPlaybackRatesOptions = false;
-    this.displayOptions = true;
-  }
   time: number = 0;
 
   startDisplayingAllControls() {
@@ -427,7 +465,7 @@ export class VideoComponent implements OnInit {
   toggleSubtitle(_module, option, value) {
     this.displaySubtitle = !this.displaySubtitle;
     console.log("testestset")
-    this.syncService.toggleSubtitle('cc', 'reload', this.displaySubtitle);
+    this.syncService.toggleSubtitle('captions', 'tracklist', this.displaySubtitle);
   }
 
   toggleMute() {
