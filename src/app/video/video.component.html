@@ -105,15 +105,7 @@
   <div [className]="!syncService.synctubeComponent.displayFullscreen ? 'video' : 'video-fullscreen'" id="player">
   </div>
 
-  <div class="left-back-overlay" (click)="tenSecBack()">
-
-  </div>
-
-  <div class="right-forward-overlay" (click)="tenSecForward()">
-
-  </div>
-
-  <div *ngIf="displaySecondsBack" class="middle-back-seconds-overlay">
+   <div *ngIf="displaySecondsBack" class="middle-back-seconds-overlay">
     <img src="assets/back10sec.png">
   </div>
 

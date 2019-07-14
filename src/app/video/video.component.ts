@@ -434,7 +434,7 @@ export class VideoComponent implements OnInit {
     let that = this;
     let secondsBackTimer = setInterval(function () {
       that.intervalSeconds += 25;
-      if (that.intervalSeconds >= 1000) {
+      if (that.intervalSeconds >= 300) {
         that.displaySecondsBack = false;
         that.intervalSeconds = 0;
         clearInterval(secondsBackTimer);
@@ -446,7 +446,7 @@ export class VideoComponent implements OnInit {
     let that = this;
     let secondsForwardTimer = setInterval(function () {
       that.intervalSeconds += 25;
-      if (that.intervalSeconds >= 1000) {
+      if (that.intervalSeconds >= 300) {
         that.displaySecondsForward = false;
         that.intervalSeconds = 0;
         clearInterval(secondsForwardTimer);

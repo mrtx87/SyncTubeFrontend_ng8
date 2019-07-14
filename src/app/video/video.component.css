@@ -65,24 +65,59 @@
 
 .middle-back-seconds-overlay img {
   position: absolute;
-  left: 44.5%;
-  top: 40%;
   z-index: 500;
-  width: 10%;
   -webkit-filter: invert(1);
-  filter: invert(1);
-  opacity: 0.5;
+  filter: invert(1);  
+ 
+  animation-name: myanimation;
+  animation-duration: 0.3s;
+}
+
+@keyframes myanimation {
+  0% {
+    left: 49.5%;
+    top: 49%;
+    width: 1%;
+    opacity: 0.0;
+  }
+  50% {
+     opacity: 1;
+  }
+  100% {
+    left: 47.2%;
+    top: 45.6%;
+    width: 5%;
+    opacity: 0.0;
+  }
 }
 
 .middle-forward-seconds-overlay img {
   position: absolute;
-  left: 45.6%;
-  top: 40%;
   z-index: 550;
   width: 10%;
   -webkit-filter: invert(1);
   filter: invert(1);
-  opacity: 0.5;
+  
+  animation-name: myanimation2;
+  animation-duration: 0.3s;
+}
+
+@keyframes myanimation2 {
+  0% {
+    left: 49.5%;
+    top: 49%;
+    width: 1%;
+    opacity: 0.0;
+  }
+  50% {
+     opacity: 1;
+  }
+  100% {
+    left: 47.9%;
+    top: 45.6%;
+    width: 5%;
+    opacity: 0.0;
+  }
 }
 
 .right-forward-overlay {

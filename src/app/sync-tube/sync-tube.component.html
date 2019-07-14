@@ -141,6 +141,8 @@
           <span>Playlist</span></div>
         <div [className]="displayTab == 3 ? 'active_tab' : 'tab'" *ngIf="user.admin" (click)="displayTab=3" class="tab">
           <span>Admin Panel</span></div>
+        <div [className]="displayTab == 2 ? 'active_middle-tab' : 'middle-tab'" (click)="displayTab=2" class="tab">
+          <span>user liste</span></div>
       </div>
 
       <div [hidden]="displayTab != 1" class="chat-messages-container">
@@ -267,6 +269,28 @@
           <div (click)="sendUpdateTitleAndDescription()"
             style="margin:0 auto; border: 1px solid black; border-radius:4px; padding: 3px; background-color:aquamarine;">
             Ändern</div>
+        </div>
+
+        <div [hidden]="displayTab != 4" class="playlist-container">
+          <div *ngIf="user.admin" class="playlist-controls">
+            <div class="inorder-container"> <img src="assets/playlist.svg"> </div>
+            <div class="random-container"> <img src="assets/shuffle.svg"> </div>
+            <div class="repeat-container"> <img src="assets/repeat.svg"> </div>
+            <div class="next-playlist-video-container"> <img src="assets/play-next-button.svg"> </div>
+          </div>
+  
+          <div class="playlist-video-content" (click)="sendSwitchPlaylistVideo(pvideo_)" (mouseenter)="pvideo_.hover=true" (mouseleave)="pvideo_.hover=false" *ngFor="let pvideo_ of playlist">
+            <div class="playlist-row-spacer"><img *ngIf="video.id === pvideo_.id " src="assets/play-button.svg"></div>
+            <div><img class="playlist-thumbnail" src="https://img.youtube.com/vi/{{pvideo_.videoId}}/0.jpg"> </div>
+            <div class="playlist-video-data"> <!-- title="{{pvideo_.description}}"> -->
+  
+              <div class="playlist-video-infos"> {{pvideo_.title}}</div>
+              <div class="playlist-video-controls">
+              <img *ngIf="pvideo_.hover" (click)="sendRemovePlaylistVideo(pvideo_)" class="garbage" src="assets/garbage.svg">
+              </div>
+            </div>
+          </div>
+  
         </div>
 
         <div *ngIf="!user.admin" class="left-create-raum-container">
