@@ -51,6 +51,19 @@ export class VideoComponent implements OnInit {
     this.syncService.registerVideoComponent(this);
   }
 
+  listenForPlayerState() {
+    let that = this;
+    setInterval(function () {
+      var state = that.player.getPlayerState();
+      if(that.getReceivedPlayerState() !== state)
+      if (state === SyncService.FINISHED) {
+        console.log("FUCK OFF")
+        that.syncService.synctubeComponent.receivedPlayerState = state;
+        that.syncService.sendAutoNextPlaylistVideo(that.getLocalUser(), that.getRaumId(), state);
+      }
+    }, 10);
+  }
+
 
   init() {
     var tag = document.createElement('script');
@@ -74,15 +87,14 @@ export class VideoComponent implements OnInit {
           'fs': 0,
         },
         events: {
-          'onStateChange': this.onPlayerStateChange.bind(this),
-          'onError': this.onPlayerError.bind(this),
           'onReady': (e) => {
             if (!this.reframed) {
               this.reframed = true;
               reframe(e.target.a);
             }
 
-            if (this.syncService.getVideo()) {
+            that.listenForPlayerState();
+            if (that.syncService.getVideo()) {
 
               that.processVideoIfLoaded(that);
 
@@ -132,8 +144,16 @@ export class VideoComponent implements OnInit {
     //this.syncService.setVideoDuration();
     this.videoDuration = this.getVideoDuration();
   }
+
+
+  addOnstateChangeListener() {
+    this.player.addEventListener('onStateChange', function (e) {
+      this.onPlayerStateChange(e);
+    });
+  }
+
   onPlayerStateChange(event) {
-    console.log(event)
+    console.log("HALLLLO")
     switch (event.data) {
       case window['YT'].PlayerState.PLAYING:
         if (this.cleanTime() == 0) {
@@ -148,7 +168,7 @@ export class VideoComponent implements OnInit {
         };
         break;
       case window['YT'].PlayerState.ENDED:
-        console.log('ended ');
+        console.log('VIDEO ENDED');
         break;
     };
   };
@@ -193,7 +213,7 @@ export class VideoComponent implements OnInit {
   }
 
   updateVideoContinously(that: VideoComponent) {
-    if(that.timer) {
+    if (that.timer) {
       clearInterval(that.timer)
       that.timer = null;
     }
@@ -239,7 +259,7 @@ export class VideoComponent implements OnInit {
 
   triggerTogglePlay(): void {
     if (this.isLocalUserAdmin() && this.getCurrentVideo()) {
-      if (this.getPlayerState() == SyncService.paused || this.getPlayerState() == SyncService.placed || this.getPlayerState() == SyncService.finished) {
+      if (this.getPlayerState() == SyncService.paused || this.getPlayerState() == SyncService.placed || this.getPlayerState() == SyncService.FINISHED) {
         console.log("playvideo")
         this.syncService.sendTogglePlay(this.syncService.getLocalUser(), this.syncService.getRaumId(), SyncService.playing, this.getCurrentVideo(), this.getCurrentTime());
       } else if (this.getPlayerState() == SyncService.playing) {

@@ -65,7 +65,6 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   beforeunloadHandler($event: any) {
     this.syncService.sendDisconnectMessage(this.user, this.raumId);
     this.syncService.localCloseConnection();
-    //@TODO  convert youtube link to mediacontenturl
   }
 
   publicRaum: boolean = false;
@@ -118,6 +117,9 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   publicRaeume: Raum[];
   importedPlaylist: ImportedPlaylist;
 
+  //playlist controls
+  loop: number = 0; //0 noloop, 1 loop all, 2 loop single video
+  randomOrder: boolean; //false sequentiell, true random
 
   configRaumStatus: Boolean = true;
   isMuted: Boolean = false;
@@ -154,7 +156,6 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   addToPlaylist(video: Video) {
     this.playlist.push(video);
-
   }
 
   sendAddVideoToPlaylist(video_: Video) {
@@ -173,9 +174,51 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.syncService.sendUpdateTitleAndDescription(this.user, this.raumId, this.raumTitle, this.raumDescription);
   }
 
+  sendAutoNextPlaylistVideo() {
+    this.syncService.sendAutoNextPlaylistVideo(this.getUser(), this.getRaumId(), 1);
+  }
+
   createNewRaumWhileInRaum() {
     this.syncService.sendDisconnectMessage(this.user, this.raumId);
+    this.clearRoomVars();
     this.createRaum();
+  }
+
+
+  //wir setzen playlist steuerungs werte sofort, wird aber von server response überschrieben (muss identisch sein)
+  togglePlaylistLoop() {
+    this.loop += 1;
+    if(this.loop > 2) {
+      this.loop = 0;
+    }
+    this.syncService.sendTogglePlaylistLoop(this.getUser(), this.getRaumId(), this.loop);
+  }
+
+
+  togglePlaylistRunningOrder() {
+    this.randomOrder = !this.randomOrder;
+    this.syncService.sendTogglePlaylistRunningOrder(this.getUser(), this.getRaumId(), this.randomOrder);
+  }
+
+  clearRoomVars() {
+    this.raumId = null;
+    this.raumDescription = null;
+    this.raumTitle = null;
+    this.createdAt = null;
+    this.raumStatus = true;
+    //currentVideo
+    this.video = null;
+
+    //restliche daten die wir brauchen vom server z.B. users in raum, playlist etc
+    this.users = null;
+    this.playbackRates = null;
+    this.chatMessages = [];
+    this.searchResults = null;
+    this.playlist = [];
+    this.videoDuration = 0;
+    this.receivedPlayerState = 0;
+    this.publicRaeume = null;
+    this.importedPlaylist = null;;
   }
 
   createRaum() {
@@ -235,8 +278,10 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
   sendSwitchPlaylistVideo(pvideo_: Video) {
-    this.forceScrollToVideo = true;
-    this.syncService.sendSwitchPlaylistVideo(this.getUser(), this.getRaumId(), pvideo_);
+    if (this.user.admin) {
+      this.forceScrollToVideo = true;
+      this.syncService.sendSwitchPlaylistVideo(this.getUser(), this.getRaumId(), pvideo_);
+    }
   }
 
 
@@ -419,16 +464,14 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   tenSecBack() {
     this.jumpBySeconds(-10);
     this.syncService.startDisplaylingsecondsBack();
-
   }
 
   tenSecForward() {
     this.jumpBySeconds(10);
     this.syncService.startDisplaylingsecondsForward();
-
   }
 
-  getLocalPlaylist() : Video[] {
+  getLocalPlaylist(): Video[] {
     return this.playlist;
   }
 }
