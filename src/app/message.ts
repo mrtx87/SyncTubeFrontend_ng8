@@ -18,7 +18,10 @@ export class Message {
     raumStatus : Boolean;
     publicRaeume: Raum[];
     assignedUser: User;
+
     playlistVideo : Video;
+    loop: number; //0 noloop, 1 loop all, 2 loop single video
+    randomOrder: boolean; //false sequentiell, true random
 
     description:string;
     raumTitle: string;

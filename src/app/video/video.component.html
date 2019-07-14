@@ -84,10 +84,10 @@
 
       <div class="controls-time"> {{currentDisplayedTime | hhMMss}}/ {{videoDuration | hhMMss}}</div>
       <div class="controls-spacer">
-        <div class="control-back" (click)="tenSecBack()">
+        <div *ngIf="syncService.synctubeComponent.user.admin" class="control-back" (click)="tenSecBack()">
           <img src="assets/back10sec.png">
         </div>
-        <div class="control-forward" (click)="tenSecForward()">
+        <div *ngIf="syncService.synctubeComponent.user.admin" class="control-forward" (click)="tenSecForward()">
           <img src="assets/foward10.png">
         </div>
       </div>

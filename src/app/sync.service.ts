@@ -23,7 +23,7 @@ export class SyncService {
 
   //PLAYERSTATES
   static notStarted: number = -1;
-  static finished: number = 0;
+  static FINISHED: number = 0;
   static playing: number = 1;
   static paused: number = 2;
   static buffering: number = 3;
@@ -181,31 +181,26 @@ export class SyncService {
     }
 
     if (message.type == 'remove-video-playlist') {
-        this.synctubeComponent.playlist = this.getLocalPlaylist().filter(vid => (vid.id == message.video.id) ? false : true );
+      this.synctubeComponent.playlist = this.getLocalPlaylist().filter(vid => (vid.id !== message.playlistVideo.id));
+      if (message.video) {
+        this.updateVideo(message);
+        this.switchVideo(message);
+      }
+      return;
     }
-    
+
+    if (message.type == 'switch-video') {
+      this.updateVideo(message);
+      this.switchVideo(message);
+      return;
+    }
+
 
     if (message.type == 'update-playlist') {
       console.log(message.users);
       if (message.video) {
         this.updateVideo(message);
-        this.loadVideoById({
-          videoId: message.video.videoId,
-          startSeconds: message.video.timestamp,
-          suggestedQuality: 'large'
-        });
-        this.videoComponent.currentTimeProgressbar = message.video.timestamp;
-        this.videoComponent.currentDisplayedTime = message.video.timestamp;
-        this.synctubeComponent.forceScrollToChatBottom = true;
-
-        let that = this;
-        let wait = setInterval(function () {
-          if (that.getPlayerState() == SyncService.playing) {
-            that.setVideoDuration();
-            that.togglePlayVideo(that.getReceivedPlayerState())
-            clearInterval(wait);
-          }
-        }, 20);
+        this.switchVideo(message);
 
       }
       if (message.chatMessage) {
@@ -213,6 +208,14 @@ export class SyncService {
       }
       this.getRaumPlaylist(this.getRaumId());
       return;
+    }
+
+    if(message.type == 'toggle-playlist-running-order') {
+      this.synctubeComponent.randomOrder = message.randomOrder;
+    }
+
+    if(message.type == 'toggle-playlist-loop') {
+      this.synctubeComponent.loop = message.loop;
     }
 
     if (message.type == 'create-room') {
@@ -238,28 +241,8 @@ export class SyncService {
 
     if (message.type == 'insert-new-video') {
       this.updateVideo(message);
-      this.loadVideoById({
-        videoId: message.video.videoId,
-        startSeconds: message.video.timestamp,
-        suggestedQuality: 'large'
-      });
-      this.videoComponent.currentTimeProgressbar = message.video.timestamp;
-      this.videoComponent.currentDisplayedTime = message.video.timestamp;
-      this.synctubeComponent.forceScrollToChatBottom = true;
+      this.switchVideo(message);
       this.synctubeComponent.chatMessages.push(message.chatMessage)
-
-      //this.setVideoDuration(this.getVideoDuration());
-      //this.setPlaybackRates();
-      //this.togglePlayVideo(this.synctubeComponent.playerState);
-      let that = this;
-      let wait = setInterval(function () {
-        if (that.getPlayerState() == SyncService.playing) {
-          that.setVideoDuration();
-          that.togglePlayVideo(that.getReceivedPlayerState())
-          clearInterval(wait);
-        }
-      }, 20);
-
       return;
     }
 
@@ -315,6 +298,27 @@ export class SyncService {
   updateVideo(message: Message) {
     this.synctubeComponent.video = message.video;
     this.synctubeComponent.receivedPlayerState = message.playerState;
+  }
+
+  switchVideo(message: Message) {
+    this.loadVideoById({
+      videoId: message.video.videoId,
+      startSeconds: message.video.timestamp,
+      suggestedQuality: 'large'
+    });
+    this.videoComponent.currentTimeProgressbar = message.video.timestamp;
+    this.videoComponent.currentDisplayedTime = message.video.timestamp;
+    this.synctubeComponent.forceScrollToChatBottom = true;
+
+    let that = this;
+    let wait = setInterval(function () {
+      if (that.getPlayerState() == SyncService.playing) {
+        that.setVideoDuration();
+        that.togglePlayVideo(that.getReceivedPlayerState())
+        clearInterval(wait);
+      }
+    }, 20);
+
   }
 
   /*
@@ -401,6 +405,21 @@ export class SyncService {
     if (playlistVideo) {
       this.stompClient.send("/app/send/switch-playlist-video", {}, JSON.stringify({ 'user': user, 'raumId': raumId, 'playlistVideo': playlistVideo }));
     }
+  }
+
+
+  sendAutoNextPlaylistVideo(user: User, raumId: number, playerState: number) {
+      this.stompClient.send("/app/send/auto-next-playlist-video", {}, JSON.stringify({ 'user': user, 'raumId': raumId, 'playerState': playerState }));
+  }
+  
+  sendTogglePlaylistLoop(user: User, raumId: number, loop: number) {
+    this.stompClient.send("/app/send/toggle-playlist-loop", {}, JSON.stringify({ 'user': user, 'raumId': raumId, 'loop': loop }));
+
+  }
+
+  sendTogglePlaylistRunningOrder(user: User, raumId: number, randomOrder: boolean ) {
+    this.stompClient.send("/app/send/toggle-playlist-running-order", {}, JSON.stringify({ 'user': user, 'raumId': raumId, 'randomOrder': randomOrder }));
+
   }
 
   sendNewVideoAndGetTitleFirst(user: User, raumId: number, video: Video) {
@@ -522,7 +541,7 @@ export class SyncService {
       console.log(playlist);
       this.synctubeComponent.playlist = playlist;
       if (this.synctubeComponent.playlist.length == 0) {
-        this.stopVideo();
+        //this.stopVideo();
       }
     });
   }
@@ -732,7 +751,7 @@ export class SyncService {
     return this.getLocalUser().admin;
   }
 
-  getLocalPlaylist() : Video[]{
+  getLocalPlaylist(): Video[] {
     return this.synctubeComponent.getLocalPlaylist();
   }
 
