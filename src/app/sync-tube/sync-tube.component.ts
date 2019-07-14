@@ -63,8 +63,8 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   @HostListener('window:beforeunload', ['$event'])
   beforeunloadHandler($event: any) {
-    //this.syncService.sendDisconnectMessage(this.user, this.raumId);
-    //this.syncService.localCloseConnection();
+    this.syncService.sendDisconnectMessage(this.user, this.raumId);
+    this.syncService.localCloseConnection();
   }
 
   publicRaum: boolean = false;
