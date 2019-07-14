@@ -75,7 +75,7 @@ export class SyncService {
     this.stompClient.connect({}, function () {
       that.stompClient.subscribe("/chat/" + user.userId, (messageFromServer) => {
         if (messageFromServer.body) {
-          console.log("[Response]: " + messageFromServer.body);
+          console.log("[RESPONSE FROM SERVER]: " + messageFromServer.body);
           let message: Message = JSON.parse(messageFromServer.body);
           that.handleMessage(message);
         }
@@ -210,11 +210,11 @@ export class SyncService {
       return;
     }
 
-    if(message.type == 'toggle-playlist-running-order') {
+    if (message.type == 'toggle-playlist-running-order') {
       this.synctubeComponent.randomOrder = message.randomOrder;
     }
 
-    if(message.type == 'toggle-playlist-loop') {
+    if (message.type == 'toggle-playlist-loop') {
       this.synctubeComponent.loop = message.loop;
     }
 
@@ -236,6 +236,11 @@ export class SyncService {
       this.getRaumPlaylist(this.getRaumId());
 
       console.log(message.users);
+      return;
+    }
+
+    if (message.type == 'change-playback-rate') {
+      this.setPlaybackRate(message.currentPlaybackRate);
       return;
     }
 
@@ -296,8 +301,18 @@ export class SyncService {
   }
 
   updateVideo(message: Message) {
-    this.synctubeComponent.video = message.video;
-    this.synctubeComponent.receivedPlayerState = message.playerState;
+    if (message.video) {
+      this.synctubeComponent.video = message.video;
+    }
+    if (message.playerState) {
+      this.synctubeComponent.receivedPlayerState = message.playerState;
+    }
+    if (message.currentPlaybackRate) {
+      this.setInitalPlaybackRate(message.currentPlaybackRate);
+    }
+    if(this.videoComponent) {
+      this.videoComponent.availableQualitys = this.videoComponent.getAvailableQualityLevels();
+    }
   }
 
   switchVideo(message: Message) {
@@ -314,6 +329,9 @@ export class SyncService {
     let wait = setInterval(function () {
       if (that.getPlayerState() == SyncService.playing) {
         that.setVideoDuration();
+        that.setPlaybackRates();
+        that.setPlaybackRate(message.currentPlaybackRate);
+  //      that.getCaptions(that.getVideo());
         that.togglePlayVideo(that.getReceivedPlayerState())
         clearInterval(wait);
       }
@@ -354,6 +372,15 @@ export class SyncService {
       this.setLocalUser(new User());
     }
     this.getLocalUser().userId = parseInt(Math.floor(Date.now() / 1000) + "" + Math.floor(Math.random() * 10000));
+  }
+
+  getCaptions(video: Video) {
+    let that = this;
+    this.http.get('https://www.googleapis.com/youtube/v3/captions?part=snippet&videoId=' + video.videoId + '&key=' + this.APIKEY).subscribe(data => {
+      let data_: any = data;
+      that.videoComponent.captions = data_.items;
+      console.log(that.videoComponent.captions);
+    });
   }
 
   sendRequestPublicRaeume(user: User) {
@@ -407,17 +434,20 @@ export class SyncService {
     }
   }
 
+  sendChangePlaybackRate(user: User, raumId: number, currentPlaybackRate: number) {
+    this.stompClient.send("/app/send/change-playback-rate", {}, JSON.stringify({ 'user': user, 'raumId': raumId, 'currentPlaybackRate': currentPlaybackRate }));
+  }
 
   sendAutoNextPlaylistVideo(user: User, raumId: number, playerState: number) {
-      this.stompClient.send("/app/send/auto-next-playlist-video", {}, JSON.stringify({ 'user': user, 'raumId': raumId, 'playerState': playerState }));
+    this.stompClient.send("/app/send/auto-next-playlist-video", {}, JSON.stringify({ 'user': user, 'raumId': raumId, 'playerState': playerState }));
   }
-  
+
   sendTogglePlaylistLoop(user: User, raumId: number, loop: number) {
     this.stompClient.send("/app/send/toggle-playlist-loop", {}, JSON.stringify({ 'user': user, 'raumId': raumId, 'loop': loop }));
 
   }
 
-  sendTogglePlaylistRunningOrder(user: User, raumId: number, randomOrder: boolean ) {
+  sendTogglePlaylistRunningOrder(user: User, raumId: number, randomOrder: boolean) {
     this.stompClient.send("/app/send/toggle-playlist-running-order", {}, JSON.stringify({ 'user': user, 'raumId': raumId, 'randomOrder': randomOrder }));
 
   }
@@ -703,7 +733,20 @@ export class SyncService {
   }
 
   setPlaybackRate(rate: number) {
-    this.videoComponent.setPlaybackRate(rate);
+    if(this.videoComponent) {
+      this.videoComponent.setPlaybackRate(rate);
+    }
+  }
+
+  getInitalPlaybackRate() : number {
+    return this.synctubeComponent.initalPlaybackRate;
+  }
+
+
+  setInitalPlaybackRate(rate: number) {
+    if(this.synctubeComponent) {
+      this.synctubeComponent.setInitalPlaybackRate(rate);
+    }
   }
 
   getOptions() {
@@ -716,7 +759,6 @@ export class SyncService {
 
   setOption(_module, option, value) {
     this.videoComponent.setOption(_module, option, value);
-
   }
 
   toggleDisplayOptions() {
