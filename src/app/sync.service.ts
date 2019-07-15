@@ -586,10 +586,6 @@ export class SyncService {
         console.log(response);
       });
     }
-
-    /*if (importedPlaylist) {
-      this.stompClient.send("/app/send/import-playlist", {}, JSON.stringify({ 'raumId': raumId, 'user': user, 'importedPlaylist': importedPlaylist }));
-    }*/
   }
 
   sendRemoveVideoFromPlaylist(raumId: number, user: User, playlistVideo: Video) {

@@ -190,16 +190,16 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   //wir setzen playlist steuerungs werte sofort, wird aber von server response überschrieben (muss identisch sein)
   togglePlaylistLoop() {
-    this.loop += 1;
+    /*this.loop += 1;
     if(this.loop > 2) {
       this.loop = 0;
-    }
-    //this.syncService.sendTogglePlaylistLoop(this.getUser(), this.getRaumId(), this.loop);
+    }*/
+    this.syncService.sendTogglePlaylistLoop(this.getUser(), this.getRaumId(), this.loop);
   }
 
 
   togglePlaylistRunningOrder() {
-    this.randomOrder = !this.randomOrder;
+    //this.randomOrder = !this.randomOrder;
     this.syncService.sendTogglePlaylistRunningOrder(this.getUser(), this.getRaumId(), this.randomOrder);
   }
 

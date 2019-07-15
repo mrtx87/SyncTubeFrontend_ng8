@@ -905,3 +905,19 @@ label {
   filter: invert(0.5) sepia(1) saturate(5) hue-rotate(175deg);
   opacity: 1;
 }
+
+.seachresults-buttons-container {
+  width:100%;
+  min-width: 100%;
+}
+
+.import-button {
+  margin: 10px 0.5%;
+  border: solid 3px black;
+  width:fit-content;
+  border-radius: 5px;
+}
+
+.import-button:hover {
+  background-color: #17183b;
+}
