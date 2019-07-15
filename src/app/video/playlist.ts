@@ -6,6 +6,7 @@ export class ImportedPlaylist {
     mode:number;
     title: string;
     items: Video[]; 
+    size: number;
     
     }
     

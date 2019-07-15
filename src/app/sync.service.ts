@@ -496,12 +496,16 @@ export class SyncService {
   }
 
 
-  searchPlaylist(query: string, mode: boolean, timestamp?: number) {
+  searchPlaylist(query: string, mode: boolean, nextPageToken?: string) {
     let params: HttpParams = new HttpParams();
     params.append('q', query);
-    this.http.get('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&key=' + this.APIKEY + '&playlistId=' + query).subscribe(response => {
+    this.http.get('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50' + ((nextPageToken) ? ('&pageToken=' + nextPageToken) : '') + '&key=' + this.APIKEY + '&playlistId=' + query).subscribe(response => {
       let data: any = response;
       let items: any[] = data.items;
+      if(this.synctubeComponent.importedPlaylist) {
+        this.synctubeComponent.importedPlaylist.size = data.pageInfo.totalResults;
+      }
+      let nextPageToken: string = data.nextPageToken;
       console.log(data);
       let vids: Video[] = items.filter(i => (i.snippet.resourceId.videoId) ? true : false).map(it => it.snippet).map(item => {
         let video: Video = new Video();
@@ -511,11 +515,22 @@ export class SyncService {
         video.publishedAt = item.publishedAt;
         return video;
       });
-      let pl: ImportedPlaylist = new ImportedPlaylist();
-      pl.items = vids;
-      if (pl.items) {
-        this.synctubeComponent.searchResults = vids;
-        this.synctubeComponent.importedPlaylist = pl;
+
+      if (vids) {
+        for(let vid of vids ) {
+          this.synctubeComponent.searchResults.push(vid);
+        }
+        //this.synctubeComponent.searchResults = [...this.synctubeComponent.searchResults, ...vids];
+
+      }
+
+      if(nextPageToken) {
+        this.searchPlaylist(query, mode, nextPageToken);
+      }else{
+        this.synctubeComponent.importedPlaylist = new ImportedPlaylist();
+        this.synctubeComponent.importedPlaylist.items = this.synctubeComponent.searchResults;
+        this.synctubeComponent.importedPlaylist.size = this.synctubeComponent.importedPlaylist.items.length;
+        this.synctubeComponent.hasImportedPlaylist = true;
       }
 
     });

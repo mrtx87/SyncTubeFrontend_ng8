@@ -110,13 +110,13 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   users: User[];
   playbackRates: number[];
   chatMessages: ChatMessage[] = [];
-  searchResults: Video[];
+  searchResults: Video[] = [];
   playlist: Video[] = [];
   videoDuration: number;
   receivedPlayerState: number;
   publicRaeume: Raum[];
   importedPlaylist: ImportedPlaylist;
-
+  hasImportedPlaylist: boolean = false;
 
   initalPlaybackRate: number;
 
@@ -248,13 +248,15 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
   search() {
-
+    this.importedPlaylist = new ImportedPlaylist();
+    this.hasImportedPlaylist = false;
+    this.searchResults = [];
     let searchQuery: SearchQuery = this.syncService.processInput(this.searchInput);
     if (searchQuery) {
 
       if (searchQuery.playlistId) {
         console.log("playlist-ID: " + searchQuery.playlistId)
-        this.syncService.searchPlaylist(searchQuery.playlistId, false, searchQuery.timestamp);
+        this.syncService.searchPlaylist(searchQuery.playlistId, false);
         this.forceScrollToSearch = true;
         return;
       }

@@ -647,6 +647,7 @@ label {
   width: 90%;
   min-height: 450px;
   display: flex;
+  align-items:flex-start;
   justify-content: left;
   flex-wrap: wrap;
   margin: 0 auto;
@@ -909,15 +910,27 @@ label {
 .seachresults-buttons-container {
   width:100%;
   min-width: 100%;
+  display:flex;
+  align-items: center;
 }
 
 .import-button {
   margin: 10px 0.5%;
-  border: solid 3px black;
+  border: solid 3px rgb(90, 199, 96);
   width:fit-content;
   border-radius: 5px;
+  color: rgb(90, 199, 96);
+}
+
+.import-button-inactive {
+  margin: 10px 0.5%;
+  border: solid 3px rgb(68, 68, 68);
+  width:fit-content;
+  border-radius: 5px;
+  color:  rgb(68, 68, 68);
 }
 
 .import-button:hover {
-  background-color: #17183b;
+  border: solid 3px blue;
+  color: blue;
 }

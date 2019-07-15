@@ -79,13 +79,15 @@
 
 
       <div *ngIf="raumId && user.admin && !displayFullscreen && !displayCinemaMode" class="search-results-container">
-        <div class="seachresults-buttons-container">
-          <div class="import-button" [hidden]="!importedPlaylist">
+        <div class="seachresults-buttons-container" [hidden]="!importedPlaylist">
+          <div [className]="hasImportedPlaylist ? 'import-button' : 'import-button-inactive'">
             <h3 (click)="sendImportPlaylist()">Playlist importieren</h3>
           </div>
+          <h4 *ngIf="importedPlaylist" [hidden]="hasImportedPlaylist"> {{importedPlaylist.size}} Elemente werden geladen...</h4>
+          <h4 *ngIf="importedPlaylist" [hidden]="!hasImportedPlaylist"> {{importedPlaylist.size}} Elemente geladen</h4>
         </div>
 
-        <div class="search-result-video" title="{{ video_.description }}" *ngFor="let video_ of searchResults">
+        <div [hidden]="!hasImportedPlaylist" class="search-result-video" title="{{ video_.description }}" *ngFor="let video_ of searchResults">
           <div (click)="sendAddVideoToPlaylistAsNext(video_)">
             <img class="search-result-thumbnail" src="https://img.youtube.com/vi/{{ video_.videoId }}/0.jpg" />
           </div>
