@@ -307,28 +307,43 @@
                 type="checkbox" />
               <span class="slider round"></span>
             </label>
-            <div>
-              <label *ngIf="raumStatus"> Klicke auf </label>
-            </div>
           </div>
-          <div class="admin-panel-row" *ngIf="user.admin && raumStatus">
-            <label class="w-90">Reset Url</label>
-            <img (click)="refreshJoinUrl()" title="refreshes the join url" class="refresh-img"
-              src="assets/refresh.svg" />
+          <div class="description">
+            <label *ngIf="raumStatus"> Klicke um den Raumstatus öffentlich zu stellen</label>
+            <label *ngIf="!raumStatus"> Klicke um den Raumstatus privat zu stellen</label>
           </div>
+          
           <div class="create-room-title-container">
             <label>Raumtitel</label>
             <input [(ngModel)]="raumTitle" class="input-room-title" type="text" />
+          </div>
+          <div class="description">
+            <label>Hier können Sie den Raumtitel bestimmen</label>
           </div>
           <div class="create-room-description-container">
             <label>Beschreibung</label>
             <textarea rows="4" [(ngModel)]="raumDescription" class="input-description"></textarea>
           </div>
+          <div class="description">
+              <label>Hier können Sie den Raumtitel bestimmen</label>
+            </div>
           <div (click)="sendUpdateTitleAndDescription()"
             style="margin:0 auto; border: 1px solid black; border-radius:4px; padding: 3px; background-color:aquamarine;">
             Ändern
           </div>
+          <div class="admin-panel-row">
+              <label *ngIf="user.admin && raumStatus" class="w-90">Reset Url</label>
+              <img *ngIf="user.admin && raumStatus" (click)="refreshJoinUrl()" title="refreshes the join url" class="refresh-img"
+                src="assets/refresh.svg" />
+          </div>
         </div>
+        <div> 
+          <img  class="admin-panel-img" src="assets/news-admin.svg" alt="admin pixelart">
+          <div>
+              <label>Admin Panel</label>   
+            </div>
+        </div>
+        
       
        <!--<div class="playlist-video-content" (click)="sendSwitchPlaylistVideo(pvideo_)"
         (mouseenter)="pvideo_.hover = true" (mouseleave)="pvideo_.hover = false" *ngFor="let pvideo_ of playlist">
