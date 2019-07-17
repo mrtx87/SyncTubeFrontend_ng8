@@ -85,7 +85,7 @@ export class SyncService {
       if (raumId) {
         that.sendJoinRaum(user, raumId);
       } else {
-        that.sendRequestPublicRaeume(that.getLocalUser());
+        that.sendRequestPublicRaeume();
         that.synctubeComponent.revealContent = true;
       }
 
@@ -114,6 +114,11 @@ export class SyncService {
       this.updateClientChat(message);
       return;
     }
+
+    if(message.type == "update-title-and-description") {
+      this.updateRaumTitleAndDescription(message.raumTitle, message.raumDescription);
+      return;
+  }
 
     if (message.type == "all-chat-messages") {
       console.log(message) //SERVER SENDING ALL ?
@@ -360,6 +365,20 @@ export class SyncService {
     this.synctubeComponent.users = message.users;
     this.synctubeComponent.chatMessages = <ChatMessage[]>message.chatMessages;
     this.synctubeComponent.raumStatus = message.raumStatus;
+    this.updateRaumTitleAndDescription(message.raumTitle, message.raumDescription);
+    
+  }
+
+  updateRaumTitleAndDescription(title: string, description: string) {
+    if(title) {
+    this.synctubeComponent.raumTitle = title;
+    this.synctubeComponent.raumTitleChange = title;
+    }
+
+    if(description) {
+      this.synctubeComponent.raumDescription = description;
+      this.synctubeComponent.raumDescriptionChange = description;
+      }
   }
 
   localCloseConnection() {
@@ -383,9 +402,11 @@ export class SyncService {
     });
   }
 
-  sendRequestPublicRaeume(user: User) {
+  sendRequestPublicRaeume() {
     console.log("[request public rooms]");
-    this.stompClient.send("/app/send/request-public-raeume", {}, JSON.stringify({ 'user': user }));
+    this.http.get("http://localhost:8080/publicrooms", {}).subscribe(response => {
+      this.synctubeComponent.publicRaeume = <Raum[]> response;
+    });
   }
 
   sendChatMessage(message: Message) {
