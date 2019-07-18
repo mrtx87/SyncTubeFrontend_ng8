@@ -8,7 +8,6 @@ import { User } from './user';
 import { Video } from '../video/video';
 import { SearchQuery } from './search-query';
 import { ImportedPlaylist } from '../video/playlist';
-//import $ from 'jquery';
 
 @Component({
   selector: 'app-sync-tube',

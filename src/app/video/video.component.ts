@@ -3,7 +3,7 @@ import reframe from 'reframe.js';
 import { SyncService } from '../sync.service';
 import { Video } from './video';
 import { User } from '../sync-tube/user';
-import { interval } from 'rxjs';
+
 @Component({
   selector: 'app-video',
   templateUrl: './video.component.html',
@@ -18,7 +18,6 @@ export class VideoComponent implements OnInit {
   //public video: any;
   public player: any;
   public reframed: Boolean = false;
-
   displayOptions: Boolean = false;
   displayPlaybackRatesOptions: Boolean = false;
   displayPlaybackQualityOptions: Boolean = false;
@@ -26,31 +25,19 @@ export class VideoComponent implements OnInit {
   displaySecondsForward: Boolean = false;
   playbackRates: number[];
   currentPlaybackRate: number;
-
   displayAllControls: boolean = false;
-
   displaySubtitle: Boolean = false;
-
   isPlaying: Boolean = false;
-
   iframe: any;
-
-
-
   currentTimestamp: number = 0;
   currentTime: number;
   currentTimeProgressbar: number;
   currentDisplayedTime: number;
-
   availableQualitys: string[];
   currentPlaybackQuality: string;
-
   volumeValue: number;
-
   videoDuration: number;
   captions: any[];
-
-  //iframe: any;
 
   constructor(private syncService: SyncService) {
     this.syncService.registerVideoComponent(this);
@@ -83,6 +70,7 @@ export class VideoComponent implements OnInit {
     var firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
   }
+
   ngOnInit() {
     let that = this;
     this.init();
@@ -109,9 +97,7 @@ export class VideoComponent implements OnInit {
             if (that.syncService.getVideo()) {
 
               that.processVideoIfLoaded(that);
-              //              that.getCaptions();
               that.setIframe(e.target.a);
-              console.log("!!! " + e.target.a.className + " !!!")
               that.currentTimeProgressbar = this.syncService.getVideo().timestamp;
               that.loadVideoById({
                 videoId: this.syncService.getVideo().videoId,
@@ -119,10 +105,6 @@ export class VideoComponent implements OnInit {
                 suggestedQuality: 'large'
               });
             }
-
-            /*
-            
-            that.togglePlayVideo(this.syncService.synctubeComponent.playerState);*/
             that.mute(); //DEBUG
           }
         }
@@ -149,8 +131,7 @@ export class VideoComponent implements OnInit {
         }
         that.setPlaybackRates();
         that.availableQualitys = that.getAvailableQualityLevels();
-
-        that.currentPlaybackRate = that.getInitalPlaybackRate();
+        that.setPlaybackRate(that.getInitalPlaybackRate());
         clearInterval(wait);
       }
     }, 3)
@@ -160,7 +141,6 @@ export class VideoComponent implements OnInit {
     return this.player.getDuration();
   }
   setVideoDuration() {
-    //this.syncService.setVideoDuration();
     this.videoDuration = this.getVideoDuration();
   }
 
@@ -240,10 +220,10 @@ export class VideoComponent implements OnInit {
       that.timer = null;
     }
     that.timer = setInterval(function () {
-      that.currentTimeProgressbar += 0.1;;
+      that.currentTimeProgressbar = that.getCurrentTime();
       that.currentDisplayedTime = that.getCurrentTime();
       that.syncService.synctubeComponent.video.timestamp = that.currentTime;
-    }, 100);
+    }, 10);
   }
 
   stopUpdatingVideo() {
@@ -309,15 +289,7 @@ export class VideoComponent implements OnInit {
     this.stopUpdatingVideo();
     this.syncService.sendSeekToTimestamp(this.getLocalUser(), this.getRaumId(), this.getCurrentVideo().videoId, this.currentTimeProgressbar);
   }
-
-  /*loadVideoFromSettings() {
-    this.player.loadVideoById({
-      videoId: this.syncService.synctubeComponent.video.videoId,
-      startSeconds: this.syncService.synctubeComponent.video.timestamp,
-      suggestedQuality: 'large'
-    })
-  }*/
-
+  
   getCurrentTimestamp(): number {
     return this.currentTimestamp;
   }
