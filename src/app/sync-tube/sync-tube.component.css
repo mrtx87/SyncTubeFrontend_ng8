@@ -825,8 +825,8 @@ label {
 .switch {
   position: relative;
   display: inline-block;
-  width: 40px;
-  height: 18px;
+  width: 80px;
+  height: 36px;
 }
 
 .slider {
@@ -836,7 +836,7 @@ label {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ccc;
+  background-color: rgb(255, 0, 0);
   -webkit-transition: 0.4s;
   transition: 0.4s;
 }
@@ -844,7 +844,7 @@ label {
 .slider:before {
   position: absolute;
   content: "";
-  width: 16px;
+  width: 32px;
   top: 1px;
   bottom: 1px;
   right: 20px;
