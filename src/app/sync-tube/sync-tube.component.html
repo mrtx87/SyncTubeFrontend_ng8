@@ -278,7 +278,9 @@
             <div class="username-container">
               {{ anyuser.userName }}
             </div>
-
+            <div class="mute-user-container">
+              <img class="mute-user" src="assets/mute-user.svg">
+            </div>
             <img *ngIf="anyuser.admin" class="star" src="assets/star.svg" />
             <img *ngIf="!anyuser.admin && user.admin" (click)="toAdmin(anyuser)" class="star"
               src="assets/greyStar.svg" />
@@ -290,7 +292,10 @@
             <div class="username-container">
               {{ anyuser.userName }}
             </div>
-
+            <div (click)="sendToggleMuteUser(anyuser)" class="mute-user-container">
+              <img [hidden]="!anyuser.isMute" class="mute-user"  src="assets/mute-user.svg">
+              <img [hidden]="anyuser.isMute" class="mute-user" src="assets/unmute-user.svg">
+            </div>
             <img *ngIf="anyuser.admin" class="star" src="assets/star.svg" />
             <img *ngIf="!anyuser.admin && user.admin" (click)="toAdmin(anyuser)" class="star"
               src="assets/greyStar.svg" />

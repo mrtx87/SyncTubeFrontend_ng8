@@ -192,6 +192,12 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
 
+  sendToggleMuteUser(user : User) {
+    this.syncService.sendToggleMuteUser(this.getUser(), this.getRaumId(), user);
+    
+  }
+
+
   //wir setzen playlist steuerungs werte sofort, wird aber von server response überschrieben (muss identisch sein)
   togglePlaylistLoop() {
     /*this.loop += 1;
@@ -320,12 +326,14 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
   sendChatMessage() {
-    let message: Message = new Message();
-    message.type = "user-chat"
-    message.user = this.user;
-    message.raumId = this.raumId;
-    message.chatMessage = this.createChatMessage();
-    this.syncService.sendChatMessage(message);
+    if(!this.user.isMute){
+      let message: Message = new Message();
+      message.type = "user-chat"
+      message.user = this.user;
+      message.raumId = this.raumId;
+      message.chatMessage = this.createChatMessage();
+      this.syncService.sendChatMessage(message);
+    }
     this.chatMessageText = "";
   }
 

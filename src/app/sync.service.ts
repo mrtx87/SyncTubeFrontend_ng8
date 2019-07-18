@@ -145,6 +145,20 @@ export class SyncService {
       return;
     }
 
+    if (message.type == "refresh-userlist") {
+      console.log(message);
+      this.updateClientChat(message);
+
+      return;
+    }
+    
+    if (message.type == "refresh-user-and-list") {
+      console.log(message);
+      this.updateClientChat(message);
+      this.setLocalUser(message.user)
+
+      return;
+    } 
     if (message.type == 'update-client') {
       console.log(message);
       this.updateClientChat(message);
@@ -482,6 +496,12 @@ export class SyncService {
     });
 
   }
+
+  sendToggleMuteUser(user : User, raumId : number, assignedUser : User) {
+    console.log(assignedUser);
+    this.stompClient.send("/app/send/toggle-mute-user", {}, JSON.stringify({ 'user': user, 'raumId': raumId, 'assignedUser': assignedUser }));
+  }
+
 
   APIKEY: string = "AIzaSyBJKPvOKMDqPzaR-06o1-Mfixvq2CRlS5M";
 

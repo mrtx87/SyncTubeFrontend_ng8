@@ -1,0 +1,20 @@
+<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="402" width="582" y="-1" x="-1"/>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <circle id="svg_1" r="12" fill="#ffd54f" cy="12.056818" cx="12"/>
+  <g id="svg_2" fill="#6d4c41">
+   <circle id="svg_3" r="2" cy="9" cx="7"/>
+   <circle id="svg_4" r="2" cy="9" cx="17"/>
+  </g>
+  <line stroke-linecap="null" stroke-linejoin="null" id="svg_15" y2="4.689732" x2="15.782895" y1="5.206649" x1="15.923872" fill-opacity="null" stroke-opacity="null" stroke-width="null" stroke="null" fill="none"/>
+  <text stroke="#4D2425" transform="rotate(87.51403045654297 7.21875,5.6484375) " xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="5" id="svg_20" y="7.33775" x="6.336087" fill-opacity="null" stroke-opacity="null" stroke-width="0" fill="#000000">(</text>
+  <text transform="rotate(94.97550964355469 17.790002822875977,5.789179801940919) " xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="5" id="svg_21" y="7.509281" x="16.957707" fill-opacity="null" stroke-opacity="null" stroke-width="0" stroke="#4D2425" fill="#000000">(</text>
+  <text stroke="#000000" transform="rotate(-90 11.21961116790771,-41.56120681762696) matrix(2.4813637733459473,0,0,2.4813637733459473,-22.590797543525696,-29.743007011711597) " xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="5" id="svg_22" y="21.428076" x="12.776153" fill-opacity="null" stroke-opacity="null" stroke-width="0" fill="#000000">(delete-icondelete-icon</text>
+  <text stroke="#000000" transform="matrix(1.466090202331543,0,0,1.123368740081787,-4.347747668623924,-2.7136094303177742) " font-weight="normal" xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="7" id="svg_30" y="20.673598" x="8.530075" fill-opacity="null" stroke-opacity="null" stroke-width="0" fill="#000000">O</text>
+ </g>
+</svg>

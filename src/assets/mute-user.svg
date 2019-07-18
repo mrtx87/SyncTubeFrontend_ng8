@@ -1,0 +1,20 @@
+<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="402" width="582" y="-1" x="-1"/>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <circle id="svg_1" r="12" fill="#ffd54f" cy="12.056818" cx="12"/>
+  <g id="svg_2" fill="#6d4c41">
+   <circle id="svg_3" r="2" cy="9" cx="7"/>
+   <circle id="svg_4" r="2" cy="9" cx="17"/>
+  </g>
+  <line stroke="#000000" stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_5" y2="21.011849" x2="14.685224" y1="15.771986" x1="9.44536" stroke-width="1.5" fill="none"/>
+  <line stroke="#000000" transform="rotate(90 12.056971549987791,18.463479995727543) " stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_6" y2="21.102287" x2="14.695778" y1="15.824673" x1="9.418165" stroke-width="1.5" fill="none"/>
+  <line stroke-linecap="null" stroke-linejoin="null" id="svg_15" y2="4.689732" x2="15.782895" y1="5.206649" x1="15.923872" fill-opacity="null" stroke-opacity="null" stroke-width="null" stroke="null" fill="none"/>
+  <text transform="rotate(87.51403045654297 7.216811656951903,5.652255535125732) " xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="5" id="svg_20" y="7.368303" x="6.384399" fill-opacity="null" stroke-opacity="null" stroke-width="0" stroke="#4D2425" fill="#000000">(</text>
+  <text transform="rotate(94.97550964355469 17.790002822875977,5.789179801940919) " xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="5" id="svg_21" y="7.509281" x="16.957707" fill-opacity="null" stroke-opacity="null" stroke-width="0" stroke="#4D2425" fill="#000000">(</text>
+ </g>
+</svg>
