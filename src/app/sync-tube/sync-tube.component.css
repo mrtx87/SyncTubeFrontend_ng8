@@ -117,7 +117,7 @@
 .admin-panel-row {
   display: flex;
   justify-content: flex-start;
-  width: auto%;
+  width: auto;
   height: 70px;
   min-height: 15%;
   align-items: center;
