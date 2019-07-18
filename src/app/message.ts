@@ -25,8 +25,7 @@ export class Message {
 
     currentPlaybackRate: number; 
 
-    description:string;
+    raumDescription:string;
     raumTitle: string;
-    createdAt: string;
 
 }

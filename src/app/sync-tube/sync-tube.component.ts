@@ -97,8 +97,11 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   //currentRaum Information
   raumId: number;
-  raumDescription: string;
-  raumTitle: string;
+  raumDescription: string = "";
+  raumTitle: string = "";
+  raumDescriptionChange: string = "";
+  raumTitleChange: string = "";
+
   createdAt: string;
   raumStatus: Boolean = true;
 
@@ -146,7 +149,6 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
     this.syncService.generateUserId();
     this.connect();
-    //this.syncService.getVideoTitle("dQw4w9WgXcQ");
   }
 
   connect() {
@@ -174,7 +176,9 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
   sendUpdateTitleAndDescription() {
-    this.syncService.sendUpdateTitleAndDescription(this.user, this.raumId, this.raumTitle, this.raumDescription);
+    if (this.raumTitleChange !== this.raumTitle || this.raumDescription !== this.raumDescriptionChange) {
+      this.syncService.sendUpdateTitleAndDescription(this.user, this.raumId, this.raumTitleChange, this.raumDescriptionChange);
+    }
   }
 
   sendAutoNextPlaylistVideo() {

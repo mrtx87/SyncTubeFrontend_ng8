@@ -48,22 +48,22 @@
     <br /><br />
     <h2>Public Rooms</h2>
     <div class="public-rooms-container">
-      <div class="room-preview" *ngFor="let pRoom of publicRaeume">
-        <table (click)="joinRaumById(pRoom.raumId)">
-          <tr>
-            <td>#{{ pRoom.raumId }}</td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>
-              <img class="thumbnail" src="https://img.youtube.com/vi/{{ pRoom.video.videoId }}/0.jpg" />
-            </td>
-            <td>
-              {{ pRoom.video.title }}
-              {{ pRoom.size }} Users
-            </td>
-          </tr>
-        </table>
+      <div (click)="joinRaumById(pRoom.raumId)" class="room-preview" *ngFor="let pRoom of publicRaeume">
+        <div class="public-room-title">
+          #{{ pRoom.raumTitle }}
+        </div>
+        <div class="public-room-row">
+          <img class="thumbnail" src="https://img.youtube.com/vi/{{ pRoom.video.videoId }}/0.jpg" />
+          <div class="public-room-infos">
+            <div class="public-room-description">
+              <strong>Beschreibung</strong><br>{{pRoom.description}}
+            </div>
+            <div class="public-room-video-title"> <strong>Videotitel</strong><br>{{ pRoom.video.title }}
+            </div>
+            <div class="public-room-size"> <strong>{{ pRoom.size }} Users</strong>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -83,8 +83,10 @@
           <div [className]="hasImportedPlaylist ? 'import-button' : 'import-button-inactive'">
             <h3 (click)="sendImportPlaylist()">Playlist importieren</h3>
           </div>
-          <h4 *ngIf="importedPlaylist" [hidden]="hasImportedPlaylist"> {{importedPlaylist.size}} Elemente werden geladen...</h4>
-          <h4 *ngIf="importedPlaylist" [hidden]="!hasImportedPlaylist"> {{importedPlaylist.size}} Elemente geladen</h4>
+          <h4 *ngIf="importedPlaylist" [hidden]="hasImportedPlaylist"> {{importedPlaylist.size}} Elemente werden
+            geladen...</h4>
+          <h4 *ngIf="importedPlaylist" [hidden]="!hasImportedPlaylist"> {{importedPlaylist.size}} Elemente geladen
+          </h4>
         </div>
 
         <div class="search-result-video" title="{{ video_.description }}" *ngFor="let video_ of searchResults">
@@ -315,14 +317,14 @@
           
           <div class="create-room-title-container">
             <label>Raumtitel</label>
-            <input [(ngModel)]="raumTitle" class="input-room-title" type="text" />
+            <input [(ngModel)]="raumTitleChange" class="input-room-title" type="text" />
           </div>
           <div class="description">
             <label>Hier können Sie den Raumtitel bestimmen</label>
           </div>
           <div class="create-room-description-container">
             <label>Beschreibung</label>
-            <textarea rows="4" [(ngModel)]="raumDescription" class="input-description"></textarea>
+            <textarea rows="4" [(ngModel)]="raumDescriptionChange" class="input-description"></textarea>
           </div>
           <div class="description">
               <label>Hier können Sie den Raumtitel bestimmen</label>
@@ -344,47 +346,19 @@
             </div>
         </div>
         
-      
-       <!--<div class="playlist-video-content" (click)="sendSwitchPlaylistVideo(pvideo_)"
-        (mouseenter)="pvideo_.hover = true" (mouseleave)="pvideo_.hover = false" *ngFor="let pvideo_ of playlist">
-          <img *ngIf="video.id === pvideo_.id" src="assets/play-button.svg" />
-          <img class="playlist-thumbnail" src="https://img.youtube.com/vi/{{ pvideo_.videoId }}/0.jpg" />
-            <img *ngIf="pvideo_.hover" (click)="sendRemovePlaylistVideo(pvideo_)" class="garbage"
-              src="assets/garbage.svg" />
 
-    <div *ngIf="!user.admin" class="left-create-raum-container">
-      <div class="create">
-        <button (click)="createNewRaumWhileInRaum()" class="button2">
-          Create your own Room
-        </button>
-        <div class="raum-toggle-startpage">
-          <div class="config-raumstatus-container">
-            <label *ngIf="configRaumStatus">Private</label>
-            <label *ngIf="!configRaumStatus">Public</label>
-          </div>
-          <label class="switch">
-            <input (click)="displayConfigToggle()" class="toggle-input" [(ngModel)]="configRaumStatus"
-              type="checkbox" />
-            <span class="slider round"></span>
-          </label>
-        </div>
       </div>
     </div>
-
-  
-  </div>--> 
-    </div>
   </div>
-</div>
 
-<div *ngIf="designatedAdmin" class="prompt">
-  <h3>Wollen Sie {{ designatedAdmin.userName }} zum Admin ernennen?</h3>
-  <div class="approved-button" (click)="approvedAdmin()">JA</div>
-  <div class="disapproved-button" (click)="disapprovedAdmin()">NEIN</div>
-</div>
+  <div *ngIf="designatedAdmin" class="prompt">
+    <h3>Wollen Sie {{ designatedAdmin.userName }} zum Admin ernennen?</h3>
+    <div class="approved-button" (click)="approvedAdmin()">JA</div>
+    <div class="disapproved-button" (click)="disapprovedAdmin()">NEIN</div>
+  </div>
 
-<div *ngIf="kickingUser" class="prompt">
-  <h3>Wollen Sie {{ kickingUser.userName }} kicken?</h3>
-  <div class="approved-button" (click)="approvedKick()">JA</div>
-  <div class="disapproved-button" (click)="disapprovedKick()">NEIN</div>
-</div>
+  <div *ngIf="kickingUser" class="prompt">
+    <h3>Wollen Sie {{ kickingUser.userName }} aus dem Raum kicken?</h3>
+    <div class="approved-button" (click)="approvedKick()">JA</div>
+    <div class="disapproved-button" (click)="disapprovedKick()">NEIN</div>
+  </div>
