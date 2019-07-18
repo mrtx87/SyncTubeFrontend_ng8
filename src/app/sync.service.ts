@@ -8,10 +8,8 @@ import { SyncTubeComponent } from "./sync-tube/sync-tube.component";
 import { ChatMessage } from './chat-message';
 import { User } from './sync-tube/user';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
 import { Video } from './video/video';
 import { CookieService } from 'ngx-cookie-service';
-import { UrlResolver } from '@angular/compiler';
 import { SearchQuery } from './sync-tube/search-query';
 import { ImportedPlaylist } from './video/playlist';
 
@@ -35,13 +33,8 @@ export class SyncService {
   /***
    * 
    * add chromecast connection (** laterlater**)
-
-   * add stats page for admins (debug)
    *
-   * FOR GORAN
-   * kinomodus : player.setSize() iframe api
-   * zeit anzeige in "controls" fertig 
-   * 
+   * add stats page for admins (debug)
    */
 
   v: any;
@@ -115,10 +108,10 @@ export class SyncService {
       return;
     }
 
-    if(message.type == "update-title-and-description") {
+    if (message.type == "update-title-and-description") {
       this.updateRaumTitleAndDescription(message.raumTitle, message.raumDescription);
       return;
-  }
+    }
 
     if (message.type == "all-chat-messages") {
       console.log(message) //SERVER SENDING ALL ?
@@ -315,7 +308,7 @@ export class SyncService {
     if (message.currentPlaybackRate) {
       this.setInitalPlaybackRate(message.currentPlaybackRate);
     }
-    if(this.videoComponent) {
+    if (this.videoComponent) {
       this.videoComponent.availableQualitys = this.videoComponent.getAvailableQualityLevels();
     }
   }
@@ -336,7 +329,7 @@ export class SyncService {
         that.setVideoDuration();
         that.setPlaybackRates();
         that.setPlaybackRate(message.currentPlaybackRate);
-  //      that.getCaptions(that.getVideo());
+        //      that.getCaptions(that.getVideo());
         that.togglePlayVideo(that.getReceivedPlayerState())
         clearInterval(wait);
       }
@@ -366,19 +359,19 @@ export class SyncService {
     this.synctubeComponent.chatMessages = <ChatMessage[]>message.chatMessages;
     this.synctubeComponent.raumStatus = message.raumStatus;
     this.updateRaumTitleAndDescription(message.raumTitle, message.raumDescription);
-    
+
   }
 
   updateRaumTitleAndDescription(title: string, description: string) {
-    if(title) {
-    this.synctubeComponent.raumTitle = title;
-    this.synctubeComponent.raumTitleChange = title;
+    if (title) {
+      this.synctubeComponent.raumTitle = title;
+      this.synctubeComponent.raumTitleChange = title;
     }
 
-    if(description) {
+    if (description) {
       this.synctubeComponent.raumDescription = description;
       this.synctubeComponent.raumDescriptionChange = description;
-      }
+    }
   }
 
   localCloseConnection() {
@@ -405,7 +398,7 @@ export class SyncService {
   sendRequestPublicRaeume() {
     console.log("[request public rooms]");
     this.http.get("http://localhost:8080/publicrooms", {}).subscribe(response => {
-      this.synctubeComponent.publicRaeume = <Raum[]> response;
+      this.synctubeComponent.publicRaeume = <Raum[]>response;
     });
   }
 
@@ -523,7 +516,7 @@ export class SyncService {
     this.http.get('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50' + ((nextPageToken) ? ('&pageToken=' + nextPageToken) : '') + '&key=' + this.APIKEY + '&playlistId=' + query).subscribe(response => {
       let data: any = response;
       let items: any[] = data.items;
-      if(this.synctubeComponent.importedPlaylist) {
+      if (this.synctubeComponent.importedPlaylist) {
         this.synctubeComponent.importedPlaylist.size = data.pageInfo.totalResults;
       }
       let nextPageToken: string = data.nextPageToken;
@@ -538,16 +531,16 @@ export class SyncService {
       });
 
       if (vids) {
-        for(let vid of vids ) {
+        for (let vid of vids) {
           this.synctubeComponent.searchResults.push(vid);
         }
         //this.synctubeComponent.searchResults = [...this.synctubeComponent.searchResults, ...vids];
 
       }
 
-      if(nextPageToken) {
+      if (nextPageToken) {
         this.searchPlaylist(query, mode, nextPageToken);
-      }else{
+      } else {
         this.synctubeComponent.importedPlaylist = new ImportedPlaylist();
         this.synctubeComponent.importedPlaylist.items = this.synctubeComponent.searchResults;
         this.synctubeComponent.importedPlaylist.size = this.synctubeComponent.importedPlaylist.items.length;
@@ -765,18 +758,18 @@ export class SyncService {
   }
 
   setPlaybackRate(rate: number) {
-    if(this.videoComponent) {
+    if (this.videoComponent) {
       this.videoComponent.setPlaybackRate(rate);
     }
   }
 
-  getInitalPlaybackRate() : number {
+  getInitalPlaybackRate(): number {
     return this.synctubeComponent.initalPlaybackRate;
   }
 
 
   setInitalPlaybackRate(rate: number) {
-    if(this.synctubeComponent) {
+    if (this.synctubeComponent) {
       this.synctubeComponent.setInitalPlaybackRate(rate);
     }
   }

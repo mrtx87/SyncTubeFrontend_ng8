@@ -2,7 +2,6 @@ import { Raum } from "./raum";
 import { ChatMessage } from "./chat-message";
 import { User } from "./sync-tube/user";
 import { Video } from "./video/video";
-import { ImportedPlaylist } from './video/playlist';
 
 export class Message {
 
