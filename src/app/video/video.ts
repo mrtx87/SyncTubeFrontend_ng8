@@ -2,6 +2,10 @@ export class Video {
 
     id: string;
 
+    isPlaylistLink?: boolean;
+    thumbnail?: string; 
+    playlistId?: string;
+
     videoId: string;
     timestamp: number;
     title: string;
@@ -10,7 +14,7 @@ export class Video {
     hover:boolean = false;
 
     //Debug
-    playlistId: string;
+
 
     clone(): Video {
         let v: Video = new Video();
@@ -20,6 +24,12 @@ export class Video {
         v.description = this.description;
         v.publishedAt = this.publishedAt;
         v.id = this.id;
+        if(this.isPlaylistLink) {
+            v.isPlaylistLink = this.isPlaylistLink;
+        }
+        if(this.thumbnail) {
+            v.thumbnail = this.thumbnail;
+        }
         return v;
     }
 

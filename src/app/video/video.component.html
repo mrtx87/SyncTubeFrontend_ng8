@@ -33,7 +33,7 @@
         <div [hidden]="isPlaying"> <img src="assets/play-button.svg"></div>
         <div [hidden]="!isPlaying"> <img src="assets/pause.svg"></div>
       </div>
-      <div *ngIf="syncService.synctubeComponent.user.admin" class="next-button">
+      <div *ngIf="syncService.synctubeComponent.user.admin" (click)="syncService.synctubeComponent.sendAutoNextPlaylistVideo()" class="next-button">
         <img src="assets/play-next-button.svg">
       </div>
 

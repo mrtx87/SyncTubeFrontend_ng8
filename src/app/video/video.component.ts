@@ -220,7 +220,7 @@ export class VideoComponent implements OnInit {
       that.timer = null;
     }
     that.timer = setInterval(function () {
-      that.currentTimeProgressbar = that.getCurrentTime();
+      that.currentTimeProgressbar += 0.01 * that.getPlaybackRate();
       that.currentDisplayedTime = that.getCurrentTime();
       that.syncService.synctubeComponent.video.timestamp = that.currentTime;
     }, 10);

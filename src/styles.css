@@ -7,10 +7,16 @@ app-root {
   bottom: 0;
   left: 0;
   right: 0;
+
+  --color1: #011627;
+  --color2: #C9C9C9;
+  --color3: #FF3366;
+  --color4: #2EC4B6;
+  --color5: #20A4F3;
 }
 
 body {
-  background-color: #4E5166;
+  background-color: #011627;
   font-family: 'Reem Kufi', sans-serif;
   overflow-x: hidden;
   overflow-y: hidden;
@@ -29,7 +35,7 @@ body {
    margin: 8px;
  }
 a { 
-  color:rgb(247, 28, 28);
+  color: #011627;
 
 }
  h2 {

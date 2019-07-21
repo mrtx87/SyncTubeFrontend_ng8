@@ -43,12 +43,9 @@ export class SyncService {
 
   synctubeComponent: SyncTubeComponent;
   videoComponent: VideoComponent
-  cookie: string;
 
   constructor(private http: HttpClient, private cookieService: CookieService) {
 
-    if (this.cookieService.check(SyncService.cookieKey))
-      this.cookie = this.cookieService.get(SyncService.cookieKey);
   }
 
   registerSyncTubeComponent(synctubeComponent: SyncTubeComponent) {
@@ -59,7 +56,24 @@ export class SyncService {
     this.videoComponent = videoComponent;
   }
 
-  connect(user: User) {
+  handleCookie(): User {
+    let user: User;
+    if (this.cookieService.check(SyncService.cookieKey)) {
+      user = new User();
+      let cookie: string = this.getCookie();
+      user.userId = parseInt(cookie);
+    } else {
+      user = new User();
+      user.userId = this.generateUserId();
+    }
+    this.setCookie(user.userId);
+    return user;
+  }
+
+  connect() {
+    let user: User = this.handleCookie();
+    this.setLocalUser(user);
+
     this.ws = new SockJS('http://localhost:8080/socket');
     this.stompClient = Stomp.over(this.ws);
     let that = this;
@@ -81,9 +95,6 @@ export class SyncService {
         that.sendRequestPublicRaeume();
         that.synctubeComponent.revealContent = true;
       }
-
-      //this.getRaumPlaylist();
-
     });
   }
 
@@ -144,14 +155,14 @@ export class SyncService {
 
       return;
     }
-    
+
     if (message.type == "refresh-user-and-list") {
       console.log(message);
       this.updateClientChat(message);
       this.setLocalUser(message.user)
 
       return;
-    } 
+    }
     if (message.type == 'update-client') {
       console.log(message);
       this.updateClientChat(message);
@@ -358,7 +369,9 @@ export class SyncService {
 
   updateClientChat(message: Message) {
     this.synctubeComponent.users = message.users;
-    this.synctubeComponent.chatMessages.push(message.chatMessage);
+    if (message.chatMessage) {
+      this.synctubeComponent.chatMessages.push(message.chatMessage);
+    }
     this.synctubeComponent.forceScrollToChatBottom = true;
   }
 
@@ -393,11 +406,8 @@ export class SyncService {
     this.ws.close();
   }
 
-  generateUserId() {
-    if (!this.getLocalUser()) {
-      this.setLocalUser(new User());
-    }
-    this.getLocalUser().userId = parseInt(Math.floor(Date.now() / 1000) + "" + Math.floor(Math.random() * 10000));
+  generateUserId(): number {
+    return parseInt(Math.floor(Date.now() / 1000) + "" + Math.floor(Math.random() * 10000));
   }
 
   getCaptions(video: Video) {
@@ -430,6 +440,13 @@ export class SyncService {
     console.log("[join-raum:] " + user.userId + " " + raumId);
     this.stompClient.send("/app/send/join-room", {}, JSON.stringify({ 'user': user, 'raumId': raumId }));
   }
+
+  sendChangeUserName(user: User, raumId: number) {
+    console.log("[change-user-name:] " + user.userName + " " + raumId);
+    this.stompClient.send("/app/send/change-user-name", {}, JSON.stringify({ 'user': user, 'raumId': raumId }));
+  }
+
+
 
   sendSeekToTimestamp(user: User, raumId: number, videoId: string, timestamp: number) {
     console.log("[seekto-timestamp:] " + timestamp);
@@ -490,7 +507,7 @@ export class SyncService {
 
   }
 
-  sendToggleMuteUser(user : User, raumId : number, assignedUser : User) {
+  sendToggleMuteUser(user: User, raumId: number, assignedUser: User) {
     console.log(assignedUser);
     this.stompClient.send("/app/send/toggle-mute-user", {}, JSON.stringify({ 'user': user, 'raumId': raumId, 'assignedUser': assignedUser }));
   }
@@ -505,18 +522,28 @@ export class SyncService {
       console.log(response);
       let data: any = response;
       let items: any[] = data.items;
-      let vids: Video[] = items.filter(i => (i.id.videoId) ? true : false).map(item => {
-        let video: Video = new Video();
-        video.videoId = item.id.videoId;
-        video.title = item.snippet.title;
-        video.description = item.snippet.description;
-        video.publishedAt = item.snippet.publishedAt;
-        /*this.http.get('https://noembed.com/embed?url=https://www.youtube.com/watch?v=' + video.videoId).subscribe(res => {
-          let data_: any = res;
-          video.title = data_.title;
-        });*/
-        return video;
-      });
+      let vids: Video[] = items
+        .filter(i => i.id.kind === 'youtube#playlist' || i.id.kind === 'youtube#video')
+        .map(item => {
+          let video: Video = new Video();
+          if (item.id.kind === 'youtube#playlist') {
+            video.isPlaylistLink = true;
+            video.playlistId = item.id.playlistId;
+            if(item.snippet.thumbnails.high) {
+              video.thumbnail = item.snippet.thumbnails.high.url;
+            }else if(item.snippet.thumbnails.medium) {
+              video.thumbnail = item.snippet.thumbnails.medium.url;
+            }else{
+              video.thumbnail = item.snippet.thumbnails.default.url;
+            }
+          } else {
+            video.videoId = item.id.videoId;
+          }
+          video.title = item.snippet.title;
+          video.description = item.snippet.description;
+          video.publishedAt = item.snippet.publishedAt;
+          return video;
+        });
       if (mode) {
         this.synctubeComponent.searchResults = vids;
       } else {
@@ -823,15 +850,17 @@ export class SyncService {
   }
 
   getCookie(): string {
-    return this.cookie;
+    if (this.hasCookie()) {
+      return this.cookieService.get(SyncService.cookieKey);
+    }
   }
 
   hasCookie(): boolean {
-    return (this.cookie) ? true : false;
+    return this.cookieService.check(SyncService.cookieKey);
   }
 
   setCookie(userId: number) {
-    this.cookieService.set(SyncService.cookieKey, "" + userId);
+    this.cookieService.set(SyncService.cookieKey, "" + userId, 30);
   }
 
   isLocalUserAdmin(): Boolean {

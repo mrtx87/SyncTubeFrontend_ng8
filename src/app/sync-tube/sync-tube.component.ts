@@ -129,6 +129,8 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   configRaumStatus: Boolean = true;
   isMuted: Boolean = false;
 
+  editUserName: Boolean = false;
+
   //personen die vom admin gekickt oder zum admin ernannt werden
   designatedAdmin: User;
   kickingUser: User;
@@ -136,22 +138,11 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   constructor(private syncService: SyncService, private route: ActivatedRoute) {
 
     this.syncService.registerSyncTubeComponent(this);
-    // this.syncService.parseYoutubeUrl('https://www.youtube.com/watch?v=luQ0JWcrsWg&feature=youtu.be&list=PLuUrokoVSxlfUJuJB_D8j_wsFR4exaEmy&t=81');
-    // this.syncService.parseYoutubeUrl('https://youtu.be/AmAy0KABoX0');
-    /*if (this.syncService.hasCookie()) {
-      this.setLocalUser(new User());
-      this.user.userId = parseInt(this.syncService.getCookie())
-    } else {
-      this.syncService.generateUserId();
-      this.syncService.setCookie(this.user.userId);
-    }*/
-
-    this.syncService.generateUserId();
     this.connect();
   }
 
   connect() {
-    this.syncService.connect(this.user);
+    this.syncService.connect();
   }
 
   setVideoDuration(duration: number) {
@@ -184,6 +175,14 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.syncService.sendAutoNextPlaylistVideo(this.getUser(), this.getRaumId(), 1);
   }
 
+  sendChangeUserName(oldUserName: string) {
+    if (this.user.userName !== oldUserName && this.user.userName.length > 0) {
+      this.syncService.sendChangeUserName(this.getUser(), this.getRaumId());
+    } else {
+      this.user.userName = oldUserName;
+    }
+  }
+
   createNewRaumWhileInRaum() {
     this.syncService.sendDisconnectMessage(this.user, this.raumId);
     this.clearRoomVars();
@@ -191,9 +190,9 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
 
-  sendToggleMuteUser(user : User) {
+  sendToggleMuteUser(user: User) {
     this.syncService.sendToggleMuteUser(this.getUser(), this.getRaumId(), user);
-    
+
   }
 
 
@@ -298,6 +297,16 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     }
   }
 
+  openPlaylistLink(video_: Video) {
+    if(video_.playlistId) {
+      this.importedPlaylist = new ImportedPlaylist();
+      this.hasImportedPlaylist = false;
+      this.searchResults = [];
+
+      this.syncService.searchPlaylist(video_.playlistId, false);
+    }
+  }
+
 
   getPathId(): number {
     return parseInt(this.route.snapshot.paramMap.get('id'));
@@ -325,7 +334,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
   sendChatMessage() {
-    if(!this.user.isMute){
+    if (!this.user.isMute) {
       let message: Message = new Message();
       message.type = "user-chat"
       message.user = this.user;
