@@ -4,6 +4,11 @@
 
 .page-title {
   font-size: 2em;
+  
+}
+
+.s2glogo {
+  filter: invert(100%) sepia(0%) saturate(7449%) hue-rotate(143deg) brightness(126%) contrast(96%);
 }
 
 .raumTitle-container {
@@ -19,7 +24,8 @@
 .button {
   min-width: 400px;
   max-width: 600px;
-  background-color: var(--color4);
+  height: 100px;
+  background-color: var(--color7);
   /* Green */
   border: none;
   border-radius: 9px;
@@ -55,9 +61,11 @@
 
 .create, .join {
   display: flex;
-  background-color: var(--color1);
-  border-radius: 15px;
-  border: 2px solid var(--color4);
+  background-color: var(--color6);
+  align-items: center;
+  /*border-radius: 15px;*/
+  border: 2px solid var(--color6);
+  height: 250px;
 }
 
 [hidden] {
@@ -76,6 +84,7 @@
 .config-raumstatus-container {
   font-size: 20px;
   color: white;
+  width: 70px;
 }
 
 .raum-container-cinema {
@@ -90,6 +99,7 @@
   width: 10%;
   height: auto;
   padding: 5px;
+  filter: invert(100%) sepia(0%) saturate(7449%) hue-rotate(143deg) brightness(126%) contrast(96%);
 }
 
 .copy-img {
@@ -142,6 +152,9 @@
   width: 90%;
   margin: 0 auto;
   resize: none;
+  border: none;
+  background-color: var(--color9);
+  color:white;
 }
 
 .admin-panel-title, .controls-panel-title, .playlist-panel-title {
@@ -174,10 +187,10 @@
   max-height: 93vh;
 }
 
-.admin-panel-img {
+/*.admin-panel-img {
   width: 100%;
   height: auto;
-}
+}*/
 
 .playlist-image {
   width: 30%;
@@ -202,6 +215,7 @@
   width: 50%;
   height: 2.5vh;
   margin: 0 10px;
+  border: none;
 }
 
 .top-panel {
@@ -209,7 +223,7 @@
   display: flex;
   height: 6.5vh;
   width: 100%;
-  background-color: var(--color4);
+  background-color: var(--color6);
   align-items: center;
 }
 
@@ -267,7 +281,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--color1);
+  background-color: var(--color8);
   color: white;
   -webkit-transition-duration: 0.4s;
   transition-duration: 0.4s;
@@ -291,11 +305,12 @@
 }
 
 .tabs-container {
-  background-color: var(--color2);
+  background-color: var(--color7);
   max-height: 93vh;
   width: 25%;
   display: flex;
   flex-direction: column;
+  color: white;
 }
 
 .chat-playlist-tabs {
@@ -304,9 +319,10 @@
 }
 
 .chat-messages-container {
-  background-color: var(--color2);
+  background-color: var(--color7);
   height: 84vh;
   width: 100%;
+  
 }
 
 .scrollable-content {
@@ -317,7 +333,11 @@
 }
 
 .footer {
+  display: flex;
+  flex-direction: row;
   width: 100%;
+  align-items: center;
+  padding-top: 6px;
 }
 
 .message-row-container {
@@ -334,11 +354,11 @@
 .message-row-container-user {
   display: flex;
   justify-content: flex-end;
-  border-radius: 6px;
+  border-radius: 2px;
   width: fit-content;
   max-width: 75%;
   padding: 5px 5px 0px 5px;
-  background-color: rgb(128, 231, 128);
+  background-color: var(--color5);
 }
 
 .insert-video-row-container {
@@ -370,8 +390,21 @@
 }
 
 .w-100 {
-  width: 100%;
+  /*width: 100%;
   margin: 0 5px;
+  border: none;*/
+  margin-left: 10px;
+  width: 80%;
+  border: none;
+  height: 25px;
+}
+
+.send-chat-button {
+  margin: 0 auto;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 3px;
+  background-color: var(--color5);
 }
 
 .text-container {
@@ -486,6 +519,10 @@ label {
   max-width: 5vh;
 }
 
+.control-sound-img {
+  width: 100%;
+}
+
 .controls-spacer {
   width: 65%;
 }
@@ -529,7 +566,7 @@ label {
 }
 
 .room-preview {
-  background: var(--color4);
+  background: var(--color6);
   max-width: 450px;
   width: 30%;
   margin: 10px;
@@ -538,6 +575,7 @@ label {
   display: flex;
   -webkit-transition-duration: 0.4s;
   transition-duration: 0.4s;
+  color: white;
 }
 
 .room-preview:hover {
@@ -610,11 +648,31 @@ label {
   scroll-behavior: smooth;
 }
 
+.information-panel {
+  flex-direction: column;
+  position: absolute;
+  bottom: 0px;
+  text-align: center;
+  width: 70%;
+  color: white;
+}
+
+.information-panel {
+  width: 10%;
+  height: auto;
+  opacity: 0.6;
+
+}
+
+.information-panel:hover {
+  opacity: 1;
+}
+
 .playlist-video-data {
   display: flex;
   flex-direction: row;
   width: 100%;
-  background-color: var(--color1);
+  background-color: var(--color8);
   color: white;
   margin-bottom: 2px;
 }
@@ -685,12 +743,16 @@ label {
   width: 40px;
   display: flex;
   align-items: center;
+  filter: invert(100%) sepia(0%) saturate(7449%) hue-rotate(143deg) brightness(126%) contrast(96%);
 }
 
 .random-container img:hover, .repeat-container img:hover, .next-playlist-video-container img:hover {
   height: 80%;
-  border: 2px solid var(--color3);
-  border-radius: 5px;
+  opacity: 1;
+  filter: invert(53%) sepia(70%) saturate(7281%) hue-rotate(326deg) brightness(101%) contrast(101%);
+  
+  /*border: 2px solid var(--color3);*/
+  /*border-radius: 5px;*/
 }
 
 .inorder-container img, .random-container img, .repeat-container img, .next-playlist-video-container img {
@@ -705,7 +767,8 @@ label {
   display: flex;
   flex-direction: column;
   margin: 0.5%;
-  background-color: #17183b;
+  /*background-color: #17183b;*/
+  background-color: var(--color6);
   font-size: 12px;
   color: white;
   height: fit-content;
@@ -802,7 +865,7 @@ label {
 }
 
 .identity {
-  background-color: var(--color4);
+  background-color: var(--color8);
 }
 
 .user-icon {
@@ -850,7 +913,7 @@ label {
 .username-input-border {
   background-color: rgba(0, 0, 0, 0);
   color: white;
-  border: 1px solid black;
+  border: 1px solid rgb(255, 255, 255);
   outline: none;
   font-size: 19px;
   font-family: inherit;
@@ -1032,7 +1095,8 @@ label {
 }
 
 .playlist-button-on {
-  filter: invert(0.5) sepia(1) saturate(5) hue-rotate(175deg);
+  /*filter: invert(0.5) sepia(1) saturate(5) hue-rotate(175deg);*/
+  filter: invert(99%) sepia(92%) saturate(7056%) hue-rotate(54deg) brightness(92%) contrast(100%);
   opacity: 1;
 }
 

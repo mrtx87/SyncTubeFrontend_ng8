@@ -35,9 +35,11 @@ export class VideoComponent implements OnInit {
   currentDisplayedTime: number;
   availableQualitys: string[];
   currentPlaybackQuality: string;
-  volumeValue: number;
+  volumeValue: number = 49;
   videoDuration: number;
   captions: any[];
+  timeForSlider: number;
+  switchVolumeIcon: number = 1;
 
   constructor(private syncService: SyncService) {
     this.syncService.registerVideoComponent(this);
@@ -59,6 +61,14 @@ export class VideoComponent implements OnInit {
         that.currentPlaybackQuality = that.getPlaybackQuality();
       }
       that.currentPlaybackRate = that.getCurrentPlaybackRate();
+
+      if(that.volumeValue < 1){
+        that.switchVolumeIcon = 0;
+      }else  if(that.volumeValue >= 1 && that.volumeValue < 50){
+        that.switchVolumeIcon = 1;
+      }else if(that.volumeValue > 50) {
+        that.switchVolumeIcon = 2;
+      }
 
     }, 10);
   }
@@ -140,6 +150,11 @@ export class VideoComponent implements OnInit {
   getVideoDuration(): number {
     return this.player.getDuration();
   }
+
+  getTimeForSlider() {
+    this.timeForSlider = this.currentTime / this.videoDuration * 100;
+  }
+
   setVideoDuration() {
     this.videoDuration = this.getVideoDuration();
   }

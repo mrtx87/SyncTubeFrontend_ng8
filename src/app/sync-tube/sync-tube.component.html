@@ -1,8 +1,9 @@
 <div class="top-panel">
   <div class="top-panel-left">
-    <h3 class="page-title"><a href="http://localhost:4200"> SyncTube</a></h3>
+    <!--<h3 class="page-title"><a href="http://localhost:4200" style="color:white"> XXXXX</a></h3>-->
+    <a href="http://localhost:4200" ><img class="s2glogo" src="assets/stream2gether.png"></a>
     <input *ngIf="raumId && user.admin" (keyup.enter)="search()" [(ngModel)]="searchInput" class="user-query"
-      type="text" />
+      type="text" /> 
     <div class="room-status-panel">
       <label [hidden]="!raumId || !raumStatus">Private <img class="rsp-lock" src="assets/padlock.svg" /></label>
       <label [hidden]="!raumId || raumStatus">Public <img class="rsp-lock" src="assets/padlock-unlock.svg" /></label>
@@ -14,10 +15,11 @@
   </div>
 </div>
 
+<div></div>
 <div *ngIf="revealContent" class="content-container">
   <!--  Visible when no room is created or joined -->
   <div *ngIf="!raumId" class="content-container">
-    <h2>Create a new Room</h2>
+    <h2 style="color:white">Create a new Room</h2>
 
     <div class="create">
       <button (click)="createRaum()" class="button">
@@ -46,7 +48,7 @@
       </button>
     </div> -->
     <br /><br />
-    <h2>Public Rooms</h2>
+    <h2 style="color:white">Public Rooms</h2>
     <div class="public-rooms-container">
       <div (click)="joinRaumById(pRoom.raumId)" class="room-preview" *ngFor="let pRoom of publicRaeume">
         <div class="public-room-title ellipsis">
@@ -66,6 +68,12 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+    <div class="information-panel">
+      <a href="https://www.youtube.de" target="_blank"><img class="logos" src="assets/youtubelogo.svg" alt="youtube logo"></a>
+      <div>
+        <label>ünterstütze Plattformen</label>
       </div>
     </div>
   </div>
@@ -144,7 +152,7 @@
       </div>
 
       <div [hidden]="displayTab != 1" class="chat-messages-container">
-        <div style="min-height:5px; height:5px; width:100%; border-bottom: 1px solid black;">
+        <div style="min-height:5px; height:5px; width:100%;">
           <!-- spacer -->
         </div>
         <div #scrollChat class="scrollable-content" id="scrollChat">
@@ -243,6 +251,9 @@
         </div>
         <div class="footer">
           <input class="w-100" (keyup.enter)="sendChatMessage()" [(ngModel)]="chatMessageText" type="text" />
+          <div class="send-chat-button">
+            senden
+          </div>
         </div>
       </div>
 
@@ -358,7 +369,7 @@
             <label>Hier können Sie den Raumtitel bestimmen</label>
           </div>
           <div (click)="sendUpdateTitleAndDescription()"
-            style="margin:0 auto; border: 1px solid black; border-radius:4px; padding: 3px; background-color:aquamarine;">
+            style="margin:0 auto; border: 1px solid black; border-radius:4px; padding-left: 10px; padding-right: 10px; padding-top: 5px; background-color:var(--color5);">
             Ändern
           </div>
           <div class="admin-panel-row">
@@ -367,12 +378,12 @@
               class="refresh-img" src="assets/refresh.svg" />
           </div>
         </div>
-        <div>
+        <!--<div>
           <img class="admin-panel-img" src="assets/news-admin.svg" alt="admin pixelart">
           <div>
             <label>Admin Panel</label>
           </div>
-        </div>
+        </div>-->
 
 
       </div>
@@ -390,3 +401,4 @@
     <div class="approved-button" (click)="approvedKick()">JA</div>
     <div class="disapproved-button" (click)="disapprovedKick()">NEIN</div>
   </div>
+</div>

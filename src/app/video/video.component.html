@@ -38,8 +38,12 @@
       </div>
 
       <div (mouseover)="mouseOverSound()" (click)="toggleMute()" class="controls-sound">
-        <div [hidden]="!syncService.synctubeComponent.isMuted"><img src="assets/mute.svg"></div>
-        <div [hidden]="syncService.synctubeComponent.isMuted"><img src="assets/unmute.svg"></div>
+        <div [hidden]="switchVolumeIcon != 0"> <img class="control-sound-img" src="assets/mute1.svg"></div>
+        
+        <div [hidden]="switchVolumeIcon != 1"><img class="control-sound-img" src="assets/unmute1.svg"></div>
+
+        <div [hidden]="switchVolumeIcon != 2"><img class="control-sound-img" src="assets/unmute2.svg"></div>
+
       </div>
       <div class="controls-volume">
         <input [(ngModel)]="volumeValue" (change)="setVolume()" min="0" max="100" type="range" class="volume"

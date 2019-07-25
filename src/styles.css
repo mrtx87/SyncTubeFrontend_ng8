@@ -13,10 +13,15 @@ app-root {
   --color3: #FF3366;
   --color4: #2EC4B6;
   --color5: #20A4F3;
+  --color6: #12121875;
+  --color7: #0d0d11;
+  --color8: #21212c;
+  --color9: #282835;
 }
 
 body {
-  background-color: #011627;
+  /*background-color: #011627;*/
+  background-image: url("assets/testwallpaper.gif");
   font-family: 'Reem Kufi', sans-serif;
   overflow-x: hidden;
   overflow-y: hidden;
