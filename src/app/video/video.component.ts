@@ -1,19 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import reframe from 'reframe.js';
-import { SyncService } from '../sync.service';
-import { Video } from './video';
-import { User } from '../sync-tube/user';
+import { Component, OnInit } from "@angular/core";
+import reframe from "reframe.js";
+import { SyncService } from "../sync.service";
+import { Video } from "./video";
+import { User } from "../sync-tube/user";
 
 @Component({
-  selector: 'app-video',
-  templateUrl: './video.component.html',
-  styleUrls: ['./video.component.css']
+  selector: "app-video",
+  templateUrl: "./video.component.html",
+  styleUrls: ["./video.component.css"]
 })
-
-
 export class VideoComponent implements OnInit {
-
-
   public YT: any;
   //public video: any;
   public player: any;
@@ -47,37 +43,38 @@ export class VideoComponent implements OnInit {
 
   listenForPlayerState() {
     let that = this;
-    setInterval(function () {
+    setInterval(function() {
       var state = that.player.getPlayerState();
       if (that.getReceivedPlayerState() !== state) {
         if (state === SyncService.FINISHED) {
-          console.log("FUCK OFF")
           that.syncService.synctubeComponent.receivedPlayerState = state;
-          that.syncService.sendAutoNextPlaylistVideo(that.getLocalUser(), that.getRaumId(), state);
+          that.syncService.sendAutoNextPlaylistVideo(
+            that.getLocalUser(),
+            that.getRaumId(),
+            state
+          );
         }
       }
 
-      if(that.currentPlaybackQuality !== that.getPlaybackQuality()) {
+      if (that.currentPlaybackQuality !== that.getPlaybackQuality()) {
         that.currentPlaybackQuality = that.getPlaybackQuality();
       }
       that.currentPlaybackRate = that.getCurrentPlaybackRate();
 
-      if(that.volumeValue < 1){
+      if (that.volumeValue < 1) {
         that.switchVolumeIcon = 0;
-      }else  if(that.volumeValue >= 1 && that.volumeValue < 50){
+      } else if (that.volumeValue >= 1 && that.volumeValue < 50) {
         that.switchVolumeIcon = 1;
-      }else if(that.volumeValue > 50) {
+      } else if (that.volumeValue > 50) {
         that.switchVolumeIcon = 2;
       }
-
     }, 10);
   }
 
-
   init() {
-    var tag = document.createElement('script');
-    tag.src = 'https://www.youtube.com/iframe_api';
-    var firstScriptTag = document.getElementsByTagName('script')[0];
+    var tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
+    var firstScriptTag = document.getElementsByTagName("script")[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
   }
 
@@ -85,19 +82,19 @@ export class VideoComponent implements OnInit {
     let that = this;
     this.init();
     // this.video = this.syncService.synctubeComponent.video.videoId; //video id
-    window['onYouTubeIframeAPIReady'] = (e) => {
-      this.YT = window['YT'];
+    window["onYouTubeIframeAPIReady"] = e => {
+      this.YT = window["YT"];
       this.reframed = false;
-      this.player = new window['YT'].Player('player', {
+      this.player = new window["YT"].Player("player", {
         videoId: null,
         playerVars: {
-          'autoplay': 0,
-          'controls': 0,
-          'rel': 0,
-          'fs': 0,
+          autoplay: 0,
+          controls: 0,
+          rel: 0,
+          fs: 0
         },
         events: {
-          'onReady': (e) => {
+          onReady: e => {
             if (!this.reframed) {
               this.reframed = true;
               reframe(e.target.a);
@@ -105,21 +102,19 @@ export class VideoComponent implements OnInit {
 
             that.listenForPlayerState();
             if (that.syncService.getVideo()) {
-
               that.processVideoIfLoaded(that);
               that.setIframe(e.target.a);
               that.currentTimeProgressbar = this.syncService.getVideo().timestamp;
               that.loadVideoById({
                 videoId: this.syncService.getVideo().videoId,
                 startSeconds: this.syncService.getVideo().timestamp,
-                suggestedQuality: 'large'
+                suggestedQuality: "large"
               });
             }
             that.mute(); //DEBUG
           }
         }
       });
-
     };
   }
 
@@ -132,7 +127,7 @@ export class VideoComponent implements OnInit {
   }
 
   processVideoIfLoaded(that: VideoComponent) {
-    let wait = setInterval(function () {
+    let wait = setInterval(function() {
       if (that.player.getPlayerState() == SyncService.playing) {
         that.setVideoDuration();
         that.togglePlayVideo(that.getReceivedPlayerState());
@@ -144,7 +139,7 @@ export class VideoComponent implements OnInit {
         that.setPlaybackRate(that.getInitalPlaybackRate());
         clearInterval(wait);
       }
-    }, 3)
+    }, 3);
   }
 
   getVideoDuration(): number {
@@ -152,7 +147,7 @@ export class VideoComponent implements OnInit {
   }
 
   getTimeForSlider() {
-    this.timeForSlider = this.currentTime / this.videoDuration * 100;
+    this.timeForSlider = (this.currentTime / this.videoDuration) * 100;
   }
 
   setVideoDuration() {
@@ -164,46 +159,46 @@ export class VideoComponent implements OnInit {
   }
 
   addOnstateChangeListener() {
-    this.player.addEventListener('onStateChange', function (e) {
+    this.player.addEventListener("onStateChange", function(e) {
       this.onPlayerStateChange(e);
     });
   }
 
   onPlayerStateChange(event) {
-    console.log("HALLLLO")
+    console.log("HALLLLO");
     switch (event.data) {
-      case window['YT'].PlayerState.PLAYING:
+      case window["YT"].PlayerState.PLAYING:
         if (this.cleanTime() == 0) {
-          console.log('started ' + this.cleanTime());
+          console.log("started " + this.cleanTime());
         } else {
-          console.log('playing ' + this.cleanTime())
-        };
+          console.log("playing " + this.cleanTime());
+        }
         break;
-      case window['YT'].PlayerState.PAUSED:
+      case window["YT"].PlayerState.PAUSED:
         if (this.player.getDuration() - this.player.getCurrentTime() != 0) {
-          console.log('paused' + ' @ ' + this.cleanTime());
-        };
+          console.log("paused" + " @ " + this.cleanTime());
+        }
         break;
-      case window['YT'].PlayerState.ENDED:
-        console.log('VIDEO ENDED');
+      case window["YT"].PlayerState.ENDED:
+        console.log("VIDEO ENDED");
         break;
-    };
-  };
+    }
+  }
   //utility
   cleanTime() {
-    return Math.round(this.player.getCurrentTime())
-  };
+    return Math.round(this.player.getCurrentTime());
+  }
   onPlayerError(event) {
     switch (event.data) {
       case 2:
-        console.log('' + 'Video Error')
+        console.log("" + "Video Error");
         break;
       case 100:
         break;
       case 101 || 150:
         break;
-    };
-  };
+    }
+  }
 
   getCurrentTime(): number {
     return this.player.getCurrentTime();
@@ -231,10 +226,10 @@ export class VideoComponent implements OnInit {
 
   updateVideoContinously(that: VideoComponent) {
     if (that.timer) {
-      clearInterval(that.timer)
+      clearInterval(that.timer);
       that.timer = null;
     }
-    that.timer = setInterval(function () {
+    that.timer = setInterval(function() {
       that.currentTimeProgressbar += 0.01 * that.getPlaybackRate();
       that.currentDisplayedTime = that.getCurrentTime();
       that.syncService.synctubeComponent.video.timestamp = that.currentTime;
@@ -284,12 +279,28 @@ export class VideoComponent implements OnInit {
 
   triggerTogglePlay(): void {
     if (this.isLocalUserAdmin() && this.getCurrentVideo()) {
-      if (this.getPlayerState() == SyncService.paused || this.getPlayerState() == SyncService.placed || this.getPlayerState() == SyncService.FINISHED) {
-        console.log("playvideo")
-        this.syncService.sendTogglePlay(this.syncService.getLocalUser(), this.syncService.getRaumId(), SyncService.playing, this.getCurrentVideo(), this.getCurrentTime());
+      if (
+        this.getPlayerState() == SyncService.paused ||
+        this.getPlayerState() == SyncService.placed ||
+        this.getPlayerState() == SyncService.FINISHED
+      ) {
+        console.log("playvideo");
+        this.syncService.sendTogglePlay(
+          this.syncService.getLocalUser(),
+          this.syncService.getRaumId(),
+          SyncService.playing,
+          this.getCurrentVideo(),
+          this.getCurrentTime()
+        );
       } else if (this.getPlayerState() == SyncService.playing) {
-        console.log("pausevideo")
-        this.syncService.sendTogglePlay(this.syncService.getLocalUser(), this.syncService.getRaumId(), SyncService.paused, this.getCurrentVideo(), this.getCurrentTime());
+        console.log("pausevideo");
+        this.syncService.sendTogglePlay(
+          this.syncService.getLocalUser(),
+          this.syncService.getRaumId(),
+          SyncService.paused,
+          this.getCurrentVideo(),
+          this.getCurrentTime()
+        );
       }
     }
   }
@@ -299,12 +310,18 @@ export class VideoComponent implements OnInit {
   }
 
   onChangeProgressBar() {
-    console.log(":::::::: " + this.currentTime)
-    this.currentTimeProgressbar;
-    this.stopUpdatingVideo();
-    this.syncService.sendSeekToTimestamp(this.getLocalUser(), this.getRaumId(), this.getCurrentVideo().videoId, this.currentTimeProgressbar);
+    if (this.getCurrentVideo()) {
+      this.currentTimeProgressbar;
+      this.stopUpdatingVideo();
+      this.syncService.sendSeekToTimestamp(
+        this.getLocalUser(),
+        this.getRaumId(),
+        this.getCurrentVideo().videoId,
+        this.currentTimeProgressbar
+      );
+    }
   }
-  
+
   getCurrentTimestamp(): number {
     return this.currentTimestamp;
   }
@@ -332,9 +349,8 @@ export class VideoComponent implements OnInit {
   }
 
   setFullscreen() {
-    console.log("hallo")
+    console.log("hallo");
   }
-
 
   mute(): void {
     this.syncService.synctubeComponent.isMuted = true;
@@ -355,7 +371,11 @@ export class VideoComponent implements OnInit {
   }
 
   sendChangePlaybackRate(rate: number) {
-    this.syncService.sendChangePlaybackRate(this.getLocalUser(), this.getRaumId(), rate);
+    this.syncService.sendChangePlaybackRate(
+      this.getLocalUser(),
+      this.getRaumId(),
+      rate
+    );
   }
 
   getAvailablePlaybackRates(): Array<number> {
@@ -376,13 +396,15 @@ export class VideoComponent implements OnInit {
   }
 
   toggleDisplayCinemaMode() {
-    this.syncService.synctubeComponent.displayCinemaMode = !this.syncService.synctubeComponent.displayCinemaMode;
+    this.syncService.synctubeComponent.displayCinemaMode = !this.syncService
+      .synctubeComponent.displayCinemaMode;
     //this.iframe.className = 'video'
     this.syncService.synctubeComponent.displayFullscreen = false;
   }
 
   toggleDisplayFullscreen() {
-    this.syncService.synctubeComponent.displayFullscreen = !this.syncService.synctubeComponent.displayFullscreen;
+    this.syncService.synctubeComponent.displayFullscreen = !this.syncService
+      .synctubeComponent.displayFullscreen;
     this.syncService.synctubeComponent.displayCinemaMode = false;
     /* if (this.syncService.synctubeComponent.displayFullscreen) {
        this.iframe.className = 'video-fullscreen'
@@ -393,7 +415,6 @@ export class VideoComponent implements OnInit {
 
   setOption(_module, option, value) {
     this.player.setOption(_module, option, value);
-
   }
 
   setPlaybackRates() {
@@ -432,27 +453,31 @@ export class VideoComponent implements OnInit {
     if (!this.displayAllControls) {
       this.displayAllControls = true;
       let that = this;
-      let toastControls = setInterval(function () {
+      let toastControls = setInterval(function() {
         if (that.time >= 2000000) {
           that.displayAllControls = false;
           clearInterval(toastControls);
           that.time = 0;
         }
         that.time += 25;
-      }, 25)
+      }, 25);
     }
   }
 
   /* Video Controls
-  */
+   */
   mouseOverSound() {
     //@TODO
   }
 
   toggleSubtitle(_module, option, value) {
     this.displaySubtitle = !this.displaySubtitle;
-    console.log("testestset")
-    this.syncService.toggleSubtitle('captions', 'tracklist', this.displaySubtitle);
+    console.log("testestset");
+    this.syncService.toggleSubtitle(
+      "captions",
+      "tracklist",
+      this.displaySubtitle
+    );
   }
 
   toggleMute() {
@@ -460,7 +485,7 @@ export class VideoComponent implements OnInit {
   }
 
   jumpBySeconds(offset: number) {
-    this.syncService.jumpBySeconds(offset)
+    this.syncService.jumpBySeconds(offset);
   }
 
   tenSecBack() {
@@ -477,7 +502,7 @@ export class VideoComponent implements OnInit {
   startDisplaylingsecondsBack() {
     this.displaySecondsBack = true;
     let that = this;
-    let secondsBackTimer = setInterval(function () {
+    let secondsBackTimer = setInterval(function() {
       that.intervalSeconds += 25;
       if (that.intervalSeconds >= 300) {
         that.displaySecondsBack = false;
@@ -489,7 +514,7 @@ export class VideoComponent implements OnInit {
   startDisplaylingsecondsForward() {
     this.displaySecondsForward = true;
     let that = this;
-    let secondsForwardTimer = setInterval(function () {
+    let secondsForwardTimer = setInterval(function() {
       that.intervalSeconds += 25;
       if (that.intervalSeconds >= 300) {
         that.displaySecondsForward = false;
@@ -499,4 +524,3 @@ export class VideoComponent implements OnInit {
     }, 25);
   }
 }
-

@@ -8,6 +8,7 @@ import { User } from './user';
 import { Video } from '../video/video';
 import { SearchQuery } from './search-query';
 import { ImportedPlaylist } from '../video/playlist';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-sync-tube',
@@ -110,13 +111,14 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   //restliche daten die wir brauchen vom server z.B. users in raum, playlist etc
   users: User[];
+  kickedUsers: User[];
   playbackRates: number[];
   chatMessages: ChatMessage[] = [];
   searchResults: Video[] = [];
   playlist: Video[] = [];
   videoDuration: number;
   receivedPlayerState: number;
-  publicRaeume: Raum[];
+  publicRaeume: Observable<Raum[]>;
   importedPlaylist: ImportedPlaylist;
   hasImportedPlaylist: boolean = false;
 
@@ -189,6 +191,9 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.createRaum();
   }
 
+  sendPardonKickedUser(kickedUser: User){
+    this.syncService.sendPardonKickedUser(this.getUser(), this.getRaumId(), kickedUser);
+  }
 
   sendToggleMuteUser(user: User) {
     this.syncService.sendToggleMuteUser(this.getUser(), this.getRaumId(), user);
@@ -303,7 +308,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
       this.hasImportedPlaylist = false;
       this.searchResults = [];
 
-      this.syncService.searchPlaylist(video_.playlistId, false);
+      this.syncService.searchPlaylist(video_.playlistId, false, null, video_.title);
     }
   }
 
@@ -371,10 +376,6 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   getUser(): User {
     return this.user;
-  }
-
-  setPublicRaeume(publicRaeume: Raum[]) {
-    this.publicRaeume = publicRaeume;
   }
 
   toAdmin(designatedUser: User) {
