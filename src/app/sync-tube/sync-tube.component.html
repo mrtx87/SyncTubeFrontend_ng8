@@ -2,6 +2,9 @@
   <div class="top-panel-left">
     <!--<h3 class="page-title"><a href="http://localhost:4200" style="color:white"> XXXXX</a></h3>-->
     <a href="http://localhost:4200"><img class="s2glogo" src="assets/stream2gether.png" /></a>
+    <select (change)="switchSelectedApi(event)" [(ngModel)]="selectedApi" *ngIf="raumId && user.admin">
+      <option *ngFor="let supportedApi_ of supportedApis"  [ngValue]="supportedApi_"  >{{supportedApi_.name}} </option>
+    </select>
     <input *ngIf="raumId && user.admin" (keyup.enter)="search()" [(ngModel)]="searchInput" class="user-query"
       type="text" />
     <div class="room-status-panel">
@@ -53,7 +56,7 @@
       <div (click)="joinRaumById(pRoom.raumId)" class="room-preview" *ngFor="let pRoom of publicRaeume | async">
         <div class="public-room-title ellipsis">#{{ pRoom.raumTitle }}</div>
         <div class="public-room-row">
-          <img *ngIf="pRoom.video" class="thumbnail" src="https://img.youtube.com/vi/{{ pRoom.video.videoId }}/0.jpg" />
+          <img *ngIf="pRoom.video" class="thumbnail" src="{{pRoom.video.thumbnail}}" />
           <img *ngIf="!pRoom.video" class="thumbnail" src="https://i.ytimg.com/vi/UH1ThWZ9hXU/hqdefault.jpg" />
           <div class="public-room-infos">
             <div class="public-room-description ellipsis">
@@ -101,7 +104,7 @@
         <ng-template ngFor let-video_ [ngForOf]="searchResults">
           <div *ngIf="!video_.isPlaylistLink" class="search-result-video" title="{{ video_.description }}">
             <div (click)="sendAddVideoToPlaylistAsNext(video_)">
-              <img class="search-result-thumbnail" src="https://img.youtube.com/vi/{{ video_.videoId }}/0.jpg" />
+              <img class="search-result-thumbnail" src="{{ video_.thumbnail }}" />
             </div>
             <div class="search-result-infos">
               <span (click)="sendAddVideoToPlaylistAsNext(video_)">{{ video_.title }}
@@ -162,7 +165,7 @@
             " *ngFor="let chatMessage of chatMessages">
             <!-- Normal Messages Containers -->
             <div class="message-row-container" *ngIf="
-                chatMessage.type === 'text-insert-user-message' &&
+                chatMessage.type === 'insert-user-message' &&
                 chatMessage.user.userId != user.userId
               ">
               <div class="userid-container">
@@ -179,7 +182,7 @@
 
             <div class="message-row-container-user" *ngIf="
                 chatMessage.type === 'insert-user-message' &&
-                chatMessage.user.userId == user.userId
+                chatMessage.user.userId === user.userId
               ">
               <div class="text-container">
                 <div>{{ chatMessage.messageText }}</div>
@@ -328,7 +331,7 @@
               <img *ngIf="video.id === pvideo_.id" src="assets/play-button.svg" />
             </div>
             <div (click)="sendSwitchPlaylistVideo(pvideo_)">
-              <img class="playlist-thumbnail" src="https://img.youtube.com/vi/{{ pvideo_.videoId }}/0.jpg" />
+              <img class="playlist-thumbnail" src="{{pvideo_.thumbnail}}" />
             </div>
             <div class="playlist-video-data">
               <!-- title="{{pvideo_.description}}"> -->

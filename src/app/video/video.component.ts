@@ -122,10 +122,6 @@ export class VideoComponent implements OnInit {
     this.iframe = iframe;
   }
 
-  getCaptions() {
-    this.syncService.getCaptions(this.getCurrentVideo());
-  }
-
   processVideoIfLoaded(that: VideoComponent) {
     let wait = setInterval(function() {
       if (that.player.getPlayerState() == SyncService.playing) {

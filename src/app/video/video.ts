@@ -1,7 +1,8 @@
 export class Video {
 
     id: string;
-
+    api:number;
+    
     isPlaylistLink?: boolean;
     thumbnail?: string; 
     playlistId?: string;

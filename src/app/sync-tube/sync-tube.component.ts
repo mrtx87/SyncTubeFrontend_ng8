@@ -9,6 +9,7 @@ import { Video } from '../video/video';
 import { SearchQuery } from './search-query';
 import { ImportedPlaylist } from '../video/playlist';
 import { Observable } from 'rxjs';
+import { SupportedApi } from '../supported-api';
 
 @Component({
   selector: 'app-sync-tube',
@@ -19,53 +20,11 @@ import { Observable } from 'rxjs';
 
 export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
-  ngAfterViewChecked(): void {
-
-    this.scrollChat = document.getElementById("scrollChat")
-    this.scrollContent = document.getElementById("scrollContent")
-
-    if (this.forceScrollToSearch) {
-      this.scrollToSearchResults();
-      this.forceScrollToSearch = false;
-    }
 
 
-    if (this.forceScrollToVideo) {
-      this.scrollToSearchVideo();
-      this.forceScrollToVideo = false;
-    }
-
-    /*
-    if (this.scrollChat && this.forceScrollToChatBottom) {
-      this.scrollChat.scrollTop = this.scrollChat.scrollHeight;
-    }*/
-
-
-    if (this.scrollChat && this.forceScrollToChatBottom) {
-      this.scrollToBottomOfChat();
-      this.forceScrollToChatBottom = false;
-    }
-  }
-
-  scrollToSearchVideo() {
-    this.scrollContent.scrollTop = 0;
-  }
-
-  scrollToBottomOfChat() {
-    //if (Math.abs(this.scrollChat.scrollHeight - this.scrollChat.scrollTop) < 100) {
-    this.scrollChat.scrollTop = this.scrollChat.scrollHeight + 25;
-    //}
-  }
-
-  scrollToSearchResults() {
-    this.scrollContent.scrollTop = this.scrollContent.scrollHeight * 0.4;
-  }
-
-  @HostListener('window:beforeunload', ['$event'])
-  beforeunloadHandler($event: any) {
-    this.syncService.sendDisconnectMessage(this.user, this.raumId);
-    this.syncService.localCloseConnection();
-  }
+  //APIS STUFF
+  supportedApis: SupportedApi[];
+  selectedApi: SupportedApi;
 
   publicRaum: boolean = false;
   privateRaum: boolean = true;
@@ -137,14 +96,68 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   designatedAdmin: User;
   kickingUser: User;
   revealContent: Boolean = false;
+
   constructor(private syncService: SyncService, private route: ActivatedRoute) {
 
     this.syncService.registerSyncTubeComponent(this);
+
+    this.syncService.retrieveSupportedApis();
+
     this.connect();
   }
 
   connect() {
     this.syncService.connect();
+  }
+
+
+
+  ngAfterViewChecked(): void {
+
+    this.scrollChat = document.getElementById("scrollChat")
+    this.scrollContent = document.getElementById("scrollContent")
+
+    if (this.forceScrollToSearch) {
+      this.scrollToSearchResults();
+      this.forceScrollToSearch = false;
+    }
+
+
+    if (this.forceScrollToVideo) {
+      this.scrollToSearchVideo();
+      this.forceScrollToVideo = false;
+    }
+
+    /*
+    if (this.scrollChat && this.forceScrollToChatBottom) {
+      this.scrollChat.scrollTop = this.scrollChat.scrollHeight;
+    }*/
+
+
+    if (this.scrollChat && this.forceScrollToChatBottom) {
+      this.scrollToBottomOfChat();
+      this.forceScrollToChatBottom = false;
+    }
+  }
+
+  scrollToSearchVideo() {
+    this.scrollContent.scrollTop = 0;
+  }
+
+  scrollToBottomOfChat() {
+    //if (Math.abs(this.scrollChat.scrollHeight - this.scrollChat.scrollTop) < 100) {
+    this.scrollChat.scrollTop = this.scrollChat.scrollHeight + 25;
+    //}
+  }
+
+  scrollToSearchResults() {
+    this.scrollContent.scrollTop = this.scrollContent.scrollHeight * 0.4;
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  beforeunloadHandler($event: any) {
+    this.syncService.sendDisconnectMessage(this.user, this.raumId);
+    this.syncService.localCloseConnection();
   }
 
   setVideoDuration(duration: number) {
@@ -191,7 +204,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.createRaum();
   }
 
-  sendPardonKickedUser(kickedUser: User){
+  sendPardonKickedUser(kickedUser: User) {
     this.syncService.sendPardonKickedUser(this.getUser(), this.getRaumId(), kickedUser);
   }
 
@@ -214,6 +227,11 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   togglePlaylistRunningOrder() {
     //this.randomOrder = !this.randomOrder;
     this.syncService.sendTogglePlaylistRunningOrder(this.getUser(), this.getRaumId(), this.randomOrder);
+  }
+
+  switchSelectedApi() {
+    
+    console.log(this.selectedApi);
   }
 
   clearRoomVars() {
@@ -264,35 +282,13 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.importedPlaylist = new ImportedPlaylist();
     this.hasImportedPlaylist = false;
     this.searchResults = [];
-    let searchQuery: SearchQuery = this.syncService.processInput(this.searchInput);
-    if (searchQuery) {
+    let searchQuery: SearchQuery = this.syncService.dataService().processInput(this.searchInput);
+    this.forceScrollToSearch = this.syncService.dataService().search(searchQuery);
 
-      if (searchQuery.playlistId) {
-        console.log("playlist-ID: " + searchQuery.playlistId)
-        this.syncService.searchPlaylist(searchQuery.playlistId, false);
-        this.forceScrollToSearch = true;
-        return;
-      }
-      if (searchQuery.videoId) {
-        //this.sendNewVideoLink(video);
-        this.syncService.search(searchQuery.videoId, false, searchQuery.timestamp);
-        this.forceScrollToSearch = true;
-        return;
-      }
     }
-
-    this.syncService.search(searchQuery.query, true);
-    this.forceScrollToSearch = true;
-
-  }
 
   getReceivedPlayerState(): number {
     return this.receivedPlayerState;
-  }
-
-  sendNewVideo(video: Video) {
-    this.forceScrollToVideo = true;
-    this.syncService.sendNewVideoAndGetTitleFirst(this.user, this.raumId, video);
   }
 
   sendSwitchPlaylistVideo(pvideo_: Video) {
@@ -303,12 +299,12 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
   openPlaylistLink(video_: Video) {
-    if(video_.playlistId) {
+    if (video_.playlistId) {
       this.importedPlaylist = new ImportedPlaylist();
       this.hasImportedPlaylist = false;
       this.searchResults = [];
 
-      this.syncService.searchPlaylist(video_.playlistId, false, null, video_.title);
+      this.syncService.dataService().searchPlaylist(video_.playlistId, false, null, video_.title);
     }
   }
 

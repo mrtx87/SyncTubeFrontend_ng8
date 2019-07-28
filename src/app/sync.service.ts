@@ -7,12 +7,18 @@ import { VideoComponent } from "./video/video.component";
 import { SyncTubeComponent } from "./sync-tube/sync-tube.component";
 import { ChatMessage } from "./chat-message";
 import { User } from "./sync-tube/user";
-import { HttpClient, HttpParams } from "@angular/common/http";
+import { HttpClient, HttpParams, HttpXsrfTokenExtractor } from "@angular/common/http";
 import { Video } from "./video/video";
 import { CookieService } from "ngx-cookie-service";
 import { SearchQuery } from "./sync-tube/search-query";
 import { ImportedPlaylist } from "./video/playlist";
 import { Observable } from 'rxjs';
+import { IDataService } from './idata-service';
+import { SupportedApi } from './supported-api';
+import { YoutubeDataService } from './youtube-dataservice';
+import { SupportedApiType } from './supported-api-type';
+import { DailymotionDataService } from './dailymotion.dataservice';
+import { VimeoDataService } from './vimeo.dataservice.';
 
 @Injectable({
   providedIn: "root"
@@ -28,6 +34,9 @@ export class SyncService {
 
   static cookieKey: string = "U_COOKIE";
 
+  supportedApis: SupportedApi[];
+
+  private dataServices: Map<Number, IDataService>;
   /***
    *
    * add chromecast connection (** laterlater**)
@@ -42,7 +51,65 @@ export class SyncService {
   synctubeComponent: SyncTubeComponent;
   videoComponent: VideoComponent;
 
-  constructor(private http: HttpClient, private cookieService: CookieService) {}
+
+
+
+  constructor(private http: HttpClient, private cookieService: CookieService) {
+
+  }
+
+  retrieveSupportedApis() {
+    this.http.get("http://localhost:8080/supported-apis", {}).subscribe(response => {
+      if (this.synctubeComponent) {
+        this.synctubeComponent.supportedApis = <SupportedApi[]>response
+        this.synctubeComponent.selectedApi = this.synctubeComponent.supportedApis[0];
+        this.supportedApis = <SupportedApi[]>response;
+      } else {
+        this.supportedApis = <SupportedApi[]>response;
+      }
+      this.buildAvailableDataServices();
+    });
+  }
+
+  dataService(): IDataService {
+    return this.dataServices.get(this.getSelectedApi().id);
+  }
+
+  getSelectedApi(): SupportedApi {
+    return this.synctubeComponent.selectedApi;
+  }
+
+  buildAvailableDataServices() {
+    if (!this.dataServices && this.supportedApis) {
+      this.dataServices = new Map<Number, IDataService>();
+      for (let supportedApi of this.supportedApis) {
+        switch (supportedApi.id) {
+          case SupportedApiType.Youtube:
+            let youTubeDataService: YoutubeDataService = new YoutubeDataService(this.http, this.synctubeComponent, SupportedApiType.Youtube, supportedApi.name);
+            this.dataServices.set(SupportedApiType.Youtube, youTubeDataService);
+            console.log("Successfully generated api: " + youTubeDataService.name);
+
+            break;
+          case SupportedApiType.Dailymotion:
+            let dailymotionDataService: DailymotionDataService = new DailymotionDataService(this.http, this.synctubeComponent, SupportedApiType.Dailymotion, supportedApi.name);
+            this.dataServices.set(SupportedApiType.Dailymotion, dailymotionDataService);
+            console.log("Successfully generated api: " + dailymotionDataService.name);
+            break;
+          case SupportedApiType.Vimeo: 
+            let vimeoDataService: VimeoDataService = new VimeoDataService(this.http, this.synctubeComponent, SupportedApiType.Vimeo, supportedApi.name);
+            this.dataServices.set(SupportedApiType.Vimeo, vimeoDataService);
+            console.log("Successfully generated api: " + vimeoDataService.name);
+          
+            break;
+
+          default:
+            break;
+        }
+      }
+      return;
+    }
+    console.log("Couldn't build Apis")
+  }
 
   registerSyncTubeComponent(synctubeComponent: SyncTubeComponent) {
     this.synctubeComponent = synctubeComponent;
@@ -74,15 +141,8 @@ export class SyncService {
     this.stompClient = Stomp.over(this.ws);
     let that = this;
 
-    this.stompClient.connect({}, function() {
-      that.stompClient.subscribe("/chat/" + user.userId, messageFromServer => {
-        if (messageFromServer.body) {
-          console.log("[RESPONSE FROM SERVER]: " + messageFromServer.body);
-          let message: Message = JSON.parse(messageFromServer.body);
-            that.handleMessage(message);
-          
-        }
-      });
+    this.stompClient.connect({}, function () {
+      that.stompClient.subscribe("/chat/" + user.userId, messageFromServer => that.handleServerResponse(messageFromServer));
 
       let raumId: number = that.synctubeComponent.getPathId();
       if (raumId) {
@@ -92,6 +152,14 @@ export class SyncService {
         that.synctubeComponent.revealContent = true;
       }
     });
+  }
+
+  handleServerResponse(messageFromServer: any) {
+    if (messageFromServer.body) {
+      console.log("[RESPONSE FROM SERVER]: " + messageFromServer.body);
+      let message: Message = JSON.parse(messageFromServer.body);
+      this.handleMessage(message);
+    }
   }
 
   handleMessage(message: Message) {
@@ -344,7 +412,7 @@ export class SyncService {
       this.synctubeComponent.forceScrollToChatBottom = true;
 
       let that = this;
-      let wait = setInterval(function() {
+      let wait = setInterval(function () {
         if (that.getPlayerState() == SyncService.playing) {
           that.setVideoDuration();
           that.setPlaybackRates();
@@ -415,27 +483,11 @@ export class SyncService {
     );
   }
 
-  getCaptions(video: Video) {
-    let that = this;
-    this.http
-      .get(
-        "https://www.googleapis.com/youtube/v3/captions?part=snippet&videoId=" +
-          video.videoId +
-          "&key=" +
-          this.APIKEY
-      )
-      .subscribe(data => {
-        let data_: any = data;
-        that.videoComponent.captions = data_.items;
-        console.log(that.videoComponent.captions);
-      });
-  }
-
   sendRequestPublicRaeume() {
     console.log("[request public rooms]");
-    this.synctubeComponent.publicRaeume = <Observable<Raum[]>> this.http
+    this.synctubeComponent.publicRaeume = <Observable<Raum[]>>this.http
       .get("http://localhost:8080/publicrooms/userId/" + this.getUserId(), {})
-      
+
   }
 
   sendChatMessage(message: Message) {
@@ -587,20 +639,6 @@ export class SyncService {
     );
   }
 
-  sendNewVideoAndGetTitleFirst(user: User, raumId: number, video: Video) {
-    let that = this;
-    this.http
-      .get(
-        "https://noembed.com/embed?url=https://www.youtube.com/watch?v=" +
-          video.videoId
-      )
-      .subscribe(data => {
-        let data_: any = data;
-        video.title = data_.title;
-        that.sendNewVideo(user, raumId, video);
-      });
-  }
-
   sendToggleMuteUser(user: User, raumId: number, assignedUser: User) {
     console.log(assignedUser);
     this.stompClient.send(
@@ -618,32 +656,35 @@ export class SyncService {
     );
   }
 
-  APIKEY: string = "AIzaSyBJKPvOKMDqPzaR-06o1-Mfixvq2CRlS5M";
-
-  search(query: string, mode: boolean, timestamp?: number) {
-    let params: HttpParams = new HttpParams();
-    params.append("q", query);
-    this.http
-      .get(
-        "https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&key=" +
-          this.APIKEY +
+  /*
+    searchQuery(query: string, normalQuery: boolean, timestamp?: number) {
+      let params: HttpParams = new HttpParams();
+      params.append("q", query);
+      this.http
+        .get(
+          "https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&key=" +
+          '' +
           "&q=" +
           query
-      )
-      .subscribe(response => {
-        console.log(response);
-        let data: any = response;
-        let items: any[] = data.items;
-        let vids: Video[] = items
-          .filter(
-            i =>
-              i.id.kind === "youtube#playlist" || i.id.kind === "youtube#video"
-          )
-          .map(item => {
-            let video: Video = new Video();
-            if (item.id.kind === "youtube#playlist") {
-              video.isPlaylistLink = true;
-              video.playlistId = item.id.playlistId;
+        )
+        .subscribe(response => {
+          console.log(response);
+          let data: any = response;
+          let items: any[] = data.items;
+          let vids: Video[] = items
+            .filter(
+              i =>
+                i.id.kind === "youtube#playlist" || i.id.kind === "youtube#video"
+            )
+            .map(item => {
+              let video: Video = new Video();
+              if (item.id.kind === "youtube#playlist") {
+                video.isPlaylistLink = true;
+                video.playlistId = item.id.playlistId;
+              } else {
+                video.videoId = item.id.videoId;
+              }
+  
               if (item.snippet.thumbnails.high) {
                 video.thumbnail = item.snippet.thumbnails.high.url;
               } else if (item.snippet.thumbnails.medium) {
@@ -651,81 +692,86 @@ export class SyncService {
               } else {
                 video.thumbnail = item.snippet.thumbnails.default.url;
               }
-            } else {
-              video.videoId = item.id.videoId;
+              video.title = item.snippet.title;
+              video.description = item.snippet.description;
+              video.publishedAt = item.snippet.publishedAt;
+              return video;
+            });
+          if (normalQuery) {
+            this.synctubeComponent.searchResults = vids;
+          } else {
+            let vid: Video = vids[0];
+            if (timestamp) {
+              vid.timestamp = timestamp;
             }
-            video.title = item.snippet.title;
-            video.description = item.snippet.description;
-            video.publishedAt = item.snippet.publishedAt;
-            return video;
-          });
-        if (mode) {
-          this.synctubeComponent.searchResults = vids;
-        } else {
-          let vid: Video = vids[0];
-          if (timestamp) {
-            vid.timestamp = timestamp;
+            this.synctubeComponent.searchResults = [vid];
           }
-          this.synctubeComponent.searchResults = [vid];
-        }
-      });
-  }
-
-  searchPlaylist(query: string, mode: boolean, nextPageToken?: string, title?: string) {
-    let params: HttpParams = new HttpParams();
-    params.append("q", query);
-    this.http
-      .get(
-        "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50" +
-          (nextPageToken  ? "&pageToken=" + nextPageToken : "") +
+        });
+    }
+  
+    searchPlaylist(query: string, mode: boolean, nextPageToken?: string, title?: string) {
+      let params: HttpParams = new HttpParams();
+      params.append("q", query);
+      this.http
+        .get(
+          "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50" +
+          (nextPageToken ? "&pageToken=" + nextPageToken : "") +
           "&key=" +
-          this.APIKEY +
+          '' +
           "&playlistId=" +
           query
-      )
-      .subscribe(response => {
-        let data: any = response;
-        let items: any[] = data.items;
-        if (this.synctubeComponent.importedPlaylist) {
-          this.synctubeComponent.importedPlaylist.size =
-            data.pageInfo.totalResults;
-           
-        }
-        let nextPageToken: string = data.nextPageToken;
-        console.log(data);
-        let vids: Video[] = items
-          .filter(i => (i.snippet.resourceId.videoId ? true : false))
-          .map(it => it.snippet)
-          .map(item => {
-            let video: Video = new Video();
-            video.videoId = item.resourceId.videoId;
-            video.title = item.title;
-            video.description = item.description;
-            video.publishedAt = item.publishedAt;
-            return video;
-          });
-
-        if (vids) {
-          for (let vid of vids) {
-            this.synctubeComponent.searchResults.push(vid);
+        )
+        .subscribe(response => {
+          let data: any = response;
+          let items: any[] = data.items;
+          if (this.synctubeComponent.importedPlaylist) {
+            this.synctubeComponent.importedPlaylist.size =
+              data.pageInfo.totalResults;
+  
           }
-          //this.synctubeComponent.searchResults = [...this.synctubeComponent.searchResults, ...vids];
-        }
-
-        if (nextPageToken) {
-          this.searchPlaylist(query, mode, nextPageToken, title);
-        } else {
-          this.synctubeComponent.importedPlaylist = new ImportedPlaylist();
-          this.synctubeComponent.importedPlaylist.items = this.synctubeComponent.searchResults;
-          this.synctubeComponent.importedPlaylist.size = this.synctubeComponent.importedPlaylist.items.length;
-          if(title) {
-            this.synctubeComponent.importedPlaylist.title = title;
+          let nextPageToken: string = data.nextPageToken;
+          console.log(data);
+          let vids: Video[] = items
+            .filter(i => (i.snippet.resourceId.videoId ? true : false))
+            .map(it => it.snippet)
+            .map(item => {
+              let video: Video = new Video();
+              video.videoId = item.resourceId.videoId;
+              video.title = item.title;
+              video.description = item.description;
+              video.publishedAt = item.publishedAt;
+  
+              if (item.snippet.thumbnails.high) {
+                video.thumbnail = item.snippet.thumbnails.high.url;
+              } else if (item.snippet.thumbnails.medium) {
+                video.thumbnail = item.snippet.thumbnails.medium.url;
+              } else {
+                video.thumbnail = item.snippet.thumbnails.default.url;
+              }
+              return video;
+            });
+  
+          if (vids) {
+            for (let vid of vids) {
+              this.synctubeComponent.searchResults.push(vid);
+            }
+            //this.synctubeComponent.searchResults = [...this.synctubeComponent.searchResults, ...vids];
           }
-          this.synctubeComponent.hasImportedPlaylist = true;
-        }
-      });
-  }
-
+  
+          if (nextPageToken) {
+            this.searchPlaylist(query, mode, nextPageToken, title);
+          } else {
+            this.synctubeComponent.importedPlaylist = new ImportedPlaylist();
+            this.synctubeComponent.importedPlaylist.items = this.synctubeComponent.searchResults;
+            this.synctubeComponent.importedPlaylist.size = this.synctubeComponent.importedPlaylist.items.length;
+            if (title) {
+              this.synctubeComponent.importedPlaylist.title = title;
+            }
+            this.synctubeComponent.hasImportedPlaylist = true;
+          }
+        });
+    }
+  */
   sendDisconnectMessage(user: User, raumId: number) {
     console.log("[disconnect-client:] " + user);
     this.stompClient.send(
@@ -823,7 +869,7 @@ export class SyncService {
       // /room/{raumId}/playlist/
       this.http
         .post(
-          "http://localhost:8080/room/" + raumId + "/userId/" + user.userId +"/playlist",
+          "http://localhost:8080/room/" + raumId + "/userId/" + user.userId + "/playlist",
           importedPlaylist
         )
         .subscribe(response => {
@@ -877,9 +923,9 @@ export class SyncService {
   ) {
     console.log(
       "[add-video-to-playlist-asnext:] " +
-        user +
-        " | video: " +
-        playlistvideo.videoId
+      user +
+      " | video: " +
+      playlistvideo.videoId
     );
     if (playlistvideo) {
       this.stompClient.send(
@@ -901,9 +947,9 @@ export class SyncService {
   ) {
     console.log(
       "[add-video-to-playlist-ascurrent:] " +
-        user +
-        " | video: " +
-        playlistvideo.videoId
+      user +
+      " | video: " +
+      playlistvideo.videoId
     );
     if (playlistvideo) {
       this.stompClient.send(
@@ -987,7 +1033,7 @@ export class SyncService {
     return this.videoComponent.isMuted();
   }
 
-  togglePlay() {}
+  togglePlay() { }
 
   toggleMute() {
     if (this.isMuted()) {
@@ -1111,32 +1157,6 @@ export class SyncService {
 
   startDisplaylingsecondsForward() {
     this.videoComponent.startDisplaylingsecondsForward();
-  }
-
-  processInput(input: string): SearchQuery {
-    //if(input.lastIndexOf('/') != -1)
-
-    let paramsIndex: number = input.indexOf("?") + 1;
-    let paramsString: string = input.substring(paramsIndex);
-    let paramsList: string[] = paramsString.split("&");
-
-    let query: SearchQuery = new SearchQuery();
-    query.query = input;
-    for (let param_ of paramsList) {
-      if (param_.startsWith("v=")) {
-        query.videoId = param_.substring(2);
-      } else if (param_.startsWith("t=")) {
-        query.timestamp = parseInt(param_.substring(2));
-      } else if (param_.startsWith("list=")) {
-        query.playlistId = param_.substring(5);
-      } else if (param_.startsWith("start_radio=")) {
-        query.startPlaylistIndex = parseInt(param_.substring(12));
-      } else {
-        console.log("_unkownParam_");
-      }
-    }
-    console.log("parsedVIDEO: " + query);
-    return query;
   }
 
   parseYoutubeUrl(url: string): Video {
