@@ -31,7 +31,13 @@ export class VideoComponent implements OnInit {
   currentTimestamp: number = 0;
   currentTime: number;
   currentTimeProgressbar: number;
-  currentDisplayedTime: number;
+  currentDisplayedTime: number = 0;
+
+  public get currentDisplayingTime(): number {
+    return this.hasPlayer() ? this.getCurrentTime() : 0; 
+  }
+
+
   availableQualitys: string[];
   currentPlaybackQuality: string;
   volumeValue: number = 49;
@@ -42,6 +48,10 @@ export class VideoComponent implements OnInit {
 
   constructor(private syncService: SyncService) {
     this.syncService.registerVideoComponent(this);
+  }
+
+  hasPlayer() : any {
+    return this.player;
   }
 
   listenForPlayerState() {
@@ -100,7 +110,7 @@ export class VideoComponent implements OnInit {
           this.initYoutubePlayer(supportedApi);
           break;
         case SupportedApiType.Dailymotion:
-          this.initDailymotionPlayer(supportedApi);
+          //this.initDailymotionPlayer(supportedApi);
           break;
         case SupportedApiType.Vimeo:
           break;
