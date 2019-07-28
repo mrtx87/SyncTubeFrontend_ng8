@@ -73,6 +73,12 @@
   <!-- Youtube video -->
   <div  [className]="!syncService.synctubeComponent.displayFullscreen ? 'video' : 'video-fullscreen'" id="youtubeplayer">
   </div>
+<!--
+  <div [hidden]="true"  [className]="!syncService.synctubeComponent.displayFullscreen ? 'video' : 'video-fullscreen'" id="dailymotionplayer">
+  </div>
+
+  <div [hidden]="true"  [className]="!syncService.synctubeComponent.displayFullscreen ? 'video' : 'video-fullscreen'" id="vimeoplayer">
+  </div> -->
 
    <div *ngIf="displaySecondsBack" class="middle-back-seconds-overlay">
     <img src="assets/back10sec.png">

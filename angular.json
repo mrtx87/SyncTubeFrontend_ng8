@@ -26,7 +26,10 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "src/assets/js/player.js",
+              "src/assets/js/all.js"
+            ]
           },
           "configurations": {
             "production": {

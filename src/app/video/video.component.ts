@@ -6,7 +6,12 @@ import { User } from "../sync-tube/user";
 import { SupportedApiType } from '../supported-api-type';
 import { SupportedApi } from '../supported-api';
 import { YoutubeDataService } from '../youtube-dataservice';
-import { all } from 'q';
+import { DailymotionDataService } from '../dailymotion.dataservice';
+import { VimeoDataService } from '../vimeo.dataservice.';
+import { YoutubeVideoService } from '../youtube.video.service';
+declare const DM: any;
+declare const Vimeo: any;
+
 
 @Component({
   selector: "app-video",
@@ -34,7 +39,7 @@ export class VideoComponent implements OnInit {
   currentDisplayedTime: number = 0;
 
   public get currentDisplayingTime(): number {
-    return this.hasPlayer() ? this.getCurrentTime() : 0; 
+    return this.hasPlayer() ? this.getCurrentTime() : 0;
   }
 
 
@@ -50,7 +55,7 @@ export class VideoComponent implements OnInit {
     this.syncService.registerVideoComponent(this);
   }
 
-  hasPlayer() : any {
+  hasPlayer(): any {
     return this.player;
   }
 
@@ -113,14 +118,19 @@ export class VideoComponent implements OnInit {
           //this.initDailymotionPlayer(supportedApi);
           break;
         case SupportedApiType.Vimeo:
+          //this.initVimeoPlayer(supportedApi);
           break;
 
       }
     }
+    let player: HTMLElement = document.getElementById("youtubeplayer");
+    console.log(player)
+    player.hidden = true;
+
   }
 
 
-  initYoutubePlayer(supportedApi: SupportedApi) : YoutubeDataService {
+  initYoutubePlayer(supportedApi: SupportedApi): YoutubeDataService {
     let that = this;
     let videoPlayer;
     window["onYouTubeIframeAPIReady"] = e => {
@@ -158,21 +168,32 @@ export class VideoComponent implements OnInit {
     };
     return null;
   }
- DM: any;
 
 
-  initDailymotionPlayer(supportedApi: SupportedApi) {
-    let videoPlayer = this.DM.player(document.getElementById(supportedApi.name + "player"), {
+  initDailymotionPlayer(supportedApi: SupportedApi): DailymotionDataService {
+    let videoPlayer = DM.player(document.getElementById(supportedApi.name + "player"), {
       video: "xwr14q",
       width: "100%",
       height: "100%",
       params: {
-          autoplay: true,
-          mute: true
+        autoplay: true,
+        mute: true
       }
-  });
+    });
+    return null;
   }
+  initVimeoPlayer(supportedApi: SupportedApi) : VimeoDataService {
+    let videoPlayer = new Vimeo.Player(document.getElementById(supportedApi.name + "player"));
 
+    videoPlayer.on('play', function () {
+      console.log('Played the video');
+    });
+
+    videoPlayer.getVideoTitle().then(function (title) {
+      console.log('title:', title);
+    });
+    return null;
+  }
 
   processVideoIfLoaded(that: VideoComponent) {
     let wait = setInterval(function () {
