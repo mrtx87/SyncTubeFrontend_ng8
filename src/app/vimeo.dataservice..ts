@@ -12,7 +12,7 @@ import { VimeoVideo } from './vimeo.video ';
 export class VimeoDataService implements IDataService {
   
 
-  type: number;
+  id: number;
   name: string;
   http: HttpClient;
   synctubeComponent: SyncTubeComponent;
@@ -21,7 +21,7 @@ export class VimeoDataService implements IDataService {
   constructor(http: HttpClient, synctubeComponent: SyncTubeComponent, type: number, name: string) {
     this.http = http;
     this.synctubeComponent = synctubeComponent;
-    this.type = type;
+    this.id = type;
     this.name = name;
   }
 
@@ -156,7 +156,7 @@ export class VimeoDataService implements IDataService {
     video.publishedAt = vimeoVideo.created_time;
     video.thumbnail = vimeoVideo.pictures.sizes[3].link;
     video.title = vimeoVideo.description;
-    video.api = this.type;
+    video.api = this.id;
     return video;
   }
 

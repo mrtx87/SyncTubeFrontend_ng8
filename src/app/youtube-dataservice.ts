@@ -9,7 +9,7 @@ import { SearchQuery } from './sync-tube/search-query';
 
 export class YoutubeDataService implements IDataService {
 
-    type: number;
+    id: number;
     name: string;
     http: HttpClient;
     synctubeComponent: SyncTubeComponent;
@@ -18,7 +18,7 @@ export class YoutubeDataService implements IDataService {
     constructor(http: HttpClient, synctubeComponent: SyncTubeComponent, type: number, name: string) {
         this.http = http;
         this.synctubeComponent = synctubeComponent;
-        this.type = type;
+        this.id = type;
         this.name = name;
     }
 
@@ -176,7 +176,7 @@ mapVideo(item: any) : Video {
     } else {
         video.thumbnail = item.thumbnails.default.url;
     }
-    video.api = this.type;
+    video.api = this.id;
     return video;
 }
 

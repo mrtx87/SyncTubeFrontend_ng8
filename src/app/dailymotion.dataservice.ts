@@ -11,7 +11,7 @@ import { SearchQuery } from './sync-tube/search-query';
 export class DailymotionDataService implements IDataService {
 
 
-  type: number;
+  id: number;
   name: string;
   http: HttpClient;
   synctubeComponent: SyncTubeComponent;
@@ -20,7 +20,7 @@ export class DailymotionDataService implements IDataService {
   constructor(http: HttpClient, synctubeComponent: SyncTubeComponent, type: number, name: string) {
     this.http = http;
     this.synctubeComponent = synctubeComponent;
-    this.type = type;
+    this.id = type;
     this.name = name;
   }
 
@@ -155,7 +155,7 @@ export class DailymotionDataService implements IDataService {
     video.description = dmVideo.description;
     video.thumbnail = dmVideo.thumbnail_480_url;
     video.title = dmVideo.title;
-    video.api = this.type;
+    video.api = this.id;
     return video;
   }
 

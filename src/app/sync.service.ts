@@ -37,6 +37,14 @@ export class SyncService {
   supportedApis: SupportedApi[];
 
   private dataServices: Map<Number, IDataService>;
+
+  get dataService(): IDataService {
+      return this.dataServices.get(this.getSelectedApi().id);
+  }
+  set dataService(value: IDataService) {
+      this.dataServices.set(value.id, value);
+  }
+
   /***
    *
    * add chromecast connection (** laterlater**)
@@ -71,9 +79,10 @@ export class SyncService {
     });
   }
 
+  /*
   dataService(): IDataService {
     return this.dataServices.get(this.getSelectedApi().id);
-  }
+  }*/
 
   getSelectedApi(): SupportedApi {
     return this.synctubeComponent.selectedApi;
@@ -86,18 +95,18 @@ export class SyncService {
         switch (supportedApi.id) {
           case SupportedApiType.Youtube:
             let youTubeDataService: YoutubeDataService = new YoutubeDataService(this.http, this.synctubeComponent, SupportedApiType.Youtube, supportedApi.name);
-            this.dataServices.set(SupportedApiType.Youtube, youTubeDataService);
+            this.dataService = youTubeDataService;
             console.log("Successfully generated api: " + youTubeDataService.name);
 
             break;
           case SupportedApiType.Dailymotion:
             let dailymotionDataService: DailymotionDataService = new DailymotionDataService(this.http, this.synctubeComponent, SupportedApiType.Dailymotion, supportedApi.name);
-            this.dataServices.set(SupportedApiType.Dailymotion, dailymotionDataService);
+            this.dataService = dailymotionDataService;
             console.log("Successfully generated api: " + dailymotionDataService.name);
             break;
           case SupportedApiType.Vimeo: 
             let vimeoDataService: VimeoDataService = new VimeoDataService(this.http, this.synctubeComponent, SupportedApiType.Vimeo, supportedApi.name);
-            this.dataServices.set(SupportedApiType.Vimeo, vimeoDataService);
+            this.dataService = vimeoDataService;
             console.log("Successfully generated api: " + vimeoDataService.name);
           
             break;

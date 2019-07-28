@@ -282,8 +282,8 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.importedPlaylist = new ImportedPlaylist();
     this.hasImportedPlaylist = false;
     this.searchResults = [];
-    let searchQuery: SearchQuery = this.syncService.dataService().processInput(this.searchInput);
-    this.forceScrollToSearch = this.syncService.dataService().search(searchQuery);
+    let searchQuery: SearchQuery = this.syncService.dataService.processInput(this.searchInput);
+    this.forceScrollToSearch = this.syncService.dataService.search(searchQuery);
 
     }
 
@@ -304,7 +304,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
       this.hasImportedPlaylist = false;
       this.searchResults = [];
 
-      this.syncService.dataService().searchPlaylist(video_.playlistId, false, null, video_.title);
+      this.syncService.dataService.searchPlaylist(video_.playlistId, false, null, video_.title);
     }
   }
 

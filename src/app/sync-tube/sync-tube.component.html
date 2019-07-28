@@ -83,8 +83,9 @@
     <!-- (keyup.arrowleft)="tenSecBack()" -->
 
     <div #scrollContent id="scrollContent" [className]="!displayFullscreen ? 'video-content' : 'display-fullscreen'">
+
       <!-- Video Component-->
-      <app-video></app-video>
+      <app-video [hidden]="selectedApi.id !== 1"></app-video>
 
       <div *ngIf="raumId && user.admin && !displayFullscreen && !displayCinemaMode" class="search-results-container">
         <div class="seachresults-buttons-container" [hidden]="!importedPlaylist">
