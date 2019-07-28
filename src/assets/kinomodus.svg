@@ -1,0 +1,29 @@
+<svg width="488.4" height="488.4" xmlns="http://www.w3.org/2000/svg">
+
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="402" width="582" y="-1" x="-1"/>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <g id="svg_8"/>
+  <g id="svg_9"/>
+  <g id="svg_10"/>
+  <g id="svg_11"/>
+  <g id="svg_12"/>
+  <g id="svg_13"/>
+  <g id="svg_14"/>
+  <g id="svg_15"/>
+  <g id="svg_16"/>
+  <g id="svg_17"/>
+  <g id="svg_18"/>
+  <g id="svg_19"/>
+  <g id="svg_20"/>
+  <g id="svg_21"/>
+  <g id="svg_22"/>
+  <path stroke="#000" id="svg_29" d="m0.99887,118.39503l37,0l0,253.00004l-37,0l0,-253.00004z" stroke-width="1.5" fill="#000000"/>
+  <path stroke="#000" id="svg_28" d="m449.99887,118.39503l37,0l0,253.00004l-37,0l0,-253.00004z" stroke-width="1.5" fill="#000000"/>
+  <path stroke="#000" transform="rotate(90 244.99887084960938,136.89505004882815) " id="svg_30" d="m226.49887,-105.10496l37,0l0,484.00002l-37,0l0,-484.00002z" stroke-width="1.5" fill="#000000"/>
+  <path stroke="#000" transform="rotate(90 243.99887084960935,353.8950500488282) " id="svg_24" d="m225.49887,111.895041l37.000002,0l0,484.000017l-37.000002,0l0,-484.000017z" stroke-width="1.5" fill="#000000"/>
+ </g>
+</svg>

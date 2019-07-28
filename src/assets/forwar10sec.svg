@@ -1,0 +1,29 @@
+<svg width="41.999" height="41.999" xmlns="http://www.w3.org/2000/svg">
+
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="402" width="582" y="-1" x="-1"/>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <g id="svg_2"/>
+  <g id="svg_3"/>
+  <g id="svg_4"/>
+  <g id="svg_5"/>
+  <g id="svg_6"/>
+  <g id="svg_7"/>
+  <g id="svg_8"/>
+  <g id="svg_9"/>
+  <g id="svg_10"/>
+  <g id="svg_11"/>
+  <g id="svg_12"/>
+  <g id="svg_13"/>
+  <g id="svg_14"/>
+  <g id="svg_15"/>
+  <g id="svg_16"/>
+  <path transform="rotate(180 17.899051666259766,21.037275314331055) " stroke="null" id="svg_24" d="m28.283656,7.76399l-9.69175,13.27408l9.69175,13.27407l-5.53874,7.59052l-15.23049,-20.86459l15.23049,-20.86618" fill-opacity="null" stroke-opacity="null" stroke-width="null" fill="null"/>
+  <path transform="rotate(180 31.697078704833984,20.989202499389652) " stroke="null" id="svg_19" d="m41.841353,7.685333l-9.467414,13.304666l9.467414,13.304654l-5.410528,7.60801l-14.877933,-20.912662l14.877933,-20.914261" fill-opacity="null" stroke-opacity="null" stroke-width="null" fill="null"/>
+  <text xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="10" id="svg_22" y="24.503106" x="0.278344" fill-opacity="null" stroke-opacity="null" stroke-width="0" stroke="null" fill="#000000">10</text>
+  <text xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="6" id="svg_23" y="24.59926" x="11.336037" fill-opacity="null" stroke-opacity="null" stroke-width="0" stroke="null" fill="#000000">s</text>
+ </g>
+</svg>
