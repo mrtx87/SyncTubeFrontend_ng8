@@ -51,6 +51,9 @@ export class SyncService {
     return this.apiServices.get(this.getSelectedApi().id);
   }
 
+  getApiServiceByKey(key: Number): ApiService{
+    return this.apiServices.get(key);
+  }
 
   /***
    *
@@ -417,7 +420,7 @@ export class SyncService {
       this.setInitalPlaybackRate(message.currentPlaybackRate);
     }
     if (this.videoComponent) {
-      this.videoComponent.availableQualitys = this.videoComponent.getAvailableQualityLevels();
+      //this.videoComponent.availableQualitys = this.videoComponent.getAvailableQualityLevels();
     }
   }
 
@@ -1109,20 +1112,16 @@ export class SyncService {
   }
 
   toggleSubtitle(_module, option, value) {
-    this.setOption(_module, option, value);
-  }
-
-  setOption(_module, option, value) {
-    this.videoComponent.setOption(_module, option, value);
   }
 
   toggleDisplayOptions() {
     this.videoComponent.toggleDisplayOptions();
   }
 
+  /*
   setSize(width: number, height: number) {
     this.videoComponent.setSize(width, height);
-  }
+  }*/
 
   toggleFullscreen() {
     this.videoComponent.toggleDisplayFullscreen();

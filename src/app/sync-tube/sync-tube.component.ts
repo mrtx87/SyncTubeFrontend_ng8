@@ -453,10 +453,6 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.syncService.toggleDisplayOptions();
   }
 
-  setSize(width: number, height: number) {
-    this.syncService.setSize(width, height);
-  }
-
   jumpBySeconds(offset: number) {
     this.syncService.jumpBySeconds(offset)
   }

@@ -1,5 +1,11 @@
+import { SyncService } from './sync.service';
+
 export interface IVideoService{
 
+
+    playerWindow: any;
+    videoPlayer: any;
+    syncService: SyncService;
 
     init();
     loadVideoById(urlObject: any): void;
@@ -16,9 +22,9 @@ export interface IVideoService{
     getVideoDuration(): number;
     getCurrentTime(): number;
     getPlayerState(): number
-    getReceivedPlayerState(): number;
     getAvailableQualityLevels(): string[];
     setPlaybackQuality(suggestedQuality: string);
+    getPlaybackQuality(): string;
     getAvailablePlaybackRates(): Array<number>;
     setPlaybackRate(rate: number);
     getPlaybackRate(): number;

@@ -1,74 +1,88 @@
 import { IVideoService } from './ivideo.service';
+import { SyncService } from './sync.service';
 
 export class YoutubeVideoService implements IVideoService {
+
     playerWindow: any;
     videoPlayer: any;
+    syncService: SyncService;
 
-    constructor(playerWindow: any, videoPlayer: any) {
+    constructor(videoPlayer: any, synService: SyncService, playerWindow?: any,) {
         this.playerWindow = playerWindow;
         this.videoPlayer = videoPlayer;
+        this.syncService = synService;
     }
 
     init() {
-       
+
+    }
+    getPlaybackQuality(): string {
+        return this.videoPlayer.getPlaybackQuality();
     }
 
     loadVideoById(urlObject: any): void {
-        throw new Error("Method not implemented.");
+        this.videoPlayer.loadVideoById(urlObject);
     }
     mute(): void {
-        throw new Error("Method not implemented.");
+        this.syncService.synctubeComponent.isMuted = true;
+        this.videoPlayer.mute();
     }
     unMute(): void {
-        throw new Error("Method not implemented.");
+        this.syncService.synctubeComponent.isMuted = false;
+        this.videoPlayer.unMute();
     }
     playVideo() {
-        throw new Error("Method not implemented.");
+        this.videoPlayer.playVideo();
     }
     pauseVideo(): void {
-        throw new Error("Method not implemented.");
+        this.videoPlayer.pauseVideo();
     }
     stopVideo(): void {
-        throw new Error("Method not implemented.");
+        this.videoPlayer.stopVideo();
     }
     seekTo(seconds: number, allowSeekAhead: Boolean) {
-        throw new Error("Method not implemented.");
+        this.videoPlayer.seekTo(seconds, allowSeekAhead);
     }
     setVolume() {
-        throw new Error("Method not implemented.");
+        if (this.syncService.videoComponent.volumeValue <= 1) {
+            this.mute();
+            this.videoPlayer.setVolume(0);
+        } else {
+            this.unMute();
+            this.videoPlayer.setVolume(this.syncService.videoComponent.volumeValue);
+        }
     }
     isMuted(): Boolean {
-        throw new Error("Method not implemented.");
+        return this.videoPlayer.isMuted();
     }
     getVideoDuration(): number {
-        throw new Error("Method not implemented.");
+        return this.videoPlayer.getDuration();
     }
     getCurrentTime(): number {
-        throw new Error("Method not implemented.");
+        return this.videoPlayer.getCurrentTime();
     }
     getPlayerState(): number {
-        throw new Error("Method not implemented.");
+        return this.videoPlayer.getPlayerState();
     }
-    getReceivedPlayerState(): number {
-        throw new Error("Method not implemented.");
-    }
+
     getAvailableQualityLevels(): string[] {
-        throw new Error("Method not implemented.");
+        return this.videoPlayer.getAvailableQualityLevels();
     }
     setPlaybackQuality(suggestedQuality: string) {
-        throw new Error("Method not implemented.");
+        this.videoPlayer.setPlaybackQuality(suggestedQuality);
     }
     getAvailablePlaybackRates(): number[] {
-        throw new Error("Method not implemented.");
+        return this.videoPlayer.getAvailablePlaybackRates();
     }
     setPlaybackRate(rate: number) {
-        throw new Error("Method not implemented.");
+        this.videoPlayer.setPlaybackRate(rate);
+        this.syncService.videoComponent.currentPlaybackRate = rate;
     }
     getPlaybackRate(): number {
-        throw new Error("Method not implemented.");
+        return this.videoPlayer.getPlaybackRate();
     }
     clearVideo() {
-        throw new Error("Method not implemented.");
+        this.videoPlayer.clearVideo();
     }
 
 }

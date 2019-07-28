@@ -9,6 +9,9 @@ import { YoutubeDataService } from '../youtube-dataservice';
 import { DailymotionDataService } from '../dailymotion.dataservice';
 import { VimeoDataService } from '../vimeo.dataservice.';
 import { YoutubeVideoService } from '../youtube.video.service';
+import { VimeoVideoService } from '../vimeo.video.service';
+import { ApiService } from '../api.service';
+import { DailymotionVideoService } from '../dailymotion.video.service';
 declare const DM: any;
 declare const Vimeo: any;
 
@@ -19,8 +22,8 @@ declare const Vimeo: any;
   styleUrls: ["./video.component.css"]
 })
 export class VideoComponent implements OnInit {
-  public YT: any;
-  public player: any;
+  
+  
   public reframed: Boolean = false;
 
   displayOptions: Boolean = false;
@@ -56,13 +59,13 @@ export class VideoComponent implements OnInit {
   }
 
   hasPlayer(): any {
-    return this.player;
+    return this.syncService.currentApiService.videoService.videoPlayer;
   }
 
   listenForPlayerState() {
     let that = this;
     setInterval(function () {
-      var state = that.player.getPlayerState();
+      var state = that.syncService.currentApiService.videoService.getPlayerState();
       if (that.getReceivedPlayerState() !== state) {
         if (state === SyncService.FINISHED) {
           that.syncService.synctubeComponent.receivedPlayerState = state;
@@ -123,20 +126,22 @@ export class VideoComponent implements OnInit {
 
       }
     }
+    /*
     let player: HTMLElement = document.getElementById("youtubeplayer");
     console.log(player)
-    player.hidden = true;
+    player.hidden = true;*/
 
   }
 
 
-  initYoutubePlayer(supportedApi: SupportedApi): YoutubeDataService {
+  initYoutubePlayer(supportedApi: SupportedApi): void {
     let that = this;
-    let videoPlayer;
+    let videoPlayer: any;
+    let YT: any;
     window["onYouTubeIframeAPIReady"] = e => {
-      this.YT = window["YT"];
+      YT = window["YT"];
       this.reframed = false;
-      this.player = new window["YT"].Player(supportedApi.name + "player", {
+      videoPlayer = new window["YT"].Player(supportedApi.name + "player", {
         videoId: null,
         playerVars: {
           autoplay: 0,
@@ -150,7 +155,9 @@ export class VideoComponent implements OnInit {
               this.reframed = true;
               reframe(e.target.a);
             }
-
+            let apiService: ApiService = this.syncService.getApiServiceByKey(SupportedApiType.Youtube);
+            apiService.videoService = new YoutubeVideoService(YT, videoPlayer, this.syncService);
+            
             that.listenForPlayerState();
             if (that.syncService.getVideo()) {
               that.processVideoIfLoaded(that);
@@ -161,16 +168,16 @@ export class VideoComponent implements OnInit {
                 suggestedQuality: "large"
               });
             }
-            that.mute(); //DEBUG
+            that.mute(); //DEBUG */
+            
           }
         }
       });
     };
-    return null;
   }
 
 
-  initDailymotionPlayer(supportedApi: SupportedApi): DailymotionDataService {
+  initDailymotionPlayer(supportedApi: SupportedApi): DailymotionVideoService {
     let videoPlayer = DM.player(document.getElementById(supportedApi.name + "player"), {
       video: "xwr14q",
       width: "100%",
@@ -182,7 +189,8 @@ export class VideoComponent implements OnInit {
     });
     return null;
   }
-  initVimeoPlayer(supportedApi: SupportedApi) : VimeoDataService {
+
+  initVimeoPlayer(supportedApi: SupportedApi): VimeoVideoService {
     let videoPlayer = new Vimeo.Player(document.getElementById(supportedApi.name + "player"));
 
     videoPlayer.on('play', function () {
@@ -197,7 +205,7 @@ export class VideoComponent implements OnInit {
 
   processVideoIfLoaded(that: VideoComponent) {
     let wait = setInterval(function () {
-      if (that.player.getPlayerState() == SyncService.playing) {
+      if (that.syncService.currentApiService.videoService.getPlayerState() == SyncService.playing) {
         that.setVideoDuration();
         that.togglePlayVideo(that.getReceivedPlayerState());
         if (that.syncService.synctubeComponent.users.length > 1) {
@@ -212,7 +220,7 @@ export class VideoComponent implements OnInit {
   }
 
   getVideoDuration(): number {
-    return this.player.getDuration();
+    return this.syncService.currentApiService.videoService.getVideoDuration();
   }
 
   getTimeForSlider() {
@@ -228,23 +236,23 @@ export class VideoComponent implements OnInit {
   }
 
   getCurrentTime(): number {
-    return this.player.getCurrentTime();
+    return this.syncService.currentApiService.videoService.getCurrentTime();
   }
 
   getPlayerState(): number {
-    return this.player.getPlayerState();
+    return this.syncService.currentApiService.videoService.getPlayerState();
   }
 
   seekTo(seconds: number, allowSeekAhead: Boolean): void {
-    this.player.seekTo(seconds, allowSeekAhead);
+    this.syncService.currentApiService.videoService.seekTo(seconds, allowSeekAhead);
   }
 
   pauseVideo(): void {
-    this.player.pauseVideo();
+    this.syncService.currentApiService.videoService.pauseVideo();
   }
 
   stopVideo(): void {
-    this.player.stopVideo();
+    this.syncService.currentApiService.videoService.stopVideo();
   }
 
   getReceivedPlayerState(): number {
@@ -268,11 +276,11 @@ export class VideoComponent implements OnInit {
   }
 
   playVideo() {
-    this.player.playVideo();
+    this.syncService.currentApiService.videoService.playVideo();
   }
 
   clearVideo() {
-    this.player.clearVideo();
+    this.syncService.currentApiService.videoService.clearVideo();
   }
 
   getCurrentPlaybackRate() {
@@ -280,7 +288,7 @@ export class VideoComponent implements OnInit {
   }
 
   getAvailableQualityLevels(): string[] {
-    return this.player.getAvailableQualityLevels();
+    return this.syncService.currentApiService.videoService.getAvailableQualityLevels();
   }
 
   timer: any;
@@ -333,7 +341,7 @@ export class VideoComponent implements OnInit {
   }
 
   loadVideoById(urlObject: any): void {
-    this.player.loadVideoById(urlObject);
+    this.syncService.currentApiService.videoService.loadVideoById(urlObject);
   }
 
   onChangeProgressBar() {
@@ -366,27 +374,20 @@ export class VideoComponent implements OnInit {
   }
 
   setVolume() {
-    if (this.volumeValue <= 1) {
-      this.mute();
-      this.player.setVolume(0);
-    } else {
-      this.unMute();
-      this.player.setVolume(this.volumeValue);
-    }
+    this.syncService.currentApiService.videoService.setVolume();
   }
 
   mute(): void {
-    this.syncService.synctubeComponent.isMuted = true;
-    this.player.mute();
+    this.syncService.currentApiService.videoService.mute();
+
   }
 
   unMute(): void {
-    this.syncService.synctubeComponent.isMuted = false;
-    this.player.unMute();
+    this.syncService.currentApiService.videoService.unMute();
   }
 
   isMuted(): Boolean {
-    return this.player.isMuted();
+    return this.syncService.currentApiService.videoService.isMuted();
   }
 
   sendRequestSyncTimestamp() {
@@ -402,16 +403,15 @@ export class VideoComponent implements OnInit {
   }
 
   getAvailablePlaybackRates(): Array<number> {
-    return this.player.getAvailablePlaybackRates();
+    return this.syncService.currentApiService.videoService.getAvailablePlaybackRates();
   }
 
   setPlaybackRate(rate: number) {
-    this.player.setPlaybackRate(rate);
-    this.currentPlaybackRate = rate;
+    this.syncService.currentApiService.videoService.setPlaybackRate(rate);
   }
 
   getPlaybackRate(): number {
-    return this.player.getPlaybackRate();
+    return this.syncService.currentApiService.videoService.getPlaybackRate();
   }
 
   toggleDisplayCinemaMode() {
@@ -432,10 +432,6 @@ export class VideoComponent implements OnInit {
      }*/
   }
 
-  setOption(_module, option, value) {
-    this.player.setOption(_module, option, value);
-  }
-
   setPlaybackRates() {
     this.playbackRates = this.getAvailablePlaybackRates();
   }
@@ -444,18 +440,17 @@ export class VideoComponent implements OnInit {
     this.displayOptions = !this.displayOptions;
   }
 
+  /*
   setSize(width: number, height: number) {
     this.player.setSize(width, height);
-  }
+  }*/
 
   getPlaybackQuality() {
-    return this.player.getPlaybackQuality();
+    return this.syncService.currentApiService.videoService.getPlaybackQuality();
   }
 
   setPlaybackQuality(suggestedQuality: string) {
-    if (this.player) {
-      this.player.setPlaybackQuality(suggestedQuality);
-    }
+    this.syncService.currentApiService.videoService.setPlaybackQuality(suggestedQuality);
   }
 
   toggleFullscreen() {
@@ -487,16 +482,6 @@ export class VideoComponent implements OnInit {
    */
   mouseOverSound() {
     //@TODO
-  }
-
-  toggleSubtitle(_module, option, value) {
-    this.displaySubtitle = !this.displaySubtitle;
-    console.log("testestset");
-    this.syncService.toggleSubtitle(
-      "captions",
-      "tracklist",
-      this.displaySubtitle
-    );
   }
 
   toggleMute() {
