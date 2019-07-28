@@ -14,6 +14,7 @@ export class Message {
     chatMessage: ChatMessage;
     chatMessages: ChatMessage[];
     users: User[];
+    kickedUsers: User[];
     raumStatus : Boolean;
     publicRaeume: Raum[];
     assignedUser: User;

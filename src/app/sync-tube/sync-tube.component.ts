@@ -8,6 +8,8 @@ import { User } from './user';
 import { Video } from '../video/video';
 import { SearchQuery } from './search-query';
 import { ImportedPlaylist } from '../video/playlist';
+import { Observable } from 'rxjs';
+import { SupportedApi } from '../supported-api';
 
 @Component({
   selector: 'app-sync-tube',
@@ -17,6 +19,96 @@ import { ImportedPlaylist } from '../video/playlist';
 
 
 export class SyncTubeComponent implements OnInit, AfterViewChecked {
+
+  //APIS STUFF
+  supportedApis: SupportedApi[];
+  selectedApi: SupportedApi;
+
+  publicRaum: boolean = false;
+  privateRaum: boolean = true;
+
+
+  scrollContent: any;
+  scrollChat: any;
+
+  forceScrollToSearch: boolean = false;
+  forceScrollToVideo: boolean = false;
+  forceScrollToChatBottom: boolean = true;
+
+  /* controls vars */
+  showRaum: boolean = false;
+  searchInput: string;
+  raumIdText: string;
+  chatMessageText: String;
+
+  displayTab: number = 1;
+
+
+  displayCinemaMode: Boolean = false;
+  displayFullscreen: Boolean = false;
+
+  title = 'SyncTube';
+
+  //currentUser
+  user: User;
+
+  //currentRaum Information
+  raumId: number;
+  raumDescription: string = "";
+  raumTitle: string = "";
+  raumDescriptionChange: string = "";
+  raumTitleChange: string = "";
+
+  createdAt: string;
+  raumStatus: Boolean = true;
+
+
+  //currentVideo
+  video: Video;
+
+  //restliche daten die wir brauchen vom server z.B. users in raum, playlist etc
+  users: User[];
+  kickedUsers: User[];
+  playbackRates: number[];
+  chatMessages: ChatMessage[] = [];
+  searchResults: Video[] = [];
+  playlist: Video[] = [];
+  videoDuration: number;
+  receivedPlayerState: number;
+  publicRaeume: Observable<Raum[]>;
+  importedPlaylist: ImportedPlaylist;
+  hasImportedPlaylist: boolean = false;
+
+  initalPlaybackRate: number;
+
+  //playlist controls
+  loop: number = 0; //0 noloop, 1 loop all, 2 loop single video
+  randomOrder: boolean; //false sequentiell, true random
+
+  configRaumStatus: Boolean = true;
+  isMuted: Boolean = false;
+
+  editUserName: Boolean = false;
+
+  //personen die vom admin gekickt oder zum admin ernannt werden
+  designatedAdmin: User;
+  kickingUser: User;
+  revealContent: Boolean = false;
+
+  constructor(private syncService: SyncService, private route: ActivatedRoute) {
+
+    this.syncService.registerSyncTubeComponent(this);
+
+    this.syncService.retrieveSupportedApis();
+
+    this.connect();
+  }
+
+  connect() {
+    this.syncService.connect();
+  }
+
+
 
   ngAfterViewChecked(): void {
 
@@ -66,85 +158,6 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.syncService.localCloseConnection();
   }
 
-  publicRaum: boolean = false;
-  privateRaum: boolean = true;
-
-
-  scrollContent: any;
-  scrollChat: any;
-
-  forceScrollToSearch: boolean = false;
-  forceScrollToVideo: boolean = false;
-  forceScrollToChatBottom: boolean = true;
-
-  /* controls vars */
-  showRaum: boolean = false;
-  searchInput: string;
-  raumIdText: string;
-  chatMessageText: String;
-
-  displayTab: number = 1;
-
-
-  displayCinemaMode: Boolean = false;
-  displayFullscreen: Boolean = false;
-
-  title = 'SyncTube';
-
-  //currentUser
-  user: User;
-
-  //currentRaum Information
-  raumId: number;
-  raumDescription: string = "";
-  raumTitle: string = "";
-  raumDescriptionChange: string = "";
-  raumTitleChange: string = "";
-
-  createdAt: string;
-  raumStatus: Boolean = true;
-
-
-  //currentVideo
-  video: Video;
-
-  //restliche daten die wir brauchen vom server z.B. users in raum, playlist etc
-  users: User[];
-  playbackRates: number[];
-  chatMessages: ChatMessage[] = [];
-  searchResults: Video[] = [];
-  playlist: Video[] = [];
-  videoDuration: number;
-  receivedPlayerState: number;
-  publicRaeume: Raum[];
-  importedPlaylist: ImportedPlaylist;
-  hasImportedPlaylist: boolean = false;
-
-  initalPlaybackRate: number;
-
-  //playlist controls
-  loop: number = 0; //0 noloop, 1 loop all, 2 loop single video
-  randomOrder: boolean; //false sequentiell, true random
-
-  configRaumStatus: Boolean = true;
-  isMuted: Boolean = false;
-
-  editUserName: Boolean = false;
-
-  //personen die vom admin gekickt oder zum admin ernannt werden
-  designatedAdmin: User;
-  kickingUser: User;
-  revealContent: Boolean = false;
-  constructor(private syncService: SyncService, private route: ActivatedRoute) {
-
-    this.syncService.registerSyncTubeComponent(this);
-    this.connect();
-  }
-
-  connect() {
-    this.syncService.connect();
-  }
-
   setVideoDuration(duration: number) {
     this.videoDuration = duration;
   }
@@ -189,26 +202,26 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.createRaum();
   }
 
+  sendPardonKickedUser(kickedUser: User) {
+    this.syncService.sendPardonKickedUser(this.getUser(), this.getRaumId(), kickedUser);
+  }
 
   sendToggleMuteUser(user: User) {
     this.syncService.sendToggleMuteUser(this.getUser(), this.getRaumId(), user);
 
   }
 
-
-  //wir setzen playlist steuerungs werte sofort, wird aber von server response überschrieben (muss identisch sein)
   togglePlaylistLoop() {
-    /*this.loop += 1;
-    if(this.loop > 2) {
-      this.loop = 0;
-    }*/
     this.syncService.sendTogglePlaylistLoop(this.getUser(), this.getRaumId(), this.loop);
   }
 
-
   togglePlaylistRunningOrder() {
-    //this.randomOrder = !this.randomOrder;
     this.syncService.sendTogglePlaylistRunningOrder(this.getUser(), this.getRaumId(), this.randomOrder);
+  }
+
+  switchSelectedApi() {
+    
+    console.log(this.selectedApi);
   }
 
   clearRoomVars() {
@@ -259,35 +272,13 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.importedPlaylist = new ImportedPlaylist();
     this.hasImportedPlaylist = false;
     this.searchResults = [];
-    let searchQuery: SearchQuery = this.syncService.processInput(this.searchInput);
-    if (searchQuery) {
+    let searchQuery: SearchQuery = this.syncService.currentApiService.dataService.processInput(this.searchInput);
+    this.forceScrollToSearch = this.syncService.currentApiService.dataService.search(searchQuery);
 
-      if (searchQuery.playlistId) {
-        console.log("playlist-ID: " + searchQuery.playlistId)
-        this.syncService.searchPlaylist(searchQuery.playlistId, false);
-        this.forceScrollToSearch = true;
-        return;
-      }
-      if (searchQuery.videoId) {
-        //this.sendNewVideoLink(video);
-        this.syncService.search(searchQuery.videoId, false, searchQuery.timestamp);
-        this.forceScrollToSearch = true;
-        return;
-      }
     }
-
-    this.syncService.search(searchQuery.query, true);
-    this.forceScrollToSearch = true;
-
-  }
 
   getReceivedPlayerState(): number {
     return this.receivedPlayerState;
-  }
-
-  sendNewVideo(video: Video) {
-    this.forceScrollToVideo = true;
-    this.syncService.sendNewVideoAndGetTitleFirst(this.user, this.raumId, video);
   }
 
   sendSwitchPlaylistVideo(pvideo_: Video) {
@@ -298,12 +289,12 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
   openPlaylistLink(video_: Video) {
-    if(video_.playlistId) {
+    if (video_.playlistId) {
       this.importedPlaylist = new ImportedPlaylist();
       this.hasImportedPlaylist = false;
       this.searchResults = [];
 
-      this.syncService.searchPlaylist(video_.playlistId, false);
+      this.syncService.currentApiService.dataService.searchPlaylist(video_.playlistId, false, null, video_.title);
     }
   }
 
@@ -373,10 +364,6 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     return this.user;
   }
 
-  setPublicRaeume(publicRaeume: Raum[]) {
-    this.publicRaeume = publicRaeume;
-  }
-
   toAdmin(designatedUser: User) {
     this.designatedAdmin = designatedUser;
     //this.displayPrompt = true;
@@ -442,12 +429,6 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     return this.video;
   }
 
-  onChangeChat() {
-    console.log("dsfsdf")
-    let objDiv = document.getElementById("scrollable-content");
-    objDiv.scrollTop = objDiv.scrollHeight;
-  }
-
   getAvailablePlaybackRates(): Array<number> {
     return this.syncService.getAvailablePlaybackRates();
   }
@@ -462,16 +443,6 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   setInitalPlaybackRate(rate: number) {
     this.initalPlaybackRate = rate;
-  }
-
-  getOptions() {
-    return this.syncService.getOptions();
-  }
-
-
-  setOption(_module, option, value) {
-    this.syncService.setOption(_module, option, value);
-
   }
 
   setPlaybackRates(rates: number[]) {

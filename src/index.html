@@ -4,7 +4,7 @@
 <head>
 
   <meta charset="utf-8">
-  <title>Spring Boot WebSocket Chat Application Client</title>
+  <title>stream2gether</title>
   <base href="/">
 
 
@@ -19,7 +19,12 @@
 <body>
   <app-root></app-root>
 
-
+  <script>
+      System.config({
+          packages: {'app': {defaultExtension: 'js'}}
+      });
+      System.import('app/app');
+  </script>
 </body>
 
 </html>

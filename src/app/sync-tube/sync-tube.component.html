@@ -1,9 +1,12 @@
 <div class="top-panel">
   <div class="top-panel-left">
     <!--<h3 class="page-title"><a href="http://localhost:4200" style="color:white"> XXXXX</a></h3>-->
-    <a href="http://localhost:4200" ><img class="s2glogo" src="assets/stream2gether.png"></a>
+    <a href="http://localhost:4200"><img class="s2glogo" src="assets/stream2gether.png" /></a>
+    <select (change)="switchSelectedApi(event)" [(ngModel)]="selectedApi" *ngIf="raumId && user.admin">
+      <option *ngFor="let supportedApi_ of supportedApis"  [ngValue]="supportedApi_"  >{{supportedApi_.name}} </option>
+    </select>
     <input *ngIf="raumId && user.admin" (keyup.enter)="search()" [(ngModel)]="searchInput" class="user-query"
-      type="text" /> 
+      type="text" />
     <div class="room-status-panel">
       <label [hidden]="!raumId || !raumStatus">Private <img class="rsp-lock" src="assets/padlock.svg" /></label>
       <label [hidden]="!raumId || raumStatus">Public <img class="rsp-lock" src="assets/padlock-unlock.svg" /></label>
@@ -16,7 +19,7 @@
 </div>
 
 <div></div>
-<div *ngIf="revealContent" class="content-container">
+<div *ngIf="revealContent">
   <!--  Visible when no room is created or joined -->
   <div *ngIf="!raumId" class="content-container">
     <h2 style="color:white">Create a new Room</h2>
@@ -49,88 +52,88 @@
     </div> -->
     <br /><br />
     <h2 style="color:white">Public Rooms</h2>
-    <div class="public-rooms-container">
-      <div (click)="joinRaumById(pRoom.raumId)" class="room-preview" *ngFor="let pRoom of publicRaeume">
-        <div class="public-room-title ellipsis">
-          #{{ pRoom.raumTitle }}
-        </div>
+    <div *ngIf="publicRaeume" class="public-rooms-container">
+      <div (click)="joinRaumById(pRoom.raumId)" class="room-preview" *ngFor="let pRoom of publicRaeume | async">
+        <div class="public-room-title ellipsis">#{{ pRoom.raumTitle }}</div>
         <div class="public-room-row">
-          <img *ngIf="pRoom.video" class="thumbnail" src="https://img.youtube.com/vi/{{ pRoom.video.videoId }}/0.jpg" />
+          <img *ngIf="pRoom.video" class="thumbnail" src="{{pRoom.video.thumbnail}}" />
           <img *ngIf="!pRoom.video" class="thumbnail" src="https://i.ytimg.com/vi/UH1ThWZ9hXU/hqdefault.jpg" />
           <div class="public-room-infos">
             <div class="public-room-description ellipsis">
-              <strong>Beschreibung</strong><br>{{pRoom.description}}
+              <strong>Beschreibung</strong><br />{{ (pRoom.description) ? pRoom.description : 'no room description'}}
             </div>
-            <div class="public-room-video-title ellipsis"> <strong>Videotitel</strong><br>{{ pRoom.video.title }}
+            <div class="public-room-video-title ellipsis">
+              <strong>Videotitel</strong><br />{{ (pRoom.video) ? pRoom.video.title : 'no video title' }}
             </div>
-            <div class="public-room-size"> <strong>{{ pRoom.size }} Users</strong> | created:
+            <div class="public-room-size">
+              <strong>{{ pRoom.size }} Users</strong> | created:
               <strong>{{ pRoom.createdAt }} </strong>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="information-panel">
-      <a href="https://www.youtube.de" target="_blank"><img class="logos" src="assets/youtubelogo.svg" alt="youtube logo"></a>
-      <div>
-        <label>ünterstütze Plattformen</label>
-      </div>
-    </div>
+
   </div>
 
   <!-- Visible when room is created or joined -->
-  <div *ngIf="raumId" [className]="
+  <div [hidden]="!raumId" [className]="
       !displayCinemaMode ? 'raum-container' : 'raum-container-cinema'
     ">
     <!-- (keyup.arrowleft)="tenSecBack()" -->
 
     <div #scrollContent id="scrollContent" [className]="!displayFullscreen ? 'video-content' : 'display-fullscreen'">
-      <app-video></app-video>
 
+      <!-- Video Component-->
+      <app-video></app-video>
 
       <div *ngIf="raumId && user.admin && !displayFullscreen && !displayCinemaMode" class="search-results-container">
         <div class="seachresults-buttons-container" [hidden]="!importedPlaylist">
-          <div [className]="hasImportedPlaylist ? 'import-button' : 'import-button-inactive'">
+          <div [className]="
+              hasImportedPlaylist ? 'import-button' : 'import-button-inactive'
+            ">
             <h3 (click)="sendImportPlaylist()">Playlist importieren</h3>
           </div>
-          <h4 *ngIf="importedPlaylist" [hidden]="hasImportedPlaylist"> {{importedPlaylist.size}} Elemente werden
-            geladen...</h4>
-          <h4 *ngIf="importedPlaylist" [hidden]="!hasImportedPlaylist"> {{importedPlaylist.size}} Elemente geladen
+          <h4 *ngIf="importedPlaylist" [hidden]="hasImportedPlaylist">
+            {{ importedPlaylist.size }} Elemente werden geladen...
+          </h4>
+          <h4 *ngIf="importedPlaylist" [hidden]="!hasImportedPlaylist">
+            {{ importedPlaylist.size }} Elemente geladen
           </h4>
         </div>
 
         <ng-template ngFor let-video_ [ngForOf]="searchResults">
-        <div *ngIf="!video_.isPlaylistLink" class="search-result-video" title="{{ video_.description }}">
-          <div  (click)="sendAddVideoToPlaylistAsNext(video_)">
-            <img class="search-result-thumbnail" src="https://img.youtube.com/vi/{{ video_.videoId }}/0.jpg" />
+          <div *ngIf="!video_.isPlaylistLink" class="search-result-video" title="{{ video_.description }}">
+            <div (click)="sendAddVideoToPlaylistAsNext(video_)">
+              <img class="search-result-thumbnail" src="{{ video_.thumbnail }}" />
+            </div>
+            <div class="search-result-infos">
+              <span (click)="sendAddVideoToPlaylistAsNext(video_)">{{ video_.title }}
+              </span>
+            </div>
+            <div class="search-result-video-controls">
+              <span class="search-result-date">
+                {{ video_.publishedAt | date: "dd.MM.yyyy" }}</span>
+              <img (click)="sendAddVideoToPlaylistAsCurrent(video_)" class="instant-play-button"
+                src="assets/playsmall.svg" />
+              <img (click)="sendAddVideoToPlaylist(video_)" class="add-to-playlist-button" src="assets/add2.svg" />
+            </div>
           </div>
-          <div class="search-result-infos">
-            <span (click)="sendAddVideoToPlaylistAsNext(video_)">{{ video_.title }}
-            </span>
-          </div>
-          <div class="search-result-video-controls">
-            <span class="search-result-date">
-              {{ video_.publishedAt | date: "dd.MM.yyyy" }}</span>
-            <img (click)="sendAddVideoToPlaylistAsCurrent(video_)" class="instant-play-button"
-              src="assets/playsmall.svg" />
-            <img (click)="sendAddVideoToPlaylist(video_)" class="add-to-playlist-button" src="assets/add2.svg" />
-          </div>
-        </div>
 
-        <div *ngIf="video_.isPlaylistLink" class="search-result-video" title="{{ video_.description }}">
-          <div>
-            <img class="search-result-thumbnail" src={{video_.thumbnail}} />
+          <div *ngIf="video_.isPlaylistLink" class="search-result-video" title="{{ video_.description }}">
+            <div>
+              <img class="search-result-thumbnail" src="{{ video_.thumbnail }}" />
+            </div>
+            <div class="search-result-infos">
+              <span>{{ video_.title }} </span>
+            </div>
+            <div class="search-result-open-playlist">
+              <div (click)="openPlaylistLink(video_)" class="open-playlist-button">
+                Playlist öffnen
+              </div>
+            </div>
           </div>
-          <div class="search-result-infos">
-            <span>{{ video_.title }}
-            </span>
-          </div>
-          <div class="search-result-open-playlist">
-            <div (click)="openPlaylistLink(video_)" class="open-playlist-button">Playlist öffnen</div>
-          </div>
-        </div>
         </ng-template>
-
       </div>
     </div>
 
@@ -163,7 +166,7 @@
             " *ngFor="let chatMessage of chatMessages">
             <!-- Normal Messages Containers -->
             <div class="message-row-container" *ngIf="
-                chatMessage.type !== 'insert-video' &&
+                chatMessage.type === 'insert-user-message' &&
                 chatMessage.user.userId != user.userId
               ">
               <div class="userid-container">
@@ -179,8 +182,8 @@
             </div>
 
             <div class="message-row-container-user" *ngIf="
-                chatMessage.type !== 'insert-video' &&
-                chatMessage.user.userId == user.userId
+                chatMessage.type === 'insert-user-message' &&
+                chatMessage.user.userId === user.userId
               ">
               <div class="text-container">
                 <div>{{ chatMessage.messageText }}</div>
@@ -196,19 +199,13 @@
                 chatMessage.user.userId !== user.userId
               ">
               <div class="userid-container">
+                <span> Video eingefügt von &nbsp; </span>
                 <span> {{ chatMessage.user.userName }} </span>
                 <img *ngIf="chatMessage.user.admin" src="assets/star.svg" class="star-img" />
-                <span> started Video</span>
+
               </div>
               <div class="insert-video-content">
-                <div>
-                  <a target="_blank" href="https://www.youtube.com/watch?v={{
-                      chatMessage.video.videoId
-                    }}">
-                    <img class="thumbnail-chat" src="https://img.youtube.com/vi/{{
-                        chatMessage.video.videoId
-                      }}/0.jpg" /></a>
-                </div>
+
                 <div class="text-container">
                   <a target="_blank" href="https://www.youtube.com/watch?v={{
                       chatMessage.video.videoId
@@ -223,18 +220,17 @@
             </div>
 
             <div class="insert-video-row-container-user" *ngIf="
-                chatMessage.type == 'insert-video' &&
+                chatMessage.type === 'insert-video' &&
                 chatMessage.user.userId == user.userId
               ">
+
+              <div class="userid-container">
+                <span> Video eingefügt von dir </span>
+
+
+              </div>
               <div class="insert-video-content">
-                <div>
-                  <a target="_blank" href="https://www.youtube.com/watch?v={{
-                      chatMessage.video.videoId
-                    }}">
-                    <img class="thumbnail-chat" src="https://img.youtube.com/vi/{{
-                        chatMessage.video.videoId
-                      }}/0.jpg" /></a>
-                </div>
+
                 <div class="text-container">
                   <a target="_blank" href="https://www.youtube.com/watch?v={{
                       chatMessage.video.videoId
@@ -247,6 +243,60 @@
                 </div>
               </div>
             </div>
+
+            <!--  Playlist messages -->
+            <div class="insert-playlist-row-container-user" *ngIf="
+            chatMessage.type === 'insert-playlist' &&
+            chatMessage.user.userId == user.userId
+          ">
+
+              <div class="userid-container">
+                <span> Playlist eingefügt von dir </span>
+
+
+              </div>
+              <div class="insert-video-content">
+
+                <div class="text-container">
+                  <a target="_blank" href="https://www.youtube.com/watch?list={{
+                  chatMessage.video.videoId
+                }}">
+                    <div class="video-title">{{ chatMessage.video.title }}</div>
+                  </a>
+                  <div class="timestamp">
+                    <span> {{ chatMessage.timestamp }} </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="insert-playlist-row-container-user" *ngIf="
+            chatMessage.type === 'insert-playlist' &&
+            chatMessage.user.userId !== user.userId
+          ">
+
+          <div class="userid-container">
+              <span> Video eingefügt von &nbsp; </span>
+              <span> {{ chatMessage.user.userName }} </span>
+              <img *ngIf="chatMessage.user.admin" src="assets/star.svg" class="star-img" />
+
+            </div>
+              <div class="insert-video-content">
+
+                <div class="text-container">
+                  <a target="_blank" href="https://www.youtube.com/watch?list={{
+                  chatMessage.video.videoId
+                }}">
+                    <div class="video-title">{{ chatMessage.video.title }}</div>
+                  </a>
+                  <div class="timestamp">
+                    <span> {{ chatMessage.timestamp }} </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
           </div>
         </div>
         <div class="footer">
@@ -282,7 +332,7 @@
               <img *ngIf="video.id === pvideo_.id" src="assets/play-button.svg" />
             </div>
             <div (click)="sendSwitchPlaylistVideo(pvideo_)">
-              <img class="playlist-thumbnail" src="https://img.youtube.com/vi/{{ pvideo_.videoId }}/0.jpg" />
+              <img class="playlist-thumbnail" src="{{pvideo_.thumbnail}}" />
             </div>
             <div class="playlist-video-data">
               <!-- title="{{pvideo_.description}}"> -->
@@ -291,8 +341,8 @@
                 {{ pvideo_.title }}
               </div>
               <div class="playlist-video-controls">
-                <img *ngIf="user.admin" [hidden]="!pvideo_.hover" (click)="sendRemovePlaylistVideo(pvideo_)" class="garbage"
-                  src="assets/waste-bin.svg" />
+                <img *ngIf="user.admin" [hidden]="!pvideo_.hover" (click)="sendRemovePlaylistVideo(pvideo_)"
+                  class="garbage" src="assets/waste-bin.svg" />
               </div>
             </div>
           </div>
@@ -306,11 +356,10 @@
               {{ anyuser.userName }}
             </div>
             <div (click)="sendToggleMuteUser(anyuser)" *ngIf="user.admin && !anyuser.admin" class="mute-user-container">
-              <img [hidden]="!anyuser.isMute" class="mute-user" src="assets/mute.svg">
-              <img [hidden]="anyuser.isMute" class="mute-user" src="assets/unmute.svg">
+              <img [hidden]="!anyuser.isMute" class="mute-user" src="assets/mute.svg" />
+              <img [hidden]="anyuser.isMute" class="mute-user" src="assets/unmute.svg" />
             </div>
             <div *ngIf="user.admin && !anyuser.admin" class="delete-icon-container">
-
               <img *ngIf="user.admin && !anyuser.admin" (click)="toKick(anyuser)" class="delete-icon"
                 src="assets/delete.svg" />
             </div>
@@ -323,11 +372,12 @@
           </div>
 
           <div *ngIf="user.userId === anyuser.userId" class="user-container identity">
-            <div class="username-container" (mouseenter)="editUserName = true" (mouseleave)="editUserName=false">
-              <input (focusout)="sendChangeUserName(anyuser.userName)" [(ngModel)]="user.userName"
-                [className]="editUserName ? 'username-input-border' : 'username-input'" class="username-input"
-                value="{{ anyuser.userName }}">
-              <div [hidden]="!editUserName" class="edit-username"><img src="assets/edit.svg">
+            <div class="username-container" (mouseenter)="editUserName = true" (mouseleave)="editUserName = false">
+              <input (focusout)="sendChangeUserName(anyuser.userName)" [(ngModel)]="user.userName" [className]="
+                  editUserName ? 'username-input-border' : 'username-input'
+                " class="username-input" value="{{ anyuser.userName }}" />
+              <div [hidden]="!editUserName" class="edit-username">
+                <img src="assets/edit.svg" />
               </div>
             </div>
             <div class="user-star-container">
@@ -350,8 +400,10 @@
             </label>
           </div>
           <div class="description">
-            <label *ngIf="raumStatus"> Klicke um den Raumstatus öffentlich zu stellen</label>
-            <label *ngIf="!raumStatus"> Klicke um den Raumstatus privat zu stellen</label>
+            <label *ngIf="raumStatus">
+              Klicke um den Raumstatus öffentlich zu stellen</label>
+            <label *ngIf="!raumStatus">
+              Klicke um den Raumstatus privat zu stellen</label>
           </div>
 
           <div class="create-room-title-container">
@@ -377,28 +429,31 @@
             <img *ngIf="user.admin" [hidden]="!raumStatus" (click)="refreshJoinUrl()" title="refreshes the join url"
               class="refresh-img" src="assets/refresh.svg" />
           </div>
-        </div>
-        <!--<div>
-          <img class="admin-panel-img" src="assets/news-admin.svg" alt="admin pixelart">
-          <div>
-            <label>Admin Panel</label>
+
+          <label style="font-size:25px;">Kicked Users</label>
+          <div class="kicked-users-list-container">
+            <div class="kicked-user-container" *ngFor="let kickedUser of kickedUsers">
+              <div class="username-container">
+                {{ kickedUser.userName }}
+              </div>
+              <div class="delete-icon-container">
+                <img (click)="sendPardonKickedUser(kickedUser)" class="delete-icon" src="assets/delete.svg" />
+              </div>
+            </div>
           </div>
-        </div>-->
-
-
+        </div>
       </div>
     </div>
   </div>
+</div>
+<div *ngIf="designatedAdmin" class="prompt">
+  <h3>Wollen Sie {{ designatedAdmin.userName }} zum Admin ernennen?</h3>
+  <div class="approved-button" (click)="approvedAdmin()">JA</div>
+  <div class="disapproved-button" (click)="disapprovedAdmin()">NEIN</div>
+</div>
 
-  <div *ngIf="designatedAdmin" class="prompt">
-    <h3>Wollen Sie {{ designatedAdmin.userName }} zum Admin ernennen?</h3>
-    <div class="approved-button" (click)="approvedAdmin()">JA</div>
-    <div class="disapproved-button" (click)="disapprovedAdmin()">NEIN</div>
-  </div>
-
-  <div *ngIf="kickingUser" class="prompt">
-    <h3>Wollen Sie {{ kickingUser.userName }} aus dem Raum kicken?</h3>
-    <div class="approved-button" (click)="approvedKick()">JA</div>
-    <div class="disapproved-button" (click)="disapprovedKick()">NEIN</div>
-  </div>
+<div *ngIf="kickingUser" class="prompt">
+  <h3>Wollen Sie {{ kickingUser.userName }} aus dem Raum kicken?</h3>
+  <div class="approved-button" (click)="approvedKick()">JA</div>
+  <div class="disapproved-button" (click)="disapprovedKick()">NEIN</div>
 </div>

@@ -258,6 +258,7 @@
   flex-direction: column;
   align-items: center;
   align-content: center;
+  overflow-y: scroll;
 }
 
 .raum-users {
@@ -349,6 +350,7 @@
   width: fit-content;
   max-width: 75%;
   padding: 5px 5px 0px 5px;
+  color:black;
 }
 
 .message-row-container-user {
@@ -370,9 +372,10 @@
   max-width: 75%;
   padding: 5px 5px 0px 5px;
   background-color: white;
+  color:black;
 }
 
-.insert-video-row-container-user {
+.insert-video-row-container-user, .insert-playlist-row-container-user {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -567,15 +570,15 @@ label {
 
 .room-preview {
   background: var(--color6);
-  max-width: 450px;
-  width: 30%;
-  margin: 10px;
+  width: 23%;
+  margin: 10px 1%;
   height: 200px;
   flex-direction: column;
   display: flex;
   -webkit-transition-duration: 0.4s;
   transition-duration: 0.4s;
   color: white;
+  float:left;
 }
 
 .room-preview:hover {
@@ -628,7 +631,7 @@ label {
 }
 
 .thumbnail {
-  height: 170px;
+  height: 100px;
   margin: 5px;
 }
 
@@ -640,12 +643,7 @@ label {
 
 .public-rooms-container {
   width: 100%;
-  display: flex;
-  justify-content: space-evenly;
-  flex-wrap: wrap;
-  overflow-x: hidden;
-  overflow-y: auto;
-  scroll-behavior: smooth;
+  padding: 0 2%;
 }
 
 .information-panel {
@@ -853,7 +851,7 @@ label {
   margin: auto 5px;
 }
 
-.user-container {
+.user-container, .kicked-user-container {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -1127,4 +1125,10 @@ label {
 .import-button:hover {
   border: solid 3px var(--color3);
   color: var(--color3);
+}
+
+.kicked-users-list-container {
+  width: 100%;
+  display:flex;
+  flex-direction: column;
 }
