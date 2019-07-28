@@ -19,6 +19,8 @@ import { YoutubeDataService } from './youtube-dataservice';
 import { SupportedApiType } from './supported-api-type';
 import { DailymotionDataService } from './dailymotion.dataservice';
 import { VimeoDataService } from './vimeo.dataservice.';
+import { IVideoService } from './ivideo.service';
+import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: "root"
@@ -36,14 +38,19 @@ export class SyncService {
 
   supportedApis: SupportedApi[];
 
-  private dataServices: Map<Number, IDataService>;
+  private _apiServices: Map<Number, ApiService>;
 
-  get dataService(): IDataService {
-      return this.dataServices.get(this.getSelectedApi().id);
+  public get apiServices(): Map<Number, ApiService> {
+    return this._apiServices; 
   }
-  set dataService(value: IDataService) {
-      this.dataServices.set(value.id, value);
+  public set apiServices(value: Map<Number, ApiService>) {
+    this._apiServices = value;
   }
+
+  get currentApiService(): ApiService {
+    return this.apiServices.get(this.getSelectedApi().id);
+  }
+
 
   /***
    *
@@ -89,26 +96,31 @@ export class SyncService {
   }
 
   buildAvailableDataServices() {
-    if (!this.dataServices && this.supportedApis) {
-      this.dataServices = new Map<Number, IDataService>();
+    if (!this.apiServices && this.supportedApis) {
+      this.apiServices = new Map<Number, ApiService>();
       for (let supportedApi of this.supportedApis) {
         switch (supportedApi.id) {
           case SupportedApiType.Youtube:
-            let youTubeDataService: YoutubeDataService = new YoutubeDataService(this.http, this.synctubeComponent, SupportedApiType.Youtube, supportedApi.name);
-            this.dataService = youTubeDataService;
-            console.log("Successfully generated api: " + youTubeDataService.name);
 
+            let youtubeApiService: ApiService = new ApiService();
+            let youTubeDataService: YoutubeDataService = new YoutubeDataService(this.http, this.synctubeComponent, SupportedApiType.Youtube, supportedApi.name);
+            youtubeApiService.dataService = youTubeDataService;
+            this.apiServices.set(SupportedApiType.Youtube, youtubeApiService);
+            console.log("Successfully generated api: " + youTubeDataService.name);
             break;
           case SupportedApiType.Dailymotion:
-            let dailymotionDataService: DailymotionDataService = new DailymotionDataService(this.http, this.synctubeComponent, SupportedApiType.Dailymotion, supportedApi.name);
-            this.dataService = dailymotionDataService;
+              let dailymotionApiService: ApiService = new ApiService();
+              let dailymotionDataService: DailymotionDataService = new DailymotionDataService(this.http, this.synctubeComponent, SupportedApiType.Dailymotion, supportedApi.name);
+              dailymotionApiService.dataService = dailymotionDataService;
+              this.apiServices.set(SupportedApiType.Dailymotion, dailymotionApiService);
             console.log("Successfully generated api: " + dailymotionDataService.name);
             break;
-          case SupportedApiType.Vimeo: 
-            let vimeoDataService: VimeoDataService = new VimeoDataService(this.http, this.synctubeComponent, SupportedApiType.Vimeo, supportedApi.name);
-            this.dataService = vimeoDataService;
+          case SupportedApiType.Vimeo:
+              let vimeoApiService: ApiService = new ApiService();
+              let vimeoDataService: VimeoDataService = new VimeoDataService(this.http, this.synctubeComponent, SupportedApiType.Vimeo, supportedApi.name);
+              vimeoApiService.dataService = vimeoDataService;
+              this.apiServices.set(SupportedApiType.Vimeo, vimeoApiService);
             console.log("Successfully generated api: " + vimeoDataService.name);
-          
             break;
 
           default:
@@ -1096,10 +1108,6 @@ export class SyncService {
     }
   }
 
-  getOptions() {
-    return this.videoComponent.getOptions();
-  }
-
   toggleSubtitle(_module, option, value) {
     this.setOption(_module, option, value);
   }
@@ -1118,10 +1126,6 @@ export class SyncService {
 
   toggleFullscreen() {
     this.videoComponent.toggleDisplayFullscreen();
-  }
-
-  setIframe(iframe: any) {
-    this.videoComponent.setIframe(iframe);
   }
 
   getCookie(): string {

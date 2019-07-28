@@ -19,7 +19,12 @@
 <body>
   <app-root></app-root>
 
-
+  <script>
+      System.config({
+          packages: {'app': {defaultExtension: 'js'}}
+      });
+      System.import('app/app');
+  </script>
 </body>
 
 </html>

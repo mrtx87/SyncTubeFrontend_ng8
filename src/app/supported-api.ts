@@ -5,4 +5,5 @@ export class SupportedApi {
     name: string;
     iconUrl: string
     apiKey: string;
+    script: string;
 }

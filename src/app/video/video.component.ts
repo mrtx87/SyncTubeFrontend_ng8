@@ -3,6 +3,10 @@ import reframe from "reframe.js";
 import { SyncService } from "../sync.service";
 import { Video } from "./video";
 import { User } from "../sync-tube/user";
+import { SupportedApiType } from '../supported-api-type';
+import { SupportedApi } from '../supported-api';
+import { YoutubeDataService } from '../youtube-dataservice';
+import { all } from 'q';
 
 @Component({
   selector: "app-video",
@@ -11,9 +15,9 @@ import { User } from "../sync-tube/user";
 })
 export class VideoComponent implements OnInit {
   public YT: any;
-  //public video: any;
   public player: any;
   public reframed: Boolean = false;
+
   displayOptions: Boolean = false;
   displayPlaybackRatesOptions: Boolean = false;
   displayPlaybackQualityOptions: Boolean = false;
@@ -24,7 +28,6 @@ export class VideoComponent implements OnInit {
   displayAllControls: boolean = false;
   displaySubtitle: Boolean = false;
   isPlaying: Boolean = false;
-  iframe: any;
   currentTimestamp: number = 0;
   currentTime: number;
   currentTimeProgressbar: number;
@@ -43,7 +46,7 @@ export class VideoComponent implements OnInit {
 
   listenForPlayerState() {
     let that = this;
-    setInterval(function() {
+    setInterval(function () {
       var state = that.player.getPlayerState();
       if (that.getReceivedPlayerState() !== state) {
         if (state === SyncService.FINISHED) {
@@ -71,21 +74,49 @@ export class VideoComponent implements OnInit {
     }, 10);
   }
 
-  init() {
-    var tag = document.createElement("script");
-    tag.src = "https://www.youtube.com/iframe_api";
-    var firstScriptTag = document.getElementsByTagName("script")[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+  // <script src="https://api.dmcdn.net/all.js"></script>
+
+  initScripts() {
+    for (let supportedApi of this.syncService.synctubeComponent.supportedApis) {
+      if (supportedApi.script) {
+        var tag = document.createElement("script");
+        tag.src = supportedApi.script;
+        var firstScriptTag = document.getElementsByTagName("script")[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+      }
+    }
   }
 
   ngOnInit() {
+    this.initScripts();
+    this.initVideoPlayers();
+
+  }
+
+  initVideoPlayers() {
+    for (let supportedApi of this.syncService.synctubeComponent.supportedApis) {
+      switch (supportedApi.id) {
+        case SupportedApiType.Youtube:
+          this.initYoutubePlayer(supportedApi);
+          break;
+        case SupportedApiType.Dailymotion:
+          this.initDailymotionPlayer(supportedApi);
+          break;
+        case SupportedApiType.Vimeo:
+          break;
+
+      }
+    }
+  }
+
+
+  initYoutubePlayer(supportedApi: SupportedApi) : YoutubeDataService {
     let that = this;
-    this.init();
-    // this.video = this.syncService.synctubeComponent.video.videoId; //video id
+    let videoPlayer;
     window["onYouTubeIframeAPIReady"] = e => {
       this.YT = window["YT"];
       this.reframed = false;
-      this.player = new window["YT"].Player("player", {
+      this.player = new window["YT"].Player(supportedApi.name + "player", {
         videoId: null,
         playerVars: {
           autoplay: 0,
@@ -103,7 +134,6 @@ export class VideoComponent implements OnInit {
             that.listenForPlayerState();
             if (that.syncService.getVideo()) {
               that.processVideoIfLoaded(that);
-              that.setIframe(e.target.a);
               that.currentTimeProgressbar = this.syncService.getVideo().timestamp;
               that.loadVideoById({
                 videoId: this.syncService.getVideo().videoId,
@@ -116,14 +146,26 @@ export class VideoComponent implements OnInit {
         }
       });
     };
+    return null;
+  }
+ DM: any;
+
+
+  initDailymotionPlayer(supportedApi: SupportedApi) {
+    let videoPlayer = this.DM.player(document.getElementById(supportedApi.name + "player"), {
+      video: "xwr14q",
+      width: "100%",
+      height: "100%",
+      params: {
+          autoplay: true,
+          mute: true
+      }
+  });
   }
 
-  setIframe(iframe: any) {
-    this.iframe = iframe;
-  }
 
   processVideoIfLoaded(that: VideoComponent) {
-    let wait = setInterval(function() {
+    let wait = setInterval(function () {
       if (that.player.getPlayerState() == SyncService.playing) {
         that.setVideoDuration();
         that.togglePlayVideo(that.getReceivedPlayerState());
@@ -152,48 +194,6 @@ export class VideoComponent implements OnInit {
 
   getInitalPlaybackRate(): number {
     return this.syncService.getInitalPlaybackRate();
-  }
-
-  addOnstateChangeListener() {
-    this.player.addEventListener("onStateChange", function(e) {
-      this.onPlayerStateChange(e);
-    });
-  }
-
-  onPlayerStateChange(event) {
-    console.log("HALLLLO");
-    switch (event.data) {
-      case window["YT"].PlayerState.PLAYING:
-        if (this.cleanTime() == 0) {
-          console.log("started " + this.cleanTime());
-        } else {
-          console.log("playing " + this.cleanTime());
-        }
-        break;
-      case window["YT"].PlayerState.PAUSED:
-        if (this.player.getDuration() - this.player.getCurrentTime() != 0) {
-          console.log("paused" + " @ " + this.cleanTime());
-        }
-        break;
-      case window["YT"].PlayerState.ENDED:
-        console.log("VIDEO ENDED");
-        break;
-    }
-  }
-  //utility
-  cleanTime() {
-    return Math.round(this.player.getCurrentTime());
-  }
-  onPlayerError(event) {
-    switch (event.data) {
-      case 2:
-        console.log("" + "Video Error");
-        break;
-      case 100:
-        break;
-      case 101 || 150:
-        break;
-    }
   }
 
   getCurrentTime(): number {
@@ -225,7 +225,7 @@ export class VideoComponent implements OnInit {
       clearInterval(that.timer);
       that.timer = null;
     }
-    that.timer = setInterval(function() {
+    that.timer = setInterval(function () {
       that.currentTimeProgressbar += 0.01 * that.getPlaybackRate();
       that.currentDisplayedTime = that.getCurrentTime();
       that.syncService.synctubeComponent.video.timestamp = that.currentTime;
@@ -344,10 +344,6 @@ export class VideoComponent implements OnInit {
     }
   }
 
-  setFullscreen() {
-    console.log("hallo");
-  }
-
   mute(): void {
     this.syncService.synctubeComponent.isMuted = true;
     this.player.mute();
@@ -385,10 +381,6 @@ export class VideoComponent implements OnInit {
 
   getPlaybackRate(): number {
     return this.player.getPlaybackRate();
-  }
-
-  getOptions() {
-    return this.player.getOptions();
   }
 
   toggleDisplayCinemaMode() {
@@ -449,7 +441,7 @@ export class VideoComponent implements OnInit {
     if (!this.displayAllControls) {
       this.displayAllControls = true;
       let that = this;
-      let toastControls = setInterval(function() {
+      let toastControls = setInterval(function () {
         if (that.time >= 2000000) {
           that.displayAllControls = false;
           clearInterval(toastControls);
@@ -498,7 +490,7 @@ export class VideoComponent implements OnInit {
   startDisplaylingsecondsBack() {
     this.displaySecondsBack = true;
     let that = this;
-    let secondsBackTimer = setInterval(function() {
+    let secondsBackTimer = setInterval(function () {
       that.intervalSeconds += 25;
       if (that.intervalSeconds >= 300) {
         that.displaySecondsBack = false;
@@ -510,7 +502,7 @@ export class VideoComponent implements OnInit {
   startDisplaylingsecondsForward() {
     this.displaySecondsForward = true;
     let that = this;
-    let secondsForwardTimer = setInterval(function() {
+    let secondsForwardTimer = setInterval(function () {
       that.intervalSeconds += 25;
       if (that.intervalSeconds >= 300) {
         that.displaySecondsForward = false;

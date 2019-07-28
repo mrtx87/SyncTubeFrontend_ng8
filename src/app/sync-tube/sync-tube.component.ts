@@ -20,8 +20,6 @@ import { SupportedApi } from '../supported-api';
 
 export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
-
-
   //APIS STUFF
   supportedApis: SupportedApi[];
   selectedApi: SupportedApi;
@@ -213,19 +211,11 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   }
 
-
-  //wir setzen playlist steuerungs werte sofort, wird aber von server response überschrieben (muss identisch sein)
   togglePlaylistLoop() {
-    /*this.loop += 1;
-    if(this.loop > 2) {
-      this.loop = 0;
-    }*/
     this.syncService.sendTogglePlaylistLoop(this.getUser(), this.getRaumId(), this.loop);
   }
 
-
   togglePlaylistRunningOrder() {
-    //this.randomOrder = !this.randomOrder;
     this.syncService.sendTogglePlaylistRunningOrder(this.getUser(), this.getRaumId(), this.randomOrder);
   }
 
@@ -282,8 +272,8 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.importedPlaylist = new ImportedPlaylist();
     this.hasImportedPlaylist = false;
     this.searchResults = [];
-    let searchQuery: SearchQuery = this.syncService.dataService.processInput(this.searchInput);
-    this.forceScrollToSearch = this.syncService.dataService.search(searchQuery);
+    let searchQuery: SearchQuery = this.syncService.currentApiService.dataService.processInput(this.searchInput);
+    this.forceScrollToSearch = this.syncService.currentApiService.dataService.search(searchQuery);
 
     }
 
@@ -304,7 +294,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
       this.hasImportedPlaylist = false;
       this.searchResults = [];
 
-      this.syncService.dataService.searchPlaylist(video_.playlistId, false, null, video_.title);
+      this.syncService.currentApiService.dataService.searchPlaylist(video_.playlistId, false, null, video_.title);
     }
   }
 
@@ -439,12 +429,6 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     return this.video;
   }
 
-  onChangeChat() {
-    console.log("dsfsdf")
-    let objDiv = document.getElementById("scrollable-content");
-    objDiv.scrollTop = objDiv.scrollHeight;
-  }
-
   getAvailablePlaybackRates(): Array<number> {
     return this.syncService.getAvailablePlaybackRates();
   }
@@ -459,16 +443,6 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   setInitalPlaybackRate(rate: number) {
     this.initalPlaybackRate = rate;
-  }
-
-  getOptions() {
-    return this.syncService.getOptions();
-  }
-
-
-  setOption(_module, option, value) {
-    this.syncService.setOption(_module, option, value);
-
   }
 
   setPlaybackRates(rates: number[]) {

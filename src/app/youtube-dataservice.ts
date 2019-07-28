@@ -23,22 +23,20 @@ export class YoutubeDataService implements IDataService {
     }
 
     search(searchQuery: SearchQuery): boolean {
-        if (searchQuery) {
-    
-          if (searchQuery.playlistId) {
+
+        if (searchQuery.playlistId) {
             this.searchPlaylist(searchQuery.playlistId, false);
             return true;
-          }
-          if (searchQuery.videoId) {
+        } else if (searchQuery.videoId) {
             //this.sendNewVideoLink(video);
             this.searchQuery(searchQuery.videoId, false, searchQuery.timestamp);
             return true;
-          }
+        } else {
+            this.searchQuery(searchQuery.query, true);
+            return true;
         }
-    
-        this.searchQuery(searchQuery.query, true);
-        return true;
-      }
+
+    }
 
     searchQuery(query: string, normalQuery: boolean, timestamp?: number) {
         this.http
@@ -162,22 +160,22 @@ export class YoutubeDataService implements IDataService {
         return query;
     }
 
-mapVideo(item: any) : Video {
-    let video: Video = new Video();
-    video.videoId = item.resourceId.videoId;
-    video.title = item.title;
-    video.description = item.description;
-    video.publishedAt = item.publishedAt;
+    mapVideo(item: any): Video {
+        let video: Video = new Video();
+        video.videoId = item.resourceId.videoId;
+        video.title = item.title;
+        video.description = item.description;
+        video.publishedAt = item.publishedAt;
 
-    if (item.thumbnails.high) {
-        video.thumbnail = item.thumbnails.high.url;
-    } else if (item.thumbnails.medium) {
-        video.thumbnail = item.thumbnails.medium.url;
-    } else {
-        video.thumbnail = item.thumbnails.default.url;
+        if (item.thumbnails.high) {
+            video.thumbnail = item.thumbnails.high.url;
+        } else if (item.thumbnails.medium) {
+            video.thumbnail = item.thumbnails.medium.url;
+        } else {
+            video.thumbnail = item.thumbnails.default.url;
+        }
+        video.api = this.id;
+        return video;
     }
-    video.api = this.id;
-    return video;
-}
 
 }

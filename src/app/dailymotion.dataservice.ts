@@ -58,7 +58,7 @@ export class DailymotionDataService implements IDataService {
         let data: any = searchResponse;
         let items: any[] = data.list;
         let vids: Video[] = items
-          .filter((item: DailymotionVideo) => item.item_type === 'video')
+          .filter((item: DailymotionVideo) => item.item_type === 'video' && item.published)
           .map((item: DailymotionVideo) => this.mapVideo(item))
           .map((video: Video) => {
 
@@ -77,6 +77,13 @@ export class DailymotionDataService implements IDataService {
       });
   }
 
+  /**
+   * 
+   * @param query TODO
+   * @param mode 
+   * @param nextPageToken 
+   * @param title 
+   */
   searchPlaylist(query: string, mode: boolean, nextPageToken?: string, title?: string) {
     this.http
       .get(
