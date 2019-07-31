@@ -301,7 +301,7 @@
         </div>
         <div class="footer">
           <input class="w-100" (keyup.enter)="sendChatMessage()" [(ngModel)]="chatMessageText" type="text" />
-          <div class="send-chat-button">
+          <div (click)="sendChatMessage()" class="send-chat-button">
             senden
           </div>
         </div>

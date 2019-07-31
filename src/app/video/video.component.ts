@@ -188,8 +188,8 @@ export class VideoComponent implements OnInit {
   initDailymotionPlayer(supportedApi: SupportedApi): void {
     let iframe = DM.player(document.getElementById(supportedApi.name + "player"), {
       video: "",
-      width: "100%",
-      height: "100%",
+      width: "500px",
+      height: "300px",
       params: {
         autoplay: false,
         mute: true
@@ -197,7 +197,10 @@ export class VideoComponent implements OnInit {
     });
     let videoPlayer = DM.Player;
     iframe.addEventListener('apiready', function(event) {
-      
+      if (!this.reframed) {
+        this.reframed = true;
+        reframe(event.target);
+      }
 
     });
     this.syncService.videoServices.set(supportedApi.id, new DailymotionVideoService(supportedApi, this.syncService,iframe, iframe));

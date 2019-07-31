@@ -71,7 +71,7 @@
   </div>
 
   <!-- Youtube video -->
-  <div  [className]="!syncService.synctubeComponent.displayFullscreen ? 'video' : 'video-fullscreen'" id="youtubeplayer">
+  <div [hidden]="syncService.selectedVideoApi !== 1" [className]="!syncService.synctubeComponent.displayFullscreen ? 'video' : 'video-fullscreen'" id="youtubeplayer">
   </div>
   <!-- Dailymotion video -->
   <div  [className]="!syncService.synctubeComponent.displayFullscreen ? 'video' : 'video-fullscreen'" id="dailymotionplayer">

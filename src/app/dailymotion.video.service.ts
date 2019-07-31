@@ -36,7 +36,7 @@ export class DailymotionVideoService implements IVideoService {
     loadVideoById(urlObject: any): void {
         
         this.videoPlayer.load(urlObject.videoId, {
-                autoplay: false,
+                autoplay: urlObject.autoplay,
                 start: urlObject.startSeconds
             }); 
     }
@@ -77,7 +77,7 @@ export class DailymotionVideoService implements IVideoService {
 
     }
     getPlayerState(): number {
-        return 1;
+        return 1; // TODO remove 
     }
     getReceivedPlayerState(): number {
    //     throw new Error("Method not implemented.");
