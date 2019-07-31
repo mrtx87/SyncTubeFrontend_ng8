@@ -22,8 +22,8 @@ declare const Vimeo: any;
   styleUrls: ["./video.component.css"]
 })
 export class VideoComponent implements OnInit {
-  
-  
+
+
   public reframed: Boolean = false;
 
   displayOptions: Boolean = false;
@@ -118,10 +118,10 @@ export class VideoComponent implements OnInit {
           this.initYoutubePlayer(supportedApi);
           break;
         case SupportedApiType.Dailymotion:
-          //this.initDailymotionPlayer(supportedApi);
+          this.initDailymotionPlayer(supportedApi);
           break;
         case SupportedApiType.Vimeo:
-          //this.initVimeoPlayer(supportedApi);
+          this.initVimeoPlayer(supportedApi);
           break;
 
       }
@@ -156,8 +156,8 @@ export class VideoComponent implements OnInit {
               reframe(e.target.a);
             }
             let apiService: ApiService = this.syncService.getApiServiceByKey(SupportedApiType.Youtube);
-            apiService.videoService = new YoutubeVideoService(YT, videoPlayer, this.syncService);
-            
+            apiService.videoService = new YoutubeVideoService(videoPlayer, this.syncService, YT);
+
             that.listenForPlayerState();
             if (that.syncService.getVideo()) {
               that.processVideoIfLoaded(that);
@@ -169,7 +169,7 @@ export class VideoComponent implements OnInit {
               });
             }
             that.mute(); //DEBUG */
-            
+
           }
         }
       });
@@ -177,8 +177,8 @@ export class VideoComponent implements OnInit {
   }
 
 
-  initDailymotionPlayer(supportedApi: SupportedApi): DailymotionVideoService {
-    let videoPlayer = DM.player(document.getElementById(supportedApi.name + "player"), {
+  initDailymotionPlayer(supportedApi: SupportedApi): void {
+    let v_iframe = DM.player(document.getElementById(supportedApi.name + "player"), {
       video: "xwr14q",
       width: "100%",
       height: "100%",
@@ -187,20 +187,24 @@ export class VideoComponent implements OnInit {
         mute: true
       }
     });
-    return null;
+    let videoPlayer = DM.Player;
+    let apiService: ApiService = this.syncService.getApiServiceByKey(SupportedApiType.Dailymotion);
+    apiService.videoService = new DailymotionVideoService(videoPlayer, this.syncService);
   }
 
-  initVimeoPlayer(supportedApi: SupportedApi): VimeoVideoService {
-    let videoPlayer = new Vimeo.Player(document.getElementById(supportedApi.name + "player"));
+  initVimeoPlayer(supportedApi: SupportedApi) {
+    let elem = document.getElementById(supportedApi.name + "player");
+    let videoPlayer = new Vimeo.Player(elem);
 
-    videoPlayer.on('play', function () {
+    let apiService: ApiService = this.syncService.getApiServiceByKey(SupportedApiType.Vimeo);
+    apiService.videoService = new VimeoVideoService(videoPlayer, this.syncService);
+    /*videoPlayer.on('play', function () {
       console.log('Played the video');
     });
 
     videoPlayer.getVideoTitle().then(function (title) {
       console.log('title:', title);
-    });
-    return null;
+    });*/
   }
 
   processVideoIfLoaded(that: VideoComponent) {

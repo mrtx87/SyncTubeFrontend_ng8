@@ -56,9 +56,6 @@ export class SyncService {
   }
 
   /***
-   *
-   * add chromecast connection (** laterlater**)
-   *
    * add stats page for admins (debug)
    */
 

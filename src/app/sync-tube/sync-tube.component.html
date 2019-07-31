@@ -158,7 +158,7 @@
         <div style="min-height:5px; height:5px; width:100%;">
           <!-- spacer -->
         </div>
-        <div #scrollChat class="scrollable-content" id="scrollChat">
+        <div #scrollChat *ngIf="user" class="scrollable-content" id="scrollChat">
           <div [className]="
               chatMessage.user.userId != user.userId
                 ? 'chat-row'
