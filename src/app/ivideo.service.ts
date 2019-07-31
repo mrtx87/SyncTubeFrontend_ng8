@@ -1,14 +1,20 @@
 import { SyncService } from './sync.service';
+import { SupportedApi } from './supported-api';
 
 export interface IVideoService{
 
-
-    playerWindow: any;
+    name:string;
+    iframe: any;
     videoPlayer: any;
     syncService: SyncService;
+    supportedApi: SupportedApi;
 
     init();
     loadVideoById(urlObject: any): void;
+    hide(): void;
+    unHide(): void;
+    isHidden(): boolean;
+
 
     mute(): void ;
     unMute(): void;

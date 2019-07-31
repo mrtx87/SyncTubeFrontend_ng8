@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, ɵPlayState } from "@angular/core";
 import * as Stomp from "stompjs";
 import * as SockJS from "sockjs-client";
 import { Raum } from "./raum";
@@ -20,7 +20,6 @@ import { SupportedApiType } from './supported-api-type';
 import { DailymotionDataService } from './dailymotion.dataservice';
 import { VimeoDataService } from './vimeo.dataservice.';
 import { IVideoService } from './ivideo.service';
-import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: "root"
@@ -36,23 +35,50 @@ export class SyncService {
 
   static cookieKey: string = "U_COOKIE";
 
+  private _selectedVideoApi: Number;
   supportedApis: SupportedApi[];
 
-  private _apiServices: Map<Number, ApiService>;
 
-  public get apiServices(): Map<Number, ApiService> {
-    return this._apiServices; 
+
+  private _videoServices: Map<Number, IVideoService>;
+  private _dataServices: Map<Number, IDataService>;
+
+  public get selectedVideoApi(): Number {
+    return this._selectedVideoApi;
   }
-  public set apiServices(value: Map<Number, ApiService>) {
-    this._apiServices = value;
+  public set selectedVideoApi(value: Number) {
+    this._selectedVideoApi = value;
   }
 
-  get currentApiService(): ApiService {
-    return this.apiServices.get(this.getSelectedApi().id);
+  public get videoServices(): Map<Number, IVideoService> {
+    return this._videoServices;
+  }
+  public set videoServices(value: Map<Number, IVideoService>) {
+    this._videoServices = value;
   }
 
-  getApiServiceByKey(key: Number): ApiService{
-    return this.apiServices.get(key);
+  public get dataServices(): Map<Number, IDataService> {
+    return this._dataServices;
+  }
+  public set dataServices(value: Map<Number, IDataService>) {
+    this._dataServices = value;
+  }
+
+  get currentDataService(): IDataService {
+    return this.dataServices.get(this.getSelectedDataApi().id);
+  }
+
+  getDataServiceByKey(key: Number): IDataService {
+    return this.dataServices.get(key);
+  }
+
+
+  get currentVideoService(): IVideoService {
+    return this.videoServices.get(this.selectedVideoApi);
+  }
+
+  getVideoServiceByKey(key: Number): IVideoService {
+    return this.videoServices.get(key);
   }
 
   /***
@@ -65,7 +91,7 @@ export class SyncService {
 
   synctubeComponent: SyncTubeComponent;
   videoComponent: VideoComponent;
-
+  joinReponseMessage: Message;
 
 
 
@@ -77,7 +103,7 @@ export class SyncService {
     this.http.get("http://localhost:8080/supported-apis", {}).subscribe(response => {
       if (this.synctubeComponent) {
         this.synctubeComponent.supportedApis = <SupportedApi[]>response
-        this.synctubeComponent.selectedApi = this.synctubeComponent.supportedApis[0];
+        this.synctubeComponent.selectedDataApi = this.synctubeComponent.supportedApis[0];
         this.supportedApis = <SupportedApi[]>response;
       } else {
         this.supportedApis = <SupportedApi[]>response;
@@ -91,35 +117,29 @@ export class SyncService {
     return this.dataServices.get(this.getSelectedApi().id);
   }*/
 
-  getSelectedApi(): SupportedApi {
-    return this.synctubeComponent.selectedApi;
+  getSelectedDataApi(): SupportedApi {
+    return this.synctubeComponent.selectedDataApi;
   }
 
   buildAvailableDataServices() {
-    if (!this.apiServices && this.supportedApis) {
-      this.apiServices = new Map<Number, ApiService>();
+    if (this.supportedApis) {
+      this.dataServices = new Map<Number, IDataService>();
       for (let supportedApi of this.supportedApis) {
         switch (supportedApi.id) {
           case SupportedApiType.Youtube:
 
-            let youtubeApiService: ApiService = new ApiService();
             let youTubeDataService: YoutubeDataService = new YoutubeDataService(this.http, this.synctubeComponent, SupportedApiType.Youtube, supportedApi.name);
-            youtubeApiService.dataService = youTubeDataService;
-            this.apiServices.set(SupportedApiType.Youtube, youtubeApiService);
+            this.dataServices.set(SupportedApiType.Youtube, youTubeDataService);
             console.log("Successfully generated api: " + youTubeDataService.name);
             break;
           case SupportedApiType.Dailymotion:
-              let dailymotionApiService: ApiService = new ApiService();
-              let dailymotionDataService: DailymotionDataService = new DailymotionDataService(this.http, this.synctubeComponent, SupportedApiType.Dailymotion, supportedApi.name);
-              dailymotionApiService.dataService = dailymotionDataService;
-              this.apiServices.set(SupportedApiType.Dailymotion, dailymotionApiService);
+            let dailymotionDataService: DailymotionDataService = new DailymotionDataService(this.http, this.synctubeComponent, SupportedApiType.Dailymotion, supportedApi.name);
+            this.dataServices.set(SupportedApiType.Dailymotion, dailymotionDataService);
             console.log("Successfully generated api: " + dailymotionDataService.name);
             break;
           case SupportedApiType.Vimeo:
-              let vimeoApiService: ApiService = new ApiService();
-              let vimeoDataService: VimeoDataService = new VimeoDataService(this.http, this.synctubeComponent, SupportedApiType.Vimeo, supportedApi.name);
-              vimeoApiService.dataService = vimeoDataService;
-              this.apiServices.set(SupportedApiType.Vimeo, vimeoApiService);
+            let vimeoDataService: VimeoDataService = new VimeoDataService(this.http, this.synctubeComponent, SupportedApiType.Vimeo, supportedApi.name);
+            this.dataServices.set(SupportedApiType.Vimeo, vimeoDataService);
             console.log("Successfully generated api: " + vimeoDataService.name);
             break;
 
@@ -341,9 +361,11 @@ export class SyncService {
     }
 
     if (message.type == "join-room") {
+      this.joinReponseMessage = message;
       this.createClient(message);
       this.replaceUrl(message.raumId);
       this.updateVideo(message);
+      //this.switchVideo(message);
 
       this.getRaumPlaylist(this.getRaumId());
       this.setInitalPlaybackRate(message.currentPlaybackRate)
@@ -423,10 +445,12 @@ export class SyncService {
 
   switchVideo(message: Message) {
     if (message.video) {
+      this.selectedVideoApi = message.video.api;
+      this.setDisplayedIframe();
       this.loadVideoById({
         videoId: message.video.videoId,
         startSeconds: message.video.timestamp,
-        suggestedQuality: "large"
+        autoplay: (message.playerState != SyncService.playing) ? false : true
       });
       this.videoComponent.currentTimeProgressbar = message.video.timestamp;
       this.videoComponent.currentDisplayedTime = message.video.timestamp;
@@ -444,6 +468,16 @@ export class SyncService {
         }
       }, 20);
     }
+  }
+
+  setDisplayedIframe() {
+    this.videoServices.forEach((videoService: IVideoService) => {
+      if (videoService.supportedApi.id === this.selectedVideoApi) {
+        videoService.unHide();
+      } else {
+        videoService.hide();
+      }
+    })
   }
 
   /*
@@ -1019,7 +1053,7 @@ export class SyncService {
   }
 
   loadVideoById(urlObject: any) {
-    this.videoComponent.loadVideoById(urlObject);
+    this.currentVideoService.loadVideoById(urlObject);
   }
 
   setVideoDuration() {

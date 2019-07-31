@@ -10,8 +10,8 @@ import { DailymotionDataService } from '../dailymotion.dataservice';
 import { VimeoDataService } from '../vimeo.dataservice.';
 import { YoutubeVideoService } from '../youtube.video.service';
 import { VimeoVideoService } from '../vimeo.video.service';
-import { ApiService } from '../api.service';
 import { DailymotionVideoService } from '../dailymotion.video.service';
+import { IVideoService } from '../ivideo.service';
 declare const DM: any;
 declare const Vimeo: any;
 
@@ -48,7 +48,7 @@ export class VideoComponent implements OnInit {
 
   availableQualitys: string[];
   currentPlaybackQuality: string;
-  volumeValue: number = 49;
+  volumeValue: number = 0;
   videoDuration: number;
   captions: any[];
   timeForSlider: number;
@@ -59,13 +59,15 @@ export class VideoComponent implements OnInit {
   }
 
   hasPlayer(): any {
-    return this.syncService.currentApiService.videoService.videoPlayer;
+    return this.syncService.currentVideoService.videoPlayer;
   }
+
+  
 
   listenForPlayerState() {
     let that = this;
     setInterval(function () {
-      var state = that.syncService.currentApiService.videoService.getPlayerState();
+      var state = that.syncService.currentVideoService.getPlayerState();
       if (that.getReceivedPlayerState() !== state) {
         if (state === SyncService.FINISHED) {
           that.syncService.synctubeComponent.receivedPlayerState = state;
@@ -108,14 +110,17 @@ export class VideoComponent implements OnInit {
   ngOnInit() {
     this.initScripts();
     this.initVideoPlayers();
-
+    //this.syncService.switchVideo(this.syncService.joinReponseMessage);
   }
 
   initVideoPlayers() {
+    this.syncService.videoServices = new Map<Number, IVideoService>();
     for (let supportedApi of this.syncService.synctubeComponent.supportedApis) {
+      //this.syncService.videoServices = new Map<Number, IVideoService>();
       switch (supportedApi.id) {
         case SupportedApiType.Youtube:
           this.initYoutubePlayer(supportedApi);
+          this.syncService.selectedVideoApi = supportedApi.id;
           break;
         case SupportedApiType.Dailymotion:
           this.initDailymotionPlayer(supportedApi);
@@ -123,8 +128,8 @@ export class VideoComponent implements OnInit {
         case SupportedApiType.Vimeo:
           this.initVimeoPlayer(supportedApi);
           break;
-
       }
+
     }
     /*
     let player: HTMLElement = document.getElementById("youtubeplayer");
@@ -138,6 +143,7 @@ export class VideoComponent implements OnInit {
     let that = this;
     let videoPlayer: any;
     let YT: any;
+    let iframe: any;
     window["onYouTubeIframeAPIReady"] = e => {
       YT = window["YT"];
       this.reframed = false;
@@ -155,20 +161,22 @@ export class VideoComponent implements OnInit {
               this.reframed = true;
               reframe(e.target.a);
             }
-            let apiService: ApiService = this.syncService.getApiServiceByKey(SupportedApiType.Youtube);
-            apiService.videoService = new YoutubeVideoService(videoPlayer, this.syncService, YT);
+            iframe = e.target.a;
+            this.syncService.videoServices.set(supportedApi.id, new YoutubeVideoService(supportedApi, this.syncService,videoPlayer, iframe));
+            this.syncService.switchVideo(this.syncService.joinReponseMessage);
+            that.mute(); //DEBUG */ 
 
+            /*
             that.listenForPlayerState();
             if (that.syncService.getVideo()) {
               that.processVideoIfLoaded(that);
               that.currentTimeProgressbar = this.syncService.getVideo().timestamp;
-              that.loadVideoById({
+              that.syncService.currentVideoService.loadVideoById({
                 videoId: this.syncService.getVideo().videoId,
                 startSeconds: this.syncService.getVideo().timestamp,
                 suggestedQuality: "large"
               });
-            }
-            that.mute(); //DEBUG */
+            }*/
 
           }
         }
@@ -178,26 +186,29 @@ export class VideoComponent implements OnInit {
 
 
   initDailymotionPlayer(supportedApi: SupportedApi): void {
-    let v_iframe = DM.player(document.getElementById(supportedApi.name + "player"), {
-      video: "xwr14q",
+    let iframe = DM.player(document.getElementById(supportedApi.name + "player"), {
+      video: "",
       width: "100%",
       height: "100%",
       params: {
-        autoplay: true,
+        autoplay: false,
         mute: true
       }
     });
     let videoPlayer = DM.Player;
-    let apiService: ApiService = this.syncService.getApiServiceByKey(SupportedApiType.Dailymotion);
-    apiService.videoService = new DailymotionVideoService(videoPlayer, this.syncService);
+    iframe.addEventListener('apiready', function(event) {
+      
+
+    });
+    this.syncService.videoServices.set(supportedApi.id, new DailymotionVideoService(supportedApi, this.syncService,iframe, iframe));
+    iframe.hidden = true;
   }
 
   initVimeoPlayer(supportedApi: SupportedApi) {
-    let elem = document.getElementById(supportedApi.name + "player");
-    let videoPlayer = new Vimeo.Player(elem);
-
-    let apiService: ApiService = this.syncService.getApiServiceByKey(SupportedApiType.Vimeo);
-    apiService.videoService = new VimeoVideoService(videoPlayer, this.syncService);
+    let iframe = document.getElementById(supportedApi.name + "player");
+    let videoPlayer = new Vimeo.Player(iframe);
+    this.syncService.videoServices.set(supportedApi.id, new VimeoVideoService(supportedApi, this.syncService,videoPlayer, iframe));
+    iframe.hidden = true;
     /*videoPlayer.on('play', function () {
       console.log('Played the video');
     });
@@ -209,7 +220,7 @@ export class VideoComponent implements OnInit {
 
   processVideoIfLoaded(that: VideoComponent) {
     let wait = setInterval(function () {
-      if (that.syncService.currentApiService.videoService.getPlayerState() == SyncService.playing) {
+      if (that.syncService.currentVideoService.getPlayerState() == SyncService.playing) {
         that.setVideoDuration();
         that.togglePlayVideo(that.getReceivedPlayerState());
         if (that.syncService.synctubeComponent.users.length > 1) {
@@ -224,7 +235,7 @@ export class VideoComponent implements OnInit {
   }
 
   getVideoDuration(): number {
-    return this.syncService.currentApiService.videoService.getVideoDuration();
+    return this.syncService.currentVideoService.getVideoDuration();
   }
 
   getTimeForSlider() {
@@ -240,23 +251,23 @@ export class VideoComponent implements OnInit {
   }
 
   getCurrentTime(): number {
-    return this.syncService.currentApiService.videoService.getCurrentTime();
+    return this.syncService.currentVideoService.getCurrentTime();
   }
 
   getPlayerState(): number {
-    return this.syncService.currentApiService.videoService.getPlayerState();
+    return this.syncService.currentVideoService.getPlayerState();
   }
 
   seekTo(seconds: number, allowSeekAhead: Boolean): void {
-    this.syncService.currentApiService.videoService.seekTo(seconds, allowSeekAhead);
+    this.syncService.currentVideoService.seekTo(seconds, allowSeekAhead);
   }
 
   pauseVideo(): void {
-    this.syncService.currentApiService.videoService.pauseVideo();
+    this.syncService.currentVideoService.pauseVideo();
   }
 
   stopVideo(): void {
-    this.syncService.currentApiService.videoService.stopVideo();
+    this.syncService.currentVideoService.stopVideo();
   }
 
   getReceivedPlayerState(): number {
@@ -280,11 +291,11 @@ export class VideoComponent implements OnInit {
   }
 
   playVideo() {
-    this.syncService.currentApiService.videoService.playVideo();
+    this.syncService.currentVideoService.playVideo();
   }
 
   clearVideo() {
-    this.syncService.currentApiService.videoService.clearVideo();
+    this.syncService.currentVideoService.clearVideo();
   }
 
   getCurrentPlaybackRate() {
@@ -292,7 +303,7 @@ export class VideoComponent implements OnInit {
   }
 
   getAvailableQualityLevels(): string[] {
-    return this.syncService.currentApiService.videoService.getAvailableQualityLevels();
+    return this.syncService.currentVideoService.getAvailableQualityLevels();
   }
 
   timer: any;
@@ -344,9 +355,7 @@ export class VideoComponent implements OnInit {
     }
   }
 
-  loadVideoById(urlObject: any): void {
-    this.syncService.currentApiService.videoService.loadVideoById(urlObject);
-  }
+
 
   onChangeProgressBar() {
     if (this.getCurrentVideo()) {
@@ -378,20 +387,20 @@ export class VideoComponent implements OnInit {
   }
 
   setVolume() {
-    this.syncService.currentApiService.videoService.setVolume();
+    this.syncService.currentVideoService.setVolume();
   }
 
   mute(): void {
-    this.syncService.currentApiService.videoService.mute();
+    this.syncService.currentVideoService.mute();
 
   }
 
   unMute(): void {
-    this.syncService.currentApiService.videoService.unMute();
+    this.syncService.currentVideoService.unMute();
   }
 
   isMuted(): Boolean {
-    return this.syncService.currentApiService.videoService.isMuted();
+    return this.syncService.currentVideoService.isMuted();
   }
 
   sendRequestSyncTimestamp() {
@@ -407,15 +416,15 @@ export class VideoComponent implements OnInit {
   }
 
   getAvailablePlaybackRates(): Array<number> {
-    return this.syncService.currentApiService.videoService.getAvailablePlaybackRates();
+    return this.syncService.currentVideoService.getAvailablePlaybackRates();
   }
 
   setPlaybackRate(rate: number) {
-    this.syncService.currentApiService.videoService.setPlaybackRate(rate);
+    this.syncService.currentVideoService.setPlaybackRate(rate);
   }
 
   getPlaybackRate(): number {
-    return this.syncService.currentApiService.videoService.getPlaybackRate();
+    return this.syncService.currentVideoService.getPlaybackRate();
   }
 
   toggleDisplayCinemaMode() {
@@ -450,11 +459,11 @@ export class VideoComponent implements OnInit {
   }*/
 
   getPlaybackQuality() {
-    return this.syncService.currentApiService.videoService.getPlaybackQuality();
+    return this.syncService.currentVideoService.getPlaybackQuality();
   }
 
   setPlaybackQuality(suggestedQuality: string) {
-    this.syncService.currentApiService.videoService.setPlaybackQuality(suggestedQuality);
+    this.syncService.currentVideoService.setPlaybackQuality(suggestedQuality);
   }
 
   toggleFullscreen() {

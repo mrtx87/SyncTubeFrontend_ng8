@@ -22,7 +22,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   //APIS STUFF
   supportedApis: SupportedApi[];
-  selectedApi: SupportedApi;
+  selectedDataApi: SupportedApi;
 
   publicRaum: boolean = false;
   privateRaum: boolean = true;
@@ -101,12 +101,9 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
     this.syncService.retrieveSupportedApis();
 
-    this.connect();
-  }
-
-  connect() {
     this.syncService.connect();
   }
+  
 
 
 
@@ -221,7 +218,6 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   switchSelectedApi() {
     
-    console.log(this.selectedApi);
   }
 
   clearRoomVars() {
@@ -272,8 +268,8 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.importedPlaylist = new ImportedPlaylist();
     this.hasImportedPlaylist = false;
     this.searchResults = [];
-    let searchQuery: SearchQuery = this.syncService.currentApiService.dataService.processInput(this.searchInput);
-    this.forceScrollToSearch = this.syncService.currentApiService.dataService.search(searchQuery);
+    let searchQuery: SearchQuery = this.syncService.currentDataService.processInput(this.searchInput);
+    this.forceScrollToSearch = this.syncService.currentDataService.search(searchQuery);
 
     }
 
@@ -294,7 +290,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
       this.hasImportedPlaylist = false;
       this.searchResults = [];
 
-      this.syncService.currentApiService.dataService.searchPlaylist(video_.playlistId, false, null, video_.title);
+      this.syncService.currentDataService.searchPlaylist(video_.playlistId, false, null, video_.title);
     }
   }
 

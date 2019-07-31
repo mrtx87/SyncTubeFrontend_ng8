@@ -1,21 +1,36 @@
 import { IVideoService } from './ivideo.service';
 import { SyncService } from './sync.service';
+import { SupportedApi } from './supported-api';
 
 export class YoutubeVideoService implements IVideoService {
 
-    playerWindow: any;
+    name: string;
+    iframe: any;
     videoPlayer: any;
     syncService: SyncService;
+    supportedApi: SupportedApi;
 
-    constructor(videoPlayer: any, synService: SyncService, playerWindow?: any,) {
-        this.playerWindow = playerWindow;
+    constructor(supportedApi: SupportedApi,synService: SyncService, videoPlayer: any,  playerWindow: any) {
+        this.iframe = playerWindow;
         this.videoPlayer = videoPlayer;
         this.syncService = synService;
+        this.supportedApi = supportedApi;
     }
 
     init() {
 
     }
+
+    hide(): void {
+        this.iframe.hidden = true;
+    }
+    unHide(): void {
+        this.iframe.hidden = false;
+    }
+    isHidden(): boolean {
+        return this.iframe.hidden;
+    }
+
     getPlaybackQuality(): string {
         return this.videoPlayer.getPlaybackQuality();
     }

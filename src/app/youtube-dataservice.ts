@@ -15,10 +15,10 @@ export class YoutubeDataService implements IDataService {
     synctubeComponent: SyncTubeComponent;
     APIKEY: string = "AIzaSyBJKPvOKMDqPzaR-06o1-Mfixvq2CRlS5M";
 
-    constructor(http: HttpClient, synctubeComponent: SyncTubeComponent, type: number, name: string) {
+    constructor(http: HttpClient, synctubeComponent: SyncTubeComponent, id: number, name: string) {
         this.http = http;
         this.synctubeComponent = synctubeComponent;
-        this.id = type;
+        this.id = id;
         this.name = name;
     }
 
@@ -74,6 +74,7 @@ export class YoutubeDataService implements IDataService {
                         video.title = item.snippet.title;
                         video.description = item.snippet.description;
                         video.publishedAt = item.snippet.publishedAt;
+                        video.api = this.id;
                         return video;
                     });
                 if (normalQuery) {
