@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, HostListener, AfterViewChecked, SystemJsNgModuleLoader } from '@angular/core';
 import { SyncService } from '../sync.service';
 import { Raum } from '../raum';
 import { ActivatedRoute } from '@angular/router';

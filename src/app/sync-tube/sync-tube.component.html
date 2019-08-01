@@ -301,9 +301,7 @@
         </div>
         <div class="footer">
           <input class="w-100" (keyup.enter)="sendChatMessage()" [(ngModel)]="chatMessageText" type="text" />
-          <div class="send-chat-button">
-            senden
-          </div>
+        
         </div>
       </div>
 
@@ -361,7 +359,7 @@
             </div>
             <div *ngIf="user.admin && !anyuser.admin" class="delete-icon-container">
               <img *ngIf="user.admin && !anyuser.admin" (click)="toKick(anyuser)" class="delete-icon"
-                src="assets/delete.svg" />
+                src="assets/kick.svg" />
             </div>
             <div class="user-star-container">
               <img *ngIf="anyuser.admin" class="star" src="assets/star.svg" />
@@ -420,9 +418,11 @@
           <div class="description">
             <label>Hier können Sie den Raumtitel bestimmen</label>
           </div>
-          <div (click)="sendUpdateTitleAndDescription()"
-            style="margin:0 auto; border: 1px solid black; border-radius:4px; padding-left: 10px; padding-right: 10px; padding-top: 5px; background-color:var(--color5);">
-            Ändern
+          <div class="change-button-container">
+            <button (click)="sendUpdateTitleAndDescription()" class="change-button">
+              Ändern
+            </button>
+            
           </div>
           <div class="admin-panel-row">
             <label *ngIf="user.admin" [hidden]="!raumStatus" class="w-90">Reset Url</label>
@@ -437,7 +437,7 @@
                 {{ kickedUser.userName }}
               </div>
               <div class="delete-icon-container">
-                <img (click)="sendPardonKickedUser(kickedUser)" class="delete-icon" src="assets/delete.svg" />
+                <img (click)="sendPardonKickedUser(kickedUser)" class="delete-icon" src="assets/open-door.svg" />
               </div>
             </div>
           </div>

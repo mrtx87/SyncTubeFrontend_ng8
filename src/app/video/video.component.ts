@@ -100,7 +100,7 @@ export class VideoComponent implements OnInit {
           this.initYoutubePlayer(supportedApi);
           break;
         case SupportedApiType.Dailymotion:
-          this.initDailymotionPlayer(supportedApi);
+          //this.initDailymotionPlayer(supportedApi);
           break;
         case SupportedApiType.Vimeo:
           break;
