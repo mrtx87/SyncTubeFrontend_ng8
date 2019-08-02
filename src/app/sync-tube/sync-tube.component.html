@@ -94,6 +94,11 @@
             ">
             <h3 (click)="sendImportPlaylist()">Playlist importieren</h3>
           </div>
+          <div [className]="
+              hasImportedPlaylist ? 'import-button' : 'import-button-inactive'
+            ">
+            <h3 (click)="sendIntegratePlaylist()">in exisierende Playlist integrieren</h3>
+          </div>
           <h4 *ngIf="importedPlaylist" [hidden]="hasImportedPlaylist">
             {{ importedPlaylist.size }} Elemente werden geladen...
           </h4>

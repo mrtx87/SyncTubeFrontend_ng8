@@ -264,6 +264,13 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     }
   }
 
+  sendIntegratePlaylist(){
+    if (this.importedPlaylist && this.user.admin) {
+      this.importedPlaylist.mode = 1;
+      this.syncService.sendImportPlaylist(this.raumId, this.user, this.importedPlaylist);
+    }
+  }
+
   search() {
     this.importedPlaylist = new ImportedPlaylist();
     this.hasImportedPlaylist = false;
