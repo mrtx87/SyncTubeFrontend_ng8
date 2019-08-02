@@ -9,8 +9,8 @@ import { SearchQuery } from './sync-tube/search-query';
 
 
 export class DailymotionDataService implements IDataService {
-
-
+  
+  nextPageToken: string;
   id: number;
   name: string;
   http: HttpClient;

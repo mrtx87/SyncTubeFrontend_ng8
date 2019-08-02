@@ -30,6 +30,9 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   scrollContent: any;
   scrollChat: any;
+  searchResultsContainer: any;
+  currentScrollTop: number = 0;
+  isLoadingVideos: boolean = false;
 
   forceScrollToSearch: boolean = false;
   forceScrollToVideo: boolean = false;
@@ -103,14 +106,18 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
     this.syncService.connect();
   }
-  
 
+
+  updateCurrentScrollTop(): void {
+    this.currentScrollTop = this.scrollContent.scrollTop;
+  }
 
 
   ngAfterViewChecked(): void {
 
     this.scrollChat = document.getElementById("scrollChat")
     this.scrollContent = document.getElementById("scrollContent")
+    this.searchResultsContainer = document.getElementById("search-results");
 
     if (this.forceScrollToSearch) {
       this.scrollToSearchResults();
@@ -122,6 +129,17 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
       this.scrollToSearchVideo();
       this.forceScrollToVideo = false;
     }
+
+    if (!this.isLoadingVideos && false) {
+      this.isLoadingVideos = true;
+      this.syncService.currentDataService.searchQuery("", true, null, this.syncService.currentDataService.nextPageToken);
+
+    }
+
+    /*console.log("SCROLLTOP: " + this.scrollContent.scrollTop)
+    console.log("CLIENTHEIGHT: " + document.documentElement.clientHeight)
+    console.log("CONTAINERHEIGHT: " + this.searchResultsContainer.scrollHeight)
+*/
 
     /*
     if (this.scrollChat && this.forceScrollToChatBottom) {
@@ -217,7 +235,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
   switchSelectedApi() {
-    
+
   }
 
   clearRoomVars() {
@@ -264,7 +282,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  sendIntegratePlaylist(){
+  sendIntegratePlaylist() {
     if (this.importedPlaylist && this.user.admin) {
       this.importedPlaylist.mode = 1;
       this.syncService.sendImportPlaylist(this.raumId, this.user, this.importedPlaylist);
@@ -275,10 +293,11 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.importedPlaylist = new ImportedPlaylist();
     this.hasImportedPlaylist = false;
     this.searchResults = [];
+    this.syncService.currentDataService.nextPageToken = null;
     let searchQuery: SearchQuery = this.syncService.currentDataService.processInput(this.searchInput);
     this.forceScrollToSearch = this.syncService.currentDataService.search(searchQuery);
 
-    }
+  }
 
   getReceivedPlayerState(): number {
     return this.receivedPlayerState;

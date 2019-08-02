@@ -444,7 +444,7 @@ export class SyncService {
   }
 
   switchVideo(message: Message) {
-    if (message.video) {
+    if (message && message.video) {
       this.selectedVideoApi = message.video.api;
       this.setDisplayedIframe();
       this.loadVideoById({

@@ -77,7 +77,7 @@
   <div  [className]="!syncService.synctubeComponent.displayFullscreen ? 'video' : 'video-fullscreen'" id="dailymotionplayer">
   </div>
   <!-- Vimeo video -->
-  <iframe  background="true" autoplay="true" mute="true" loop="false" id="vimeoplayer" src="https://player.vimeo.com/video/213468818" [className]="!syncService.synctubeComponent.displayFullscreen ? 'video' : 'video-fullscreen'" width="500px" height="350px"></iframe>
+  <iframe  background="true" autoplay="true" mute="1" loop="false" id="vimeoplayer" src="https://player.vimeo.com/video/213468818?autoplay=1&muted=1" [className]="!syncService.synctubeComponent.displayFullscreen ? 'video' : 'video-fullscreen'" width="500px" height="350px"></iframe>
 
    <div *ngIf="displaySecondsBack" class="middle-back-seconds-overlay">
     <img src="assets/back10sec.png">

@@ -215,7 +215,7 @@ export class VideoComponent implements OnInit {
 
   initVimeoPlayer(supportedApi: SupportedApi) {
     let iframe = document.getElementById(supportedApi.name + "player");
-    let videoPlayer = new Vimeo.Player(iframe);
+    let videoPlayer = new Vimeo.Player(iframe, {muted:true, autoplay:true});
     let that = this;
     this.syncService.videoServices.set(supportedApi.id, new VimeoVideoService(supportedApi, this.syncService,videoPlayer, iframe));
     iframe.hidden = true;

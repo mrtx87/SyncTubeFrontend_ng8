@@ -69,7 +69,7 @@ export class VimeoVideoService implements IVideoService {
         this.videoPlayer.setCurrentTime(seconds)
     }
     setVolume(value: number) {
-        this.videoPlayer.setVolume(value);
+        this.videoPlayer.setVolume(value/100);
     }
     isMuted(): Boolean {
         return this.videoPlayer.getVolume() == 0;

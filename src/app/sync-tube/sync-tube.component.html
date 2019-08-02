@@ -87,7 +87,7 @@
       <!-- Video Component-->
       <app-video></app-video>
 
-      <div *ngIf="raumId && user.admin && !displayFullscreen && !displayCinemaMode" class="search-results-container">
+      <div *ngIf="raumId && user.admin && !displayFullscreen && !displayCinemaMode" class="search-results-container" id="search-results">
         <div class="seachresults-buttons-container" [hidden]="!importedPlaylist">
           <div [className]="
               hasImportedPlaylist ? 'import-button' : 'import-button-inactive'
