@@ -6,7 +6,7 @@ export class ChatMessage {
     type:String;
     isPrivate: Boolean;
     user: User;    
-    raumId: number;
+    raumId: string;
     timestamp: number;
     messageText: String;
     video: Video;

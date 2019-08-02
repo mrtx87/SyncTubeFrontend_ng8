@@ -8,6 +8,7 @@ export interface IVideoService{
     videoPlayer: any;
     syncService: SyncService;
     supportedApi: SupportedApi;
+    reframed: boolean;
 
     init();
     loadVideoById(urlObject: any): void;
@@ -22,7 +23,7 @@ export interface IVideoService{
     pauseVideo(): void;
     stopVideo(): void;
     seekTo(seconds: number, allowSeekAhead: Boolean);
-    setVolume();
+    setVolume(value: number);
     isMuted(): Boolean;
 
     getVideoDuration(): number;

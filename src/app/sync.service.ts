@@ -25,6 +25,20 @@ import { IVideoService } from './ivideo.service';
   providedIn: "root"
 })
 export class SyncService {
+
+
+    /***
+   * add stats page for admins (debug)
+   */
+
+  v: any;
+  ws: SockJS;
+  private stompClient;
+
+  synctubeComponent: SyncTubeComponent;
+  videoComponent: VideoComponent;
+  joinReponseMessage: Message;
+
   //PLAYERSTATES
   static notStarted: number = -1;
   static FINISHED: number = 0;
@@ -80,20 +94,6 @@ export class SyncService {
   getVideoServiceByKey(key: Number): IVideoService {
     return this.videoServices.get(key);
   }
-
-  /***
-   * add stats page for admins (debug)
-   */
-
-  v: any;
-  ws: SockJS;
-  private stompClient;
-
-  synctubeComponent: SyncTubeComponent;
-  videoComponent: VideoComponent;
-  joinReponseMessage: Message;
-
-
 
   constructor(private http: HttpClient, private cookieService: CookieService) {
 
@@ -165,7 +165,7 @@ export class SyncService {
     if (this.cookieService.check(SyncService.cookieKey)) {
       user = new User();
       let cookie: string = this.getCookie();
-      user.userId = parseInt(cookie);
+      user.userId = cookie;
     } else {
       user = new User();
       user.userId = this.generateUserId();
@@ -185,7 +185,7 @@ export class SyncService {
     this.stompClient.connect({}, function () {
       that.stompClient.subscribe("/chat/" + user.userId, messageFromServer => that.handleServerResponse(messageFromServer));
 
-      let raumId: number = that.synctubeComponent.getPathId();
+      let raumId: string = that.synctubeComponent.getPathId();
       if (raumId) {
         that.sendJoinRaum(user, raumId);
       } else {
@@ -403,7 +403,7 @@ export class SyncService {
     }
   }
 
-  setRaumId(raumId: number) {
+  setRaumId(raumId: string) {
     this.synctubeComponent.raumId = raumId;
   }
 
@@ -419,7 +419,7 @@ export class SyncService {
     return this.synctubeComponent.getReceivedPlayerState();
   }
 
-  replaceUrl(raumId: number) {
+  replaceUrl(raumId: string) {
     let url: string = "/rooms/" + raumId;
     window.history.replaceState({}, "", url);
   }
@@ -532,10 +532,8 @@ export class SyncService {
     this.ws.close();
   }
 
-  generateUserId(): number {
-    return parseInt(
-      Math.floor(Date.now() / 1000) + "" + Math.floor(Math.random() * 10000)
-    );
+  generateUserId(): string {
+    return Math.floor(Date.now() / 1000) + "" + Math.floor(Math.random() * 10000);
   }
 
   sendRequestPublicRaeume() {
@@ -563,7 +561,7 @@ export class SyncService {
     );
   }
 
-  sendJoinRaum(user: User, raumId: number) {
+  sendJoinRaum(user: User, raumId: string) {
     console.log("[join-raum:] " + user.userId + " " + raumId);
     this.stompClient.send(
       "/app/send/join-room",
@@ -572,7 +570,7 @@ export class SyncService {
     );
   }
 
-  sendChangeUserName(user: User, raumId: number) {
+  sendChangeUserName(user: User, raumId: string) {
     console.log("[change-user-name:] " + user.userName + " " + raumId);
     this.stompClient.send(
       "/app/send/change-user-name",
@@ -583,7 +581,7 @@ export class SyncService {
 
   sendSeekToTimestamp(
     user: User,
-    raumId: number,
+    raumId: string,
     videoId: string,
     timestamp: number
   ) {
@@ -598,7 +596,7 @@ export class SyncService {
     );
   }
 
-  sendCurrentTimeStamp(user: User, raumId: number, video: Video) {
+  sendCurrentTimeStamp(user: User, raumId: string, video: Video) {
     console.log("[seekto-timestamp:] " + video);
     this.stompClient.send(
       "/app/send/current-timestamp",
@@ -607,7 +605,7 @@ export class SyncService {
     );
   }
 
-  sendNewVideo(user: User, raumId: number, video: Video) {
+  sendNewVideo(user: User, raumId: string, video: Video) {
     console.log("[send-new-video:] " + video);
     if (video) {
       this.stompClient.send(
@@ -620,7 +618,7 @@ export class SyncService {
 
   sendUpdateTitleAndDescription(
     user: User,
-    raumId: number,
+    raumId: string,
     raumTitle: string,
     raumDescription: string
   ) {
@@ -636,7 +634,7 @@ export class SyncService {
     );
   }
 
-  sendSwitchPlaylistVideo(user: User, raumId: number, playlistVideo: Video) {
+  sendSwitchPlaylistVideo(user: User, raumId: string, playlistVideo: Video) {
     if (playlistVideo) {
       this.stompClient.send(
         "/app/send/switch-playlist-video",
@@ -652,7 +650,7 @@ export class SyncService {
 
   sendChangePlaybackRate(
     user: User,
-    raumId: number,
+    raumId: string,
     currentPlaybackRate: number
   ) {
     this.stompClient.send(
@@ -666,7 +664,7 @@ export class SyncService {
     );
   }
 
-  sendAutoNextPlaylistVideo(user: User, raumId: number, playerState: number) {
+  sendAutoNextPlaylistVideo(user: User, raumId: string, playerState: number) {
     this.stompClient.send(
       "/app/send/auto-next-playlist-video",
       {},
@@ -674,7 +672,7 @@ export class SyncService {
     );
   }
 
-  sendTogglePlaylistLoop(user: User, raumId: number, loop: number) {
+  sendTogglePlaylistLoop(user: User, raumId: string, loop: number) {
     this.stompClient.send(
       "/app/send/toggle-playlist-loop",
       {},
@@ -684,7 +682,7 @@ export class SyncService {
 
   sendTogglePlaylistRunningOrder(
     user: User,
-    raumId: number,
+    raumId: string,
     randomOrder: boolean
   ) {
     this.stompClient.send(
@@ -694,7 +692,7 @@ export class SyncService {
     );
   }
 
-  sendToggleMuteUser(user: User, raumId: number, assignedUser: User) {
+  sendToggleMuteUser(user: User, raumId: string, assignedUser: User) {
     console.log(assignedUser);
     this.stompClient.send(
       "/app/send/toggle-mute-user",
@@ -703,7 +701,7 @@ export class SyncService {
     );
   }
 
-  sendPardonKickedUser(user: User, raumId: number, kickedUser: User) {
+  sendPardonKickedUser(user: User, raumId: string, kickedUser: User) {
     this.stompClient.send(
       "/app/send/pardon-kicked-user",
       {},
@@ -827,7 +825,7 @@ export class SyncService {
         });
     }
   */
-  sendDisconnectMessage(user: User, raumId: number) {
+  sendDisconnectMessage(user: User, raumId: string) {
     console.log("[disconnect-client:] " + user);
     this.stompClient.send(
       "/app/send/disconnect-client",
@@ -838,7 +836,7 @@ export class SyncService {
 
   sendTogglePlay(
     user: User,
-    raumId: number,
+    raumId: string,
     playerState: number,
     video: Video,
     currentTime: number
@@ -853,7 +851,7 @@ export class SyncService {
     this.stompClient.send("/app/send/toggle-play", {}, JSON.stringify(message));
   }
 
-  sendAssignAdmin(raumId: number, user: User, assignedUser: User) {
+  sendAssignAdmin(raumId: string, user: User, assignedUser: User) {
     console.log("[assign-as-admin:] " + assignedUser);
     this.stompClient.send(
       "/app/send/assign-admin",
@@ -862,7 +860,7 @@ export class SyncService {
     );
   }
 
-  sendKickUser(raumId: number, user: User, assignedUser: User) {
+  sendKickUser(raumId: string, user: User, assignedUser: User) {
     console.log("[kick-user:] " + assignedUser);
     this.stompClient.send(
       "/app/send/kick-user",
@@ -871,7 +869,7 @@ export class SyncService {
     );
   }
 
-  sendToPublicRoomRequest(raumId: number, user: User) {
+  sendToPublicRoomRequest(raumId: string, user: User) {
     console.log("[switch-to-public-room:] " + user);
     this.stompClient.send(
       "/app/send/to-public-room",
@@ -880,7 +878,7 @@ export class SyncService {
     );
   }
 
-  sendToPrivateRoomRequest(raumId: number, user: User) {
+  sendToPrivateRoomRequest(raumId: string, user: User) {
     console.log("[switch-to-private-room:] " + user);
     this.stompClient.send(
       "/app/send/to-private-room",
@@ -889,7 +887,7 @@ export class SyncService {
     );
   }
 
-  sendRefreshRaumId(raumId: number, user: User) {
+  sendRefreshRaumId(raumId: string, user: User) {
     console.log("[refresh-RaumId:] " + user);
     this.stompClient.send(
       "/app/send/refresh-raumid",
@@ -898,7 +896,7 @@ export class SyncService {
     );
   }
 
-  getRaumPlaylist(raumId: number) {
+  getRaumPlaylist(raumId: string) {
     // /room/{raumId}/playlist/
     this.http
       .get("http://localhost:8080/room/" + raumId + "/playlist")
@@ -912,7 +910,7 @@ export class SyncService {
   }
 
   sendImportPlaylist(
-    raumId: number,
+    raumId: string,
     user: User,
     importedPlaylist: ImportedPlaylist
   ) {
@@ -934,7 +932,7 @@ export class SyncService {
   }
 
   sendRemoveVideoFromPlaylist(
-    raumId: number,
+    raumId: string,
     user: User,
     playlistVideo: Video
   ) {
@@ -954,7 +952,7 @@ export class SyncService {
     }
   }
 
-  sendAddVideoToPlaylist(raumId: number, user: User, playlistvideo: Video) {
+  sendAddVideoToPlaylist(raumId: string, user: User, playlistvideo: Video) {
     console.log(
       "[add-video-to-playlist:] " + user + " | video: " + playlistvideo.videoId
     );
@@ -972,7 +970,7 @@ export class SyncService {
   }
 
   sendAddVideoToPlaylistAsNext(
-    raumId: number,
+    raumId: string,
     user: User,
     playlistvideo: Video
   ) {
@@ -996,7 +994,7 @@ export class SyncService {
   }
 
   sendAddVideoToPlaylistAsCurrent(
-    raumId: number,
+    raumId: string,
     user: User,
     playlistvideo: Video
   ) {
@@ -1064,7 +1062,7 @@ export class SyncService {
     this.videoComponent.setPlaybackRates();
   }
 
-  getUserId(): number {
+  getUserId(): string {
     return this.synctubeComponent.getUserId();
   }
 
@@ -1072,7 +1070,7 @@ export class SyncService {
     return this.synctubeComponent.getUser();
   }
 
-  getRaumId(): number {
+  getRaumId(): string {
     return this.synctubeComponent.getRaumId();
   }
 
@@ -1168,7 +1166,7 @@ export class SyncService {
     return this.cookieService.check(SyncService.cookieKey);
   }
 
-  setCookie(userId: number) {
+  setCookie(userId: string) {
     this.cookieService.set(SyncService.cookieKey, "" + userId, 30);
   }
 
@@ -1186,7 +1184,7 @@ export class SyncService {
 
   jumpBySeconds(offset: number) {
     if (this.isLocalUserAdmin() && this.currentVideoExists()) {
-      let raumId: number = this.getRaumId();
+      let raumId: string = this.getRaumId();
       let user: User = this.getLocalUser();
       let videoId: string = this.getVideo().videoId;
       let currentTime: number = this.getCurrentTime();

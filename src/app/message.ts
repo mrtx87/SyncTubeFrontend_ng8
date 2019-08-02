@@ -7,7 +7,7 @@ export class Message {
 
     type: String;
     user: User;
-    raumId: number;
+    raumId: string;
     
     video: Video;
     playerState: number;

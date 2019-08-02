@@ -1,23 +1,26 @@
 import { IVideoService } from './ivideo.service';
 import { SyncService } from './sync.service';
 import { SupportedApi } from './supported-api';
+import reframe from "reframe.js";
+
 
 export class VimeoVideoService implements IVideoService {
+    reframed: boolean;
     name: string;
     iframe: any;
     videoPlayer: any;
     syncService: SyncService;
     supportedApi: SupportedApi;
 
-    constructor(supportedApi: SupportedApi, synService: SyncService, videoPlayer: any,  playerWindow: any) {
+    constructor(supportedApi: SupportedApi, synService: SyncService, videoPlayer: any, playerWindow: any) {
         this.iframe = playerWindow;
         this.videoPlayer = videoPlayer;
         this.syncService = synService;
-        this.supportedApi= supportedApi;
+        this.supportedApi = supportedApi;
     }
 
     init() {
-    
+
     }
 
     hide(): void {
@@ -35,61 +38,75 @@ export class VimeoVideoService implements IVideoService {
     }
 
     loadVideoById(urlObject: any): void {
-        throw new Error("Method not implemented.");
+        let that = this;
+        this.mute();
+        this.videoPlayer.loadVideo(urlObject.videoId).then(function (id) {
+            if (!that.reframed) {
+                that.reframed = true;
+                reframe(that.iframe);
+            }
+            that.syncService.videoComponent.togglePlayVideo(that.syncService.getReceivedPlayerState());
+        })
     }
     mute(): void {
-        throw new Error("Method not implemented.");
+        this.videoPlayer.setVolume(0);
     }
     unMute(): void {
-        throw new Error("Method not implemented.");
+        this.videoPlayer.setVolume(this.syncService.videoComponent.volumeValue)
     }
     playVideo() {
-        throw new Error("Method not implemented.");
+        this.videoPlayer.play().then(function () {
+            console.log("video started")
+        });
     }
     pauseVideo(): void {
-        throw new Error("Method not implemented.");
+        this.videoPlayer.pause();
     }
     stopVideo(): void {
-        throw new Error("Method not implemented.");
+        this.videoPlayer.stop();
     }
     seekTo(seconds: number, allowSeekAhead: Boolean) {
-        throw new Error("Method not implemented.");
+        this.videoPlayer.setCurrentTime(seconds)
     }
-    setVolume() {
-        throw new Error("Method not implemented.");
+    setVolume(value: number) {
+        this.videoPlayer.setVolume(value);
     }
     isMuted(): Boolean {
-        throw new Error("Method not implemented.");
+        return this.videoPlayer.getVolume() == 0;
     }
     getVideoDuration(): number {
-        throw new Error("Method not implemented.");
+        return this.videoPlayer.getVideoDuration();
     }
     getCurrentTime(): number {
-        throw new Error("Method not implemented.");
+        let wait: boolean = true;
+        let secs: number;
+        this.videoPlayer.getCurrentTime().then(function(seconds) {
+            secs = seconds;
+        });
+
+        return secs;
     }
     getPlayerState(): number {
-        throw new Error("Method not implemented.");
+        return (this.videoPlayer.getPaused() || this.videoPlayer.getEnded()) ? 2 : 1;
     }
-    getReceivedPlayerState(): number {
-        throw new Error("Method not implemented.");
-    }
+
     getAvailableQualityLevels(): string[] {
-        throw new Error("Method not implemented.");
+        return ["default"];
     }
     setPlaybackQuality(suggestedQuality: string) {
-        throw new Error("Method not implemented.");
+        console.log('setPlaybackQuality: not supported');
     }
     getAvailablePlaybackRates(): number[] {
-        throw new Error("Method not implemented.");
+        return [1]; //this.videoPlayer
     }
     setPlaybackRate(rate: number) {
-        throw new Error("Method not implemented.");
+        this.videoPlayer.setPlaybackRate(rate);
     }
     getPlaybackRate(): number {
-        throw new Error("Method not implemented.");
+        return this.videoPlayer.getPlaybackRate();
     }
     clearVideo() {
-        throw new Error("Method not implemented.");
+        console.log('clearVideo: not supported');
     }
 
 }

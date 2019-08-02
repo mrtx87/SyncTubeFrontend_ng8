@@ -3,6 +3,7 @@ import { SyncService } from './sync.service';
 import { SupportedApi } from './supported-api';
 
 export class YoutubeVideoService implements IVideoService {
+    reframed: boolean;
 
     name: string;
     iframe: any;
@@ -58,14 +59,8 @@ export class YoutubeVideoService implements IVideoService {
     seekTo(seconds: number, allowSeekAhead: Boolean) {
         this.videoPlayer.seekTo(seconds, allowSeekAhead);
     }
-    setVolume() {
-        if (this.syncService.videoComponent.volumeValue <= 1) {
-            this.mute();
-            this.videoPlayer.setVolume(0);
-        } else {
-            this.unMute();
-            this.videoPlayer.setVolume(this.syncService.videoComponent.volumeValue);
-        }
+    setVolume(value: number) {
+        this.videoPlayer.setVolume(value);
     }
     isMuted(): Boolean {
         return this.videoPlayer.isMuted();

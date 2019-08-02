@@ -53,7 +53,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   user: User;
 
   //currentRaum Information
-  raumId: number;
+  raumId: string;
   raumDescription: string = "";
   raumTitle: string = "";
   raumDescriptionChange: string = "";
@@ -246,10 +246,10 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
   joinRaum() {
-    this.syncService.sendJoinRaum(this.user, parseInt(this.raumIdText));
+    this.syncService.sendJoinRaum(this.user, this.raumIdText);
   }
 
-  joinRaumById(raumId: number) {
+  joinRaumById(raumId: string) {
     this.syncService.sendJoinRaum(this.user, raumId);
   }
 
@@ -295,8 +295,8 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
 
-  getPathId(): number {
-    return parseInt(this.route.snapshot.paramMap.get('id'));
+  getPathId(): string {
+    return this.route.snapshot.paramMap.get('id');
   }
 
   updatePlaylist(playlist: Video[]) {
@@ -344,11 +344,11 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.syncService.pauseVideo();
   }
 
-  getUserId(): number {
+  getUserId(): string {
     return this.user.userId;
   }
 
-  getRaumId(): number {
+  getRaumId(): string {
     return this.raumId;
   }
 

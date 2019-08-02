@@ -157,13 +157,15 @@ export class VideoComponent implements OnInit {
         },
         events: {
           onReady: e => {
+            console.log('youtube player ready')
             if (!this.reframed) {
               this.reframed = true;
               reframe(e.target.a);
             }
             iframe = e.target.a;
-            this.syncService.videoServices.set(supportedApi.id, new YoutubeVideoService(supportedApi, this.syncService,videoPlayer, iframe));
-            this.syncService.switchVideo(this.syncService.joinReponseMessage);
+            that.syncService.videoServices.set(supportedApi.id, new YoutubeVideoService(supportedApi, this.syncService,videoPlayer, iframe));
+
+            that.syncService.switchVideo(this.syncService.joinReponseMessage);
             that.mute(); //DEBUG */ 
 
             /*
@@ -192,11 +194,15 @@ export class VideoComponent implements OnInit {
       height: "300px",
       params: {
         autoplay: false,
-        mute: true
+        mute: true,
+        controls: false,
+        api: 1
       }
     });
     let videoPlayer = DM.Player;
     iframe.addEventListener('apiready', function(event) {
+      console.log('dailymotion player ready')
+      this.reframed = false;
       if (!this.reframed) {
         this.reframed = true;
         reframe(event.target);
@@ -210,8 +216,12 @@ export class VideoComponent implements OnInit {
   initVimeoPlayer(supportedApi: SupportedApi) {
     let iframe = document.getElementById(supportedApi.name + "player");
     let videoPlayer = new Vimeo.Player(iframe);
+    let that = this;
     this.syncService.videoServices.set(supportedApi.id, new VimeoVideoService(supportedApi, this.syncService,videoPlayer, iframe));
     iframe.hidden = true;
+    videoPlayer.ready().then(function() {
+     console.log('vimeo player ready')
+    });
     /*videoPlayer.on('play', function () {
       console.log('Played the video');
     });
@@ -381,7 +391,7 @@ export class VideoComponent implements OnInit {
     return this.syncService.getLocalUser();
   }
 
-  getRaumId(): number {
+  getRaumId(): string {
     return this.syncService.getRaumId();
   }
 
@@ -390,7 +400,13 @@ export class VideoComponent implements OnInit {
   }
 
   setVolume() {
-    this.syncService.currentVideoService.setVolume();
+    if (this.syncService.videoComponent.volumeValue <= 1) {
+      this.mute();
+      this.syncService.currentVideoService.setVolume(0);
+  } else {
+      this.unMute();
+      this.syncService.currentVideoService.setVolume(this.syncService.videoComponent.volumeValue);
+  }
   }
 
   mute(): void {
