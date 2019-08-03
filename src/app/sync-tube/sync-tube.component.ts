@@ -128,11 +128,9 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  get toastr() : ToastrService{
-    return this.toastr_;
-  }
 
-  constructor(private syncService: SyncService, private toastr_: ToastrService, private route: ActivatedRoute) {
+
+  constructor(private syncService: SyncService, private route: ActivatedRoute) {
 
     this.syncService.registerSyncTubeComponent(this);
 

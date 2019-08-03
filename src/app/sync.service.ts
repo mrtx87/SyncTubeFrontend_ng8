@@ -20,6 +20,8 @@ import { SupportedApiType } from './supported-api-type';
 import { DailymotionDataService } from './dailymotion.dataservice';
 import { VimeoDataService } from './vimeo.dataservice.';
 import { IVideoService } from './ivideo.service';
+import { ToastrConfig } from './toastr.config';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable({
   providedIn: "root"
@@ -51,7 +53,6 @@ export class SyncService {
 
   private _selectedVideoApi: Number;
   supportedApis: SupportedApi[];
-
 
 
   private _videoServices: Map<Number, IVideoService>;
@@ -95,8 +96,12 @@ export class SyncService {
     return this.videoServices.get(key);
   }
 
-  constructor(private http: HttpClient, private cookieService: CookieService) {
+  constructor(private http: HttpClient, private cookieService: CookieService, private toastr_: ToastrService) {
 
+  }
+
+  get toastr() : ToastrService {
+    return this.toastr_;
   }
 
   retrieveSupportedApis() {
@@ -193,7 +198,7 @@ export class SyncService {
         that.synctubeComponent.revealContent = true;
       }
       
-        that.synctubeComponent.toastr.success('Hello world!', 'Toastr fun!');
+        that.toastr.info("Video wurde hinzugefügt",'',new ToastrConfig(1500, false, false, null, 300, true, true));
       
     });
   }
