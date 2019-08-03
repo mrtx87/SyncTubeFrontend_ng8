@@ -3,7 +3,7 @@
     <!--<h3 class="page-title"><a href="http://localhost:4200" style="color:white"> XXXXX</a></h3>-->
     <a href="http://localhost:4200"><img class="s2glogo" src="assets/stream2gether.png" /></a>
     <select (change)="switchSelectedApi(event)" [(ngModel)]="selectedDataApi" *ngIf="raumId && user.admin">
-      <option *ngFor="let supportedApi_ of supportedApis"  [ngValue]="supportedApi_"  >{{supportedApi_.name}} </option>
+      <option *ngFor="let supportedApi_ of supportedApis" [ngValue]="supportedApi_">{{supportedApi_.name}} </option>
     </select>
     <input *ngIf="raumId && user.admin" (keyup.enter)="search()" [(ngModel)]="searchInput" class="user-query"
       type="text" />
@@ -87,7 +87,8 @@
       <!-- Video Component-->
       <app-video></app-video>
 
-      <div *ngIf="raumId && user.admin && !displayFullscreen && !displayCinemaMode" class="search-results-container" id="search-results">
+      <div *ngIf="raumId && user.admin && !displayFullscreen && !displayCinemaMode" class="search-results-container"
+        id="search-results">
         <div class="seachresults-buttons-container" [hidden]="!importedPlaylist">
           <div [className]="
               hasImportedPlaylist ? 'import-button' : 'import-button-inactive'
@@ -280,12 +281,12 @@
             chatMessage.user.userId !== user.userId
           ">
 
-          <div class="userid-container">
-              <span> Video eingefügt von &nbsp; </span>
-              <span> {{ chatMessage.user.userName }} </span>
-              <img *ngIf="chatMessage.user.admin" src="assets/star.svg" class="star-img" />
+              <div class="userid-container">
+                <span> Video eingefügt von &nbsp; </span>
+                <span> {{ chatMessage.user.userName }} </span>
+                <img *ngIf="chatMessage.user.admin" src="assets/star.svg" class="star-img" />
 
-            </div>
+              </div>
               <div class="insert-video-content">
 
                 <div class="text-container">
@@ -317,20 +318,30 @@
       <div [hidden]="displayTab != 2" class="playlist-container">
         <div *ngIf="user.admin" class="playlist-controls">
           <!-- <div [className]="!randomOrder ? 'active-playlist-control inorder-container' : 'inorder-container'" (click)="togglePlaylistRunningOrder()"> <img src="assets/playlist.svg"> </div>-->
-          <div class="random-container" (click)="togglePlaylistRunningOrder()">
-            <img [hidden]="randomOrder" src="assets/shuffle.svg" class="playlist-button-off" />
-            <img [hidden]="!randomOrder" src="assets/shuffle.svg" class="playlist-button-on" />
+
+          <div (click)="displayHistory=false" [className]="
+          !displayHistory ? 'playlist-controls-left' : 'playlist-controls-left-inactive'" >
+            <div class="random-container" (click)="togglePlaylistRunningOrder()">
+              <img [hidden]="randomOrder" src="assets/shuffle.svg" class="playlist-button-off" />
+              <img [hidden]="!randomOrder" src="assets/shuffle.svg" class="playlist-button-on" />
+            </div>
+            <div (click)="togglePlaylistLoop()" class="repeat-container">
+              <img [hidden]="loop != 0" src="assets/repeat.svg" class="playlist-button-off" />
+              <img [hidden]="loop != 1" src="assets/repeat.svg" class="playlist-button-on" />
+              <img [hidden]="loop != 2" src="assets/repeat1.svg" class="playlist-button-on" />
+            </div>
+            <div (click)="sendAutoNextPlaylistVideo()" class="next-playlist-video-container">
+              <img src="assets/play-next-button.svg" />
+            </div>
           </div>
-          <div (click)="togglePlaylistLoop()" class="repeat-container">
-            <img [hidden]="loop != 0" src="assets/repeat.svg" class="playlist-button-off" />
-            <img [hidden]="loop != 1" src="assets/repeat.svg" class="playlist-button-on" />
-            <img [hidden]="loop != 2" src="assets/repeat1.svg" class="playlist-button-on" />
+          <div (click)="displayHistory=true"  [className]="
+          displayHistory ? 'playlist-controls-right' : 'playlist-controls-right-inactive'" title="Videohistory">
+            <img [className]="displayHistory ? 'history-control-icon' : 'history-control-icon-inactive'" src="assets/history.svg" />
           </div>
-          <div (click)="sendAutoNextPlaylistVideo()" class="next-playlist-video-container">
-            <img src="assets/play-next-button.svg" />
-          </div>
+
         </div>
-        <div class="playlist-videos-container">
+
+        <div [hidden]="displayHistory" class="playlist-videos-container">
           <div class="playlist-video-content" (mouseenter)="pvideo_.hover = true" (mouseleave)="pvideo_.hover = false"
             *ngFor="let pvideo_ of playlist">
             <div class="playlist-row-spacer">
@@ -352,6 +363,28 @@
             </div>
           </div>
         </div>
+
+        <div [hidden]="!displayHistory" class="history-videos-container">
+          <div class="history-video-content"
+            *ngFor="let hvideo_ of history; let i = index">
+            <div class="history-row-spacer">
+              {{i+1}}
+            </div>
+            <div>
+              <img class="history-thumbnail" src="{{hvideo_.thumbnail}}" />
+            </div>
+            <div class="history-video-data">
+              <!-- title="{{pvideo_.description}}"> -->
+
+              <div class="history-video-infos">
+                {{ hvideo_.title }}
+              </div>
+              <div class="history-video-controls">
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <div [hidden]="displayTab != 3" *ngIf="raumId && !displayFullscreen" class="raum-users">

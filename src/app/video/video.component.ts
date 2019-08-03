@@ -166,6 +166,7 @@ export class VideoComponent implements OnInit {
             that.syncService.videoServices.set(supportedApi.id, new YoutubeVideoService(supportedApi, this.syncService,videoPlayer, iframe));
 
             that.syncService.switchVideo(this.syncService.joinReponseMessage);
+            that.listenForPlayerState();
             that.mute(); //DEBUG */ 
 
             /*

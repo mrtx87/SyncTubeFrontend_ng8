@@ -49,6 +49,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   displayCinemaMode: Boolean = false;
   displayFullscreen: Boolean = false;
+  displayHistory: Boolean = false;
 
   title = 'SyncTube';
 
@@ -76,6 +77,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   chatMessages: ChatMessage[] = [];
   searchResults: Video[] = [];
   playlist: Video[] = [];
+  history: Video[] = [];
   videoDuration: number;
   receivedPlayerState: number;
   publicRaeume: Observable<Raum[]>;

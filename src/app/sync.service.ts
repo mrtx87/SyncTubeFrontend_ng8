@@ -27,9 +27,9 @@ import { IVideoService } from './ivideo.service';
 export class SyncService {
 
 
-    /***
-   * add stats page for admins (debug)
-   */
+  /***
+ * add stats page for admins (debug)
+ */
 
   v: any;
   ws: SockJS;
@@ -327,6 +327,7 @@ export class SyncService {
     if (message.type == "switch-video") {
       this.updateVideo(message);
       this.switchVideo(message);
+      this.updateHistory(message);
       return;
     }
 
@@ -335,6 +336,7 @@ export class SyncService {
       if (message.video) {
         this.updateVideo(message);
         this.switchVideo(message);
+        this.updateHistory(message);
       }
       if (message.chatMessage) {
         this.synctubeComponent.chatMessages.push(message.chatMessage);
@@ -368,6 +370,7 @@ export class SyncService {
       //this.switchVideo(message);
 
       this.getRaumPlaylist(this.getRaumId());
+      this.getHistory(this.getRaumId(), this.getUserId());
       this.setInitalPlaybackRate(message.currentPlaybackRate)
       console.log(message.users);
       return;
@@ -484,6 +487,12 @@ export class SyncService {
   updatePlaylist(playlist: Video[]) {
     this.synctubeComponent.playlist = playlist;
   }*/
+
+  updateHistory(message: Message) {
+    if(message && message.video) {
+      this.synctubeComponent.history.push(message.video);
+    }
+  }
 
   updateKickedUsers(message: Message) {
     if (message.kickedUsers) {
@@ -906,6 +915,15 @@ export class SyncService {
         if (this.synctubeComponent.playlist.length == 0) {
           //this.stopVideo();
         }
+      });
+  }
+
+  getHistory(raumId: string, userId: string) {
+    this.http
+      .get("http://localhost:8080/room/" + raumId + "/userId/" + userId + "/history")
+      .subscribe((history: Video[]) => {
+        console.log(history);
+        this.synctubeComponent.history = history;
       });
   }
 
