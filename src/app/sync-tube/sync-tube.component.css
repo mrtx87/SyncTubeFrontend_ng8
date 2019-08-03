@@ -1158,6 +1158,15 @@ label {
   color: white;
 }
 
+.send-button {
+  margin: 0 auto;
+  border: none;
+  border-radius: 4px;
+  padding: 7px;
+  width: 15%;
+  background-color: var(--color5);
+  color: white;
+}
 .change-button-container {
   width: 100%;
   text-align: center;
