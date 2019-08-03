@@ -22,6 +22,10 @@ import { VimeoDataService } from './vimeo.dataservice.';
 import { IVideoService } from './ivideo.service';
 import { ToastrConfig } from './toastr.config';
 import { ToastrService } from 'ngx-toastr';
+import { ToastrConfigs } from './toastr.configs';
+import { ToastrMessageTypes } from './toastr.message.types';
+import { MessageTypes } from './message.types';
+import { ToastrMessage } from './toastr.message';
 
 @Injectable({
   providedIn: "root"
@@ -40,6 +44,9 @@ export class SyncService {
   synctubeComponent: SyncTubeComponent;
   videoComponent: VideoComponent;
   joinReponseMessage: Message;
+
+  toastrMessageTypes: ToastrMessageTypes;
+  messageTypes: MessageTypes;
 
   //PLAYERSTATES
   static notStarted: number = -1;
@@ -97,11 +104,31 @@ export class SyncService {
   }
 
   constructor(private http: HttpClient, private cookieService: CookieService, private toastr_: ToastrService) {
-
+    this.retrieveMessageTypes();
+    this.retrieveToastrMessageTypes();
   }
 
-  get toastr() : ToastrService {
+  get toastr(): ToastrService {
     return this.toastr_;
+  }
+
+  retrieveToastrMessageTypes() {
+    let that = this;
+    this.http.get("http://localhost:8080/toastr-message-types", {}).subscribe(function (response) {
+      that.toastrMessageTypes = <ToastrMessageTypes>response;
+      console.log(that.toastrMessageTypes)
+    }
+    );
+  }
+
+
+  retrieveMessageTypes() {
+    let that = this;
+    this.http.get("http://localhost:8080/message-types", {}).subscribe(function (response) {
+      that.messageTypes = <MessageTypes>response;
+      console.log(that.messageTypes)
+    }
+    );
   }
 
   retrieveSupportedApis() {
@@ -197,9 +224,12 @@ export class SyncService {
         that.sendRequestPublicRaeume();
         that.synctubeComponent.revealContent = true;
       }
-      
-        that.toastr.info("Video wurde hinzugefügt",'',new ToastrConfig(1500, false, false, null, 300, true, true));
-      
+
+      // that.toastr.success("Video wurde hinzugefügt",'Testnachricht', new ToastrConfig(2000, null, null, null, null, false, false));
+      // that.toastr.warning("Video wurde hinzugefügt",'Testnachricht', new ToastrConfig(2000, null, null, null, null, false, false));
+      // that.toastr.error("Video wurde hinzugefügt",'Testnachricht', new ToastrConfig(2000, null, null, null, null, false, false));
+
+
     });
   }
 
@@ -212,7 +242,10 @@ export class SyncService {
   }
 
   handleMessage(message: Message) {
-    if (message.type == "toggle-play") {
+
+    this.displayAsToast(message.toastrMessage);
+
+    if (message.type == this.messageTypes.TOGGLE_PLAY) {
       console.log(message);
 
       this.videoComponent.currentDisplayedTime = message.video.timestamp;
@@ -224,7 +257,7 @@ export class SyncService {
       return;
     }
 
-    if (message.type == "assigned-as-admin") {
+    if (message.type == this.messageTypes.ASSIGNED_AS_ADMIN) {
       console.log(message);
       this.assignedAsAdmin(message.user);
       this.updateClientChat(message);
@@ -380,6 +413,7 @@ export class SyncService {
       this.getRaumPlaylist(this.getRaumId());
       this.getHistory(this.getRaumId(), this.getUserId());
       this.setInitalPlaybackRate(message.currentPlaybackRate)
+      
       console.log(message.users);
       return;
     }
@@ -411,6 +445,70 @@ export class SyncService {
     if (message.type == "error") {
       console.log("[ERROR from Server]");
       return;
+    }
+  }
+
+  displayAsToast(toastrMessage: ToastrMessage) {
+    if (toastrMessage) {
+      // this.toastr.success("Raum #" + this.getRaumId() + " wurde von " + this.getLocalUser().userName + ' erstellt', 'Raum erstellt:', ToastrConfigs.SUCCESS);
+      switch (toastrMessage.type) {
+        case this.toastrMessageTypes.CREATE_ROOM:
+          this.toastr.success(toastrMessage.message, 'Raum erstellt:', ToastrConfigs.SUCCESS);
+          break;
+        case this.toastrMessageTypes.JOIN_ROOM:
+            this.toastr.info(toastrMessage.message, 'Raum beigetreten:', ToastrConfigs.INFO);
+          break;
+        case this.toastrMessageTypes.DISCONNECT:
+            this.toastr.info(toastrMessage.message, 'Raum verlassen:', ToastrConfigs.INFO);
+          break;
+        case this.toastrMessageTypes.ASSIGNED_AS_ADMIN:
+            this.toastr.success(toastrMessage.message, 'zum Admin ernannt:', ToastrConfigs.SUCCESS);
+          break;
+        case this.toastrMessageTypes.TO_PUBLIC_ROOM:
+            this.toastr.info(toastrMessage.message, 'Raumstatus:', ToastrConfigs.INFO);
+          break;
+        case this.toastrMessageTypes.TO_PRIVATE_ROOM:
+            this.toastr.info(toastrMessage.message, 'Raumstatus:', ToastrConfigs.INFO);
+          break;
+        case this.toastrMessageTypes.KICKED_USER:
+            this.toastr.error(toastrMessage.message, 'You were kicked!', ToastrConfigs.ERROR);
+          break;
+        case this.toastrMessageTypes.UPDATE_KICK_CLIENT:
+            this.toastr.warning(toastrMessage.message, 'User kicked:', ToastrConfigs.WARNING);
+          break;
+        case this.toastrMessageTypes.REFRESH_ROOM_ID:
+            this.toastr.info(toastrMessage.message, 'RaumId Update:', ToastrConfigs.INFO);
+          break;
+        case this.toastrMessageTypes.ADDED_VIDEO_TO_PLAYLIST:
+            this.toastr.info(toastrMessage.message, 'Playlist Update:', ToastrConfigs.INFO);
+          break;
+        case this.toastrMessageTypes.UPDATE_TITLE_AND_DESCRIPTION:
+            this.toastr.info(toastrMessage.message, 'Raum Update:', ToastrConfigs.INFO);
+          break;
+        case this.toastrMessageTypes.REMOVE_VIDEO_PLAYLIST:
+            this.toastr.info(toastrMessage.message, 'Playlist Update:', ToastrConfigs.INFO);
+          break;
+        case this.toastrMessageTypes.IMPORTED_PLAYLIST:
+            this.toastr.success(toastrMessage.message, 'Playlist Update:', ToastrConfigs.SUCCESS);
+          break;
+        case this.toastrMessageTypes.INTEGRATED_PLAYLIST:
+            this.toastr.success(toastrMessage.message, 'Playlist Update:', ToastrConfigs.SUCCESS);
+          break;
+        case this.toastrMessageTypes.CHANGED_PLAYBACK_RATE:
+            this.toastr.info(toastrMessage.message, 'Playbackrate Update:', ToastrConfigs.INFO);
+          break;
+        case this.toastrMessageTypes.MUTE_USER:
+            this.toastr.warning(toastrMessage.message, 'User Update:', ToastrConfigs.WARNING);
+          break;
+        case this.toastrMessageTypes.CHANGED_USER_NAME:
+            this.toastr.info(toastrMessage.message, 'User Update:', ToastrConfigs.INFO);
+          break;
+        case this.toastrMessageTypes.PARDONED_KICKED_USER:
+            this.toastr.info(toastrMessage.message, 'User Update:', ToastrConfigs.INFO);
+          break;
+
+      }
+
     }
   }
 
@@ -497,7 +595,7 @@ export class SyncService {
   }*/
 
   updateHistory(message: Message) {
-    if(message && message.video) {
+    if (message && message.video) {
       this.synctubeComponent.history.push(message.video);
     }
   }

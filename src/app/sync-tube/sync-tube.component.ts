@@ -10,7 +10,6 @@ import { SearchQuery } from './search-query';
 import { ImportedPlaylist } from '../video/playlist';
 import { Observable } from 'rxjs';
 import { SupportedApi } from '../supported-api';
-import { ToastrService } from 'ngx-toastr';
 
 
 
@@ -27,7 +26,6 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   publicRaum: boolean = false;
   privateRaum: boolean = true;
-
 
   scrollContent: any;
   scrollChat: any;
@@ -120,7 +118,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
       break;*/
       case KEY_CODE.KEY_D: //forwards 10sec
       break;
-      case KEY_CODE.SPACE: //Pause
+      case KEY_CODE.SPACE: this.syncService.videoComponent.triggerTogglePlay();
       break;
       case KEY_CODE.KEY_F: //Fullscreen 
       break;
