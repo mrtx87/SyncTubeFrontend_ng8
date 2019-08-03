@@ -71,8 +71,13 @@
   </div>
 
   <!-- Youtube video -->
-  <div  [className]="!syncService.synctubeComponent.displayFullscreen ? 'video' : 'video-fullscreen'" id="youtubeplayer">
+  <div [hidden]="syncService.selectedVideoApi !== 1" [className]="!syncService.synctubeComponent.displayFullscreen ? 'video' : 'video-fullscreen'" id="youtubeplayer">
   </div>
+  <!-- Dailymotion video -->
+  <div  [className]="!syncService.synctubeComponent.displayFullscreen ? 'video' : 'video-fullscreen'" id="dailymotionplayer">
+  </div>
+  <!-- Vimeo video -->
+  <iframe  background="true" autoplay="true" mute="1" loop="false" id="vimeoplayer" src="https://player.vimeo.com/video/213468818?autoplay=1&muted=1" [className]="!syncService.synctubeComponent.displayFullscreen ? 'video' : 'video-fullscreen'" width="500px" height="350px"></iframe>
 
    <div *ngIf="displaySecondsBack" class="middle-back-seconds-overlay">
     <img src="assets/back10sec.png">

@@ -10,19 +10,20 @@ import { SearchQuery } from './search-query';
 import { ImportedPlaylist } from '../video/playlist';
 import { Observable } from 'rxjs';
 import { SupportedApi } from '../supported-api';
+import { ToastrService } from 'ngx-toastr';
+
+
 
 @Component({
   selector: 'app-sync-tube',
   templateUrl: './sync-tube.component.html',
   styleUrls: ['./sync-tube.component.css']
 })
-
-
 export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   //APIS STUFF
   supportedApis: SupportedApi[];
-  selectedApi: SupportedApi;
+  selectedDataApi: SupportedApi;
 
   publicRaum: boolean = false;
   privateRaum: boolean = true;
@@ -30,6 +31,9 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   scrollContent: any;
   scrollChat: any;
+  searchResultsContainer: any;
+  currentScrollTop: number = 0;
+  isLoadingVideos: boolean = false;
 
   forceScrollToSearch: boolean = false;
   forceScrollToVideo: boolean = false;
@@ -46,6 +50,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   displayCinemaMode: Boolean = false;
   displayFullscreen: Boolean = false;
+  displayHistory: Boolean = false;
 
   title = 'SyncTube';
 
@@ -53,7 +58,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   user: User;
 
   //currentRaum Information
-  raumId: number;
+  raumId: string;
   raumDescription: string = "";
   raumTitle: string = "";
   raumDescriptionChange: string = "";
@@ -73,6 +78,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   chatMessages: ChatMessage[] = [];
   searchResults: Video[] = [];
   playlist: Video[] = [];
+  history: Video[] = [];
   videoDuration: number;
   receivedPlayerState: number;
   publicRaeume: Observable<Raum[]>;
@@ -95,25 +101,55 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   kickingUser: User;
   revealContent: Boolean = false;
 
+  /* Keyboard controlings */
+  @HostListener('window:keyup', ['$event'])
+  keyEvent(event: KeyboardEvent) {
+    console.log(event); //DEBUG
+    switch(event.keyCode) {
+      case KEY_CODE.LEFT_ARROW:  ///backwards 10sec
+      break;
+      case KEY_CODE.RIGHT_ARROW: ///forwards 10sec
+      break;
+      case KEY_CODE.BACKSPACE: //to startpage
+      break;
+      /*case KEY_CODE.KEY_W: 
+      break;*/
+      case KEY_CODE.KEY_A: //backwards 10sec*/
+      break;
+      /*case KEY_CODE.KEY_S: 
+      break;*/
+      case KEY_CODE.KEY_D: //forwards 10sec
+      break;
+      case KEY_CODE.SPACE: //Pause
+      break;
+      case KEY_CODE.KEY_F: //Fullscreen 
+      break;
+
+    }
+  }
+
+
+
   constructor(private syncService: SyncService, private route: ActivatedRoute) {
 
     this.syncService.registerSyncTubeComponent(this);
 
     this.syncService.retrieveSupportedApis();
 
-    this.connect();
-  }
-
-  connect() {
     this.syncService.connect();
   }
 
+
+  updateCurrentScrollTop(): void {
+    this.currentScrollTop = this.scrollContent.scrollTop;
+  }
 
 
   ngAfterViewChecked(): void {
 
     this.scrollChat = document.getElementById("scrollChat")
     this.scrollContent = document.getElementById("scrollContent")
+    this.searchResultsContainer = document.getElementById("search-results");
 
     if (this.forceScrollToSearch) {
       this.scrollToSearchResults();
@@ -125,6 +161,17 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
       this.scrollToSearchVideo();
       this.forceScrollToVideo = false;
     }
+
+    if (!this.isLoadingVideos && false) {
+      this.isLoadingVideos = true;
+      this.syncService.currentDataService.searchQuery("", true, null, this.syncService.currentDataService.nextPageToken);
+
+    }
+
+    /*console.log("SCROLLTOP: " + this.scrollContent.scrollTop)
+    console.log("CLIENTHEIGHT: " + document.documentElement.clientHeight)
+    console.log("CONTAINERHEIGHT: " + this.searchResultsContainer.scrollHeight)
+*/
 
     /*
     if (this.scrollChat && this.forceScrollToChatBottom) {
@@ -220,8 +267,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
   switchSelectedApi() {
-    
-    console.log(this.selectedApi);
+
   }
 
   clearRoomVars() {
@@ -250,10 +296,10 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
   joinRaum() {
-    this.syncService.sendJoinRaum(this.user, parseInt(this.raumIdText));
+    this.syncService.sendJoinRaum(this.user, this.raumIdText);
   }
 
-  joinRaumById(raumId: number) {
+  joinRaumById(raumId: string) {
     this.syncService.sendJoinRaum(this.user, raumId);
   }
 
@@ -268,14 +314,22 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     }
   }
 
+  sendIntegratePlaylist() {
+    if (this.importedPlaylist && this.user.admin) {
+      this.importedPlaylist.mode = 1;
+      this.syncService.sendImportPlaylist(this.raumId, this.user, this.importedPlaylist);
+    }
+  }
+
   search() {
     this.importedPlaylist = new ImportedPlaylist();
     this.hasImportedPlaylist = false;
     this.searchResults = [];
-    let searchQuery: SearchQuery = this.syncService.currentApiService.dataService.processInput(this.searchInput);
-    this.forceScrollToSearch = this.syncService.currentApiService.dataService.search(searchQuery);
+    this.syncService.currentDataService.nextPageToken = null;
+    let searchQuery: SearchQuery = this.syncService.currentDataService.processInput(this.searchInput);
+    this.forceScrollToSearch = this.syncService.currentDataService.search(searchQuery);
 
-    }
+  }
 
   getReceivedPlayerState(): number {
     return this.receivedPlayerState;
@@ -294,13 +348,13 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
       this.hasImportedPlaylist = false;
       this.searchResults = [];
 
-      this.syncService.currentApiService.dataService.searchPlaylist(video_.playlistId, false, null, video_.title);
+      this.syncService.currentDataService.searchPlaylist(video_.playlistId, false, null, video_.title);
     }
   }
 
 
-  getPathId(): number {
-    return parseInt(this.route.snapshot.paramMap.get('id'));
+  getPathId(): string {
+    return this.route.snapshot.paramMap.get('id');
   }
 
   updatePlaylist(playlist: Video[]) {
@@ -348,11 +402,11 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.syncService.pauseVideo();
   }
 
-  getUserId(): number {
+  getUserId(): string {
     return this.user.userId;
   }
 
-  getRaumId(): number {
+  getRaumId(): string {
     return this.raumId;
   }
 
@@ -453,10 +507,6 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.syncService.toggleDisplayOptions();
   }
 
-  setSize(width: number, height: number) {
-    this.syncService.setSize(width, height);
-  }
-
   jumpBySeconds(offset: number) {
     this.syncService.jumpBySeconds(offset)
   }
@@ -476,5 +526,106 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 }
 
+export enum KEY_CODE {
+  BACKSPACE= 8,
+       TAB= 9,
+       ENTER= 13,
+       SHIFT= 16,
+       CTRL= 17,
+       ALT= 18,
+       PAUSE= 19,
+       CAPS_LOCK= 20,
+       ESCAPE= 27,
+       SPACE= 32,
+       PAGE_UP= 33,
+       PAGE_DOWN= 34,
+       END= 35,
+       HOME= 36,
+       LEFT_ARROW= 37,
+       UP_ARROW= 38,
+       RIGHT_ARROW= 39,
+       DOWN_ARROW= 40,
+       INSERT= 45,
+       DELETE= 46,
+       KEY_0= 48,
+       KEY_1= 49,
+       KEY_2= 50,
+       KEY_3= 51,
+       KEY_4= 52,
+       KEY_5= 53,
+       KEY_6= 54,
+       KEY_7= 55,
+       KEY_8= 56,
+       KEY_9= 57,
+       KEY_A= 65,
+       KEY_B= 66,
+       KEY_C= 67,
+       KEY_D= 68,
+       KEY_E= 69,
+       KEY_F= 70,
+       KEY_G= 71,
+       KEY_H= 72,
+       KEY_I= 73,
+       KEY_J= 74,
+       KEY_K= 75,
+       KEY_L= 76,
+       KEY_M= 77,
+       KEY_N= 78,
+       KEY_O= 79,
+       KEY_P= 80,
+       KEY_Q= 81,
+       KEY_R= 82,
+       KEY_S= 83,
+       KEY_T= 84,
+       KEY_U= 85,
+       KEY_V= 86,
+       KEY_W= 87,
+       KEY_X= 88,
+       KEY_Y= 89,
+       KEY_Z= 90,
+       LEFT_META= 91,
+       RIGHT_META= 92,
+       SELECT= 93,
+       NUMPAD_0= 96,
+       NUMPAD_1= 97,
+       NUMPAD_2= 98,
+       NUMPAD_3= 99,
+       NUMPAD_4= 100,
+       NUMPAD_5= 101,
+       NUMPAD_6= 102,
+       NUMPAD_7= 103,
+       NUMPAD_8= 104,
+       NUMPAD_9= 105,
+       MULTIPLY= 106,
+       ADD= 107,
+       SUBTRACT= 109,
+       DECIMAL= 110,
+       DIVIDE= 111,
+       F1= 112,
+       F2= 113,
+       F3= 114,
+       F4= 115,
+       F5= 116,
+       F6= 117,
+       F7= 118,
+       F8= 119,
+       F9= 120,
+       F10= 121,
+       F11= 122,
+       F12= 123,
+       NUM_LOCK= 144,
+       SCROLL_LOCK= 145,
+       SEMICOLON= 186,
+       EQUALS= 187,
+       COMMA= 188,
+       DASH= 189,
+       PERIOD= 190,
+       FORWARD_SLASH= 191,
+       GRAVE_ACCENT= 192,
+       OPEN_BRACKET= 219,
+       BACK_SLASH= 220,
+       CLOSE_BRACKET= 221,
+       SINGLE_QUOTE= 222
+ }
 
 

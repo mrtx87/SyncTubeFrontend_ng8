@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, ɵPlayState } from "@angular/core";
 import * as Stomp from "stompjs";
 import * as SockJS from "sockjs-client";
 import { Raum } from "./raum";
@@ -20,12 +20,27 @@ import { SupportedApiType } from './supported-api-type';
 import { DailymotionDataService } from './dailymotion.dataservice';
 import { VimeoDataService } from './vimeo.dataservice.';
 import { IVideoService } from './ivideo.service';
-import { ApiService } from './api.service';
+import { ToastrConfig } from './toastr.config';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable({
   providedIn: "root"
 })
 export class SyncService {
+
+
+  /***
+ * add stats page for admins (debug)
+ */
+
+  v: any;
+  ws: SockJS;
+  private stompClient;
+
+  synctubeComponent: SyncTubeComponent;
+  videoComponent: VideoComponent;
+  joinReponseMessage: Message;
+
   //PLAYERSTATES
   static notStarted: number = -1;
   static FINISHED: number = 0;
@@ -36,48 +51,64 @@ export class SyncService {
 
   static cookieKey: string = "U_COOKIE";
 
+  private _selectedVideoApi: Number;
   supportedApis: SupportedApi[];
 
-  private _apiServices: Map<Number, ApiService>;
 
-  public get apiServices(): Map<Number, ApiService> {
-    return this._apiServices; 
-  }
-  public set apiServices(value: Map<Number, ApiService>) {
-    this._apiServices = value;
-  }
+  private _videoServices: Map<Number, IVideoService>;
+  private _dataServices: Map<Number, IDataService>;
 
-  get currentApiService(): ApiService {
-    return this.apiServices.get(this.getSelectedApi().id);
+  public get selectedVideoApi(): Number {
+    return this._selectedVideoApi;
+  }
+  public set selectedVideoApi(value: Number) {
+    this._selectedVideoApi = value;
   }
 
+  public get videoServices(): Map<Number, IVideoService> {
+    return this._videoServices;
+  }
+  public set videoServices(value: Map<Number, IVideoService>) {
+    this._videoServices = value;
+  }
 
-  /***
-   *
-   * add chromecast connection (** laterlater**)
-   *
-   * add stats page for admins (debug)
-   */
+  public get dataServices(): Map<Number, IDataService> {
+    return this._dataServices;
+  }
+  public set dataServices(value: Map<Number, IDataService>) {
+    this._dataServices = value;
+  }
 
-  v: any;
-  ws: SockJS;
-  private stompClient;
+  get currentDataService(): IDataService {
+    return this.dataServices.get(this.getSelectedDataApi().id);
+  }
 
-  synctubeComponent: SyncTubeComponent;
-  videoComponent: VideoComponent;
+  getDataServiceByKey(key: Number): IDataService {
+    return this.dataServices.get(key);
+  }
 
 
+  get currentVideoService(): IVideoService {
+    return this.videoServices.get(this.selectedVideoApi);
+  }
 
+  getVideoServiceByKey(key: Number): IVideoService {
+    return this.videoServices.get(key);
+  }
 
-  constructor(private http: HttpClient, private cookieService: CookieService) {
+  constructor(private http: HttpClient, private cookieService: CookieService, private toastr_: ToastrService) {
 
+  }
+
+  get toastr() : ToastrService {
+    return this.toastr_;
   }
 
   retrieveSupportedApis() {
     this.http.get("http://localhost:8080/supported-apis", {}).subscribe(response => {
       if (this.synctubeComponent) {
         this.synctubeComponent.supportedApis = <SupportedApi[]>response
-        this.synctubeComponent.selectedApi = this.synctubeComponent.supportedApis[0];
+        this.synctubeComponent.selectedDataApi = this.synctubeComponent.supportedApis[0];
         this.supportedApis = <SupportedApi[]>response;
       } else {
         this.supportedApis = <SupportedApi[]>response;
@@ -91,35 +122,29 @@ export class SyncService {
     return this.dataServices.get(this.getSelectedApi().id);
   }*/
 
-  getSelectedApi(): SupportedApi {
-    return this.synctubeComponent.selectedApi;
+  getSelectedDataApi(): SupportedApi {
+    return this.synctubeComponent.selectedDataApi;
   }
 
   buildAvailableDataServices() {
-    if (!this.apiServices && this.supportedApis) {
-      this.apiServices = new Map<Number, ApiService>();
+    if (this.supportedApis) {
+      this.dataServices = new Map<Number, IDataService>();
       for (let supportedApi of this.supportedApis) {
         switch (supportedApi.id) {
           case SupportedApiType.Youtube:
 
-            let youtubeApiService: ApiService = new ApiService();
             let youTubeDataService: YoutubeDataService = new YoutubeDataService(this.http, this.synctubeComponent, SupportedApiType.Youtube, supportedApi.name);
-            youtubeApiService.dataService = youTubeDataService;
-            this.apiServices.set(SupportedApiType.Youtube, youtubeApiService);
+            this.dataServices.set(SupportedApiType.Youtube, youTubeDataService);
             console.log("Successfully generated api: " + youTubeDataService.name);
             break;
           case SupportedApiType.Dailymotion:
-              let dailymotionApiService: ApiService = new ApiService();
-              let dailymotionDataService: DailymotionDataService = new DailymotionDataService(this.http, this.synctubeComponent, SupportedApiType.Dailymotion, supportedApi.name);
-              dailymotionApiService.dataService = dailymotionDataService;
-              this.apiServices.set(SupportedApiType.Dailymotion, dailymotionApiService);
+            let dailymotionDataService: DailymotionDataService = new DailymotionDataService(this.http, this.synctubeComponent, SupportedApiType.Dailymotion, supportedApi.name);
+            this.dataServices.set(SupportedApiType.Dailymotion, dailymotionDataService);
             console.log("Successfully generated api: " + dailymotionDataService.name);
             break;
           case SupportedApiType.Vimeo:
-              let vimeoApiService: ApiService = new ApiService();
-              let vimeoDataService: VimeoDataService = new VimeoDataService(this.http, this.synctubeComponent, SupportedApiType.Vimeo, supportedApi.name);
-              vimeoApiService.dataService = vimeoDataService;
-              this.apiServices.set(SupportedApiType.Vimeo, vimeoApiService);
+            let vimeoDataService: VimeoDataService = new VimeoDataService(this.http, this.synctubeComponent, SupportedApiType.Vimeo, supportedApi.name);
+            this.dataServices.set(SupportedApiType.Vimeo, vimeoDataService);
             console.log("Successfully generated api: " + vimeoDataService.name);
             break;
 
@@ -145,7 +170,7 @@ export class SyncService {
     if (this.cookieService.check(SyncService.cookieKey)) {
       user = new User();
       let cookie: string = this.getCookie();
-      user.userId = parseInt(cookie);
+      user.userId = cookie;
     } else {
       user = new User();
       user.userId = this.generateUserId();
@@ -165,13 +190,16 @@ export class SyncService {
     this.stompClient.connect({}, function () {
       that.stompClient.subscribe("/chat/" + user.userId, messageFromServer => that.handleServerResponse(messageFromServer));
 
-      let raumId: number = that.synctubeComponent.getPathId();
+      let raumId: string = that.synctubeComponent.getPathId();
       if (raumId) {
         that.sendJoinRaum(user, raumId);
       } else {
         that.sendRequestPublicRaeume();
         that.synctubeComponent.revealContent = true;
       }
+      
+        that.toastr.info("Video wurde hinzugefügt",'',new ToastrConfig(1500, false, false, null, 300, true, true));
+      
     });
   }
 
@@ -307,6 +335,7 @@ export class SyncService {
     if (message.type == "switch-video") {
       this.updateVideo(message);
       this.switchVideo(message);
+      this.updateHistory(message);
       return;
     }
 
@@ -315,6 +344,7 @@ export class SyncService {
       if (message.video) {
         this.updateVideo(message);
         this.switchVideo(message);
+        this.updateHistory(message);
       }
       if (message.chatMessage) {
         this.synctubeComponent.chatMessages.push(message.chatMessage);
@@ -341,11 +371,14 @@ export class SyncService {
     }
 
     if (message.type == "join-room") {
+      this.joinReponseMessage = message;
       this.createClient(message);
       this.replaceUrl(message.raumId);
       this.updateVideo(message);
+      //this.switchVideo(message);
 
       this.getRaumPlaylist(this.getRaumId());
+      this.getHistory(this.getRaumId(), this.getUserId());
       this.setInitalPlaybackRate(message.currentPlaybackRate)
       console.log(message.users);
       return;
@@ -381,7 +414,7 @@ export class SyncService {
     }
   }
 
-  setRaumId(raumId: number) {
+  setRaumId(raumId: string) {
     this.synctubeComponent.raumId = raumId;
   }
 
@@ -397,7 +430,7 @@ export class SyncService {
     return this.synctubeComponent.getReceivedPlayerState();
   }
 
-  replaceUrl(raumId: number) {
+  replaceUrl(raumId: string) {
     let url: string = "/rooms/" + raumId;
     window.history.replaceState({}, "", url);
   }
@@ -417,16 +450,18 @@ export class SyncService {
       this.setInitalPlaybackRate(message.currentPlaybackRate);
     }
     if (this.videoComponent) {
-      this.videoComponent.availableQualitys = this.videoComponent.getAvailableQualityLevels();
+      //this.videoComponent.availableQualitys = this.videoComponent.getAvailableQualityLevels();
     }
   }
 
   switchVideo(message: Message) {
-    if (message.video) {
+    if (message && message.video) {
+      this.selectedVideoApi = message.video.api;
+      this.setDisplayedIframe();
       this.loadVideoById({
         videoId: message.video.videoId,
         startSeconds: message.video.timestamp,
-        suggestedQuality: "large"
+        autoplay: (message.playerState != SyncService.playing) ? false : true
       });
       this.videoComponent.currentTimeProgressbar = message.video.timestamp;
       this.videoComponent.currentDisplayedTime = message.video.timestamp;
@@ -446,10 +481,26 @@ export class SyncService {
     }
   }
 
+  setDisplayedIframe() {
+    this.videoServices.forEach((videoService: IVideoService) => {
+      if (videoService.supportedApi.id === this.selectedVideoApi) {
+        videoService.unHide();
+      } else {
+        videoService.hide();
+      }
+    })
+  }
+
   /*
   updatePlaylist(playlist: Video[]) {
     this.synctubeComponent.playlist = playlist;
   }*/
+
+  updateHistory(message: Message) {
+    if(message && message.video) {
+      this.synctubeComponent.history.push(message.video);
+    }
+  }
 
   updateKickedUsers(message: Message) {
     if (message.kickedUsers) {
@@ -498,10 +549,8 @@ export class SyncService {
     this.ws.close();
   }
 
-  generateUserId(): number {
-    return parseInt(
-      Math.floor(Date.now() / 1000) + "" + Math.floor(Math.random() * 10000)
-    );
+  generateUserId(): string {
+    return Math.floor(Date.now() / 1000) + "" + Math.floor(Math.random() * 10000);
   }
 
   sendRequestPublicRaeume() {
@@ -529,7 +578,7 @@ export class SyncService {
     );
   }
 
-  sendJoinRaum(user: User, raumId: number) {
+  sendJoinRaum(user: User, raumId: string) {
     console.log("[join-raum:] " + user.userId + " " + raumId);
     this.stompClient.send(
       "/app/send/join-room",
@@ -538,7 +587,7 @@ export class SyncService {
     );
   }
 
-  sendChangeUserName(user: User, raumId: number) {
+  sendChangeUserName(user: User, raumId: string) {
     console.log("[change-user-name:] " + user.userName + " " + raumId);
     this.stompClient.send(
       "/app/send/change-user-name",
@@ -549,7 +598,7 @@ export class SyncService {
 
   sendSeekToTimestamp(
     user: User,
-    raumId: number,
+    raumId: string,
     videoId: string,
     timestamp: number
   ) {
@@ -564,7 +613,7 @@ export class SyncService {
     );
   }
 
-  sendCurrentTimeStamp(user: User, raumId: number, video: Video) {
+  sendCurrentTimeStamp(user: User, raumId: string, video: Video) {
     console.log("[seekto-timestamp:] " + video);
     this.stompClient.send(
       "/app/send/current-timestamp",
@@ -573,7 +622,7 @@ export class SyncService {
     );
   }
 
-  sendNewVideo(user: User, raumId: number, video: Video) {
+  sendNewVideo(user: User, raumId: string, video: Video) {
     console.log("[send-new-video:] " + video);
     if (video) {
       this.stompClient.send(
@@ -586,7 +635,7 @@ export class SyncService {
 
   sendUpdateTitleAndDescription(
     user: User,
-    raumId: number,
+    raumId: string,
     raumTitle: string,
     raumDescription: string
   ) {
@@ -602,7 +651,7 @@ export class SyncService {
     );
   }
 
-  sendSwitchPlaylistVideo(user: User, raumId: number, playlistVideo: Video) {
+  sendSwitchPlaylistVideo(user: User, raumId: string, playlistVideo: Video) {
     if (playlistVideo) {
       this.stompClient.send(
         "/app/send/switch-playlist-video",
@@ -618,7 +667,7 @@ export class SyncService {
 
   sendChangePlaybackRate(
     user: User,
-    raumId: number,
+    raumId: string,
     currentPlaybackRate: number
   ) {
     this.stompClient.send(
@@ -632,7 +681,7 @@ export class SyncService {
     );
   }
 
-  sendAutoNextPlaylistVideo(user: User, raumId: number, playerState: number) {
+  sendAutoNextPlaylistVideo(user: User, raumId: string, playerState: number) {
     this.stompClient.send(
       "/app/send/auto-next-playlist-video",
       {},
@@ -640,7 +689,7 @@ export class SyncService {
     );
   }
 
-  sendTogglePlaylistLoop(user: User, raumId: number, loop: number) {
+  sendTogglePlaylistLoop(user: User, raumId: string, loop: number) {
     this.stompClient.send(
       "/app/send/toggle-playlist-loop",
       {},
@@ -650,7 +699,7 @@ export class SyncService {
 
   sendTogglePlaylistRunningOrder(
     user: User,
-    raumId: number,
+    raumId: string,
     randomOrder: boolean
   ) {
     this.stompClient.send(
@@ -660,7 +709,7 @@ export class SyncService {
     );
   }
 
-  sendToggleMuteUser(user: User, raumId: number, assignedUser: User) {
+  sendToggleMuteUser(user: User, raumId: string, assignedUser: User) {
     console.log(assignedUser);
     this.stompClient.send(
       "/app/send/toggle-mute-user",
@@ -669,7 +718,7 @@ export class SyncService {
     );
   }
 
-  sendPardonKickedUser(user: User, raumId: number, kickedUser: User) {
+  sendPardonKickedUser(user: User, raumId: string, kickedUser: User) {
     this.stompClient.send(
       "/app/send/pardon-kicked-user",
       {},
@@ -793,7 +842,7 @@ export class SyncService {
         });
     }
   */
-  sendDisconnectMessage(user: User, raumId: number) {
+  sendDisconnectMessage(user: User, raumId: string) {
     console.log("[disconnect-client:] " + user);
     this.stompClient.send(
       "/app/send/disconnect-client",
@@ -804,7 +853,7 @@ export class SyncService {
 
   sendTogglePlay(
     user: User,
-    raumId: number,
+    raumId: string,
     playerState: number,
     video: Video,
     currentTime: number
@@ -819,7 +868,7 @@ export class SyncService {
     this.stompClient.send("/app/send/toggle-play", {}, JSON.stringify(message));
   }
 
-  sendAssignAdmin(raumId: number, user: User, assignedUser: User) {
+  sendAssignAdmin(raumId: string, user: User, assignedUser: User) {
     console.log("[assign-as-admin:] " + assignedUser);
     this.stompClient.send(
       "/app/send/assign-admin",
@@ -828,7 +877,7 @@ export class SyncService {
     );
   }
 
-  sendKickUser(raumId: number, user: User, assignedUser: User) {
+  sendKickUser(raumId: string, user: User, assignedUser: User) {
     console.log("[kick-user:] " + assignedUser);
     this.stompClient.send(
       "/app/send/kick-user",
@@ -837,7 +886,7 @@ export class SyncService {
     );
   }
 
-  sendToPublicRoomRequest(raumId: number, user: User) {
+  sendToPublicRoomRequest(raumId: string, user: User) {
     console.log("[switch-to-public-room:] " + user);
     this.stompClient.send(
       "/app/send/to-public-room",
@@ -846,7 +895,7 @@ export class SyncService {
     );
   }
 
-  sendToPrivateRoomRequest(raumId: number, user: User) {
+  sendToPrivateRoomRequest(raumId: string, user: User) {
     console.log("[switch-to-private-room:] " + user);
     this.stompClient.send(
       "/app/send/to-private-room",
@@ -855,7 +904,7 @@ export class SyncService {
     );
   }
 
-  sendRefreshRaumId(raumId: number, user: User) {
+  sendRefreshRaumId(raumId: string, user: User) {
     console.log("[refresh-RaumId:] " + user);
     this.stompClient.send(
       "/app/send/refresh-raumid",
@@ -864,7 +913,7 @@ export class SyncService {
     );
   }
 
-  getRaumPlaylist(raumId: number) {
+  getRaumPlaylist(raumId: string) {
     // /room/{raumId}/playlist/
     this.http
       .get("http://localhost:8080/room/" + raumId + "/playlist")
@@ -877,8 +926,17 @@ export class SyncService {
       });
   }
 
+  getHistory(raumId: string, userId: string) {
+    this.http
+      .get("http://localhost:8080/room/" + raumId + "/userId/" + userId + "/history")
+      .subscribe((history: Video[]) => {
+        console.log(history);
+        this.synctubeComponent.history = history;
+      });
+  }
+
   sendImportPlaylist(
-    raumId: number,
+    raumId: string,
     user: User,
     importedPlaylist: ImportedPlaylist
   ) {
@@ -900,7 +958,7 @@ export class SyncService {
   }
 
   sendRemoveVideoFromPlaylist(
-    raumId: number,
+    raumId: string,
     user: User,
     playlistVideo: Video
   ) {
@@ -920,7 +978,7 @@ export class SyncService {
     }
   }
 
-  sendAddVideoToPlaylist(raumId: number, user: User, playlistvideo: Video) {
+  sendAddVideoToPlaylist(raumId: string, user: User, playlistvideo: Video) {
     console.log(
       "[add-video-to-playlist:] " + user + " | video: " + playlistvideo.videoId
     );
@@ -938,7 +996,7 @@ export class SyncService {
   }
 
   sendAddVideoToPlaylistAsNext(
-    raumId: number,
+    raumId: string,
     user: User,
     playlistvideo: Video
   ) {
@@ -962,7 +1020,7 @@ export class SyncService {
   }
 
   sendAddVideoToPlaylistAsCurrent(
-    raumId: number,
+    raumId: string,
     user: User,
     playlistvideo: Video
   ) {
@@ -1019,7 +1077,7 @@ export class SyncService {
   }
 
   loadVideoById(urlObject: any) {
-    this.videoComponent.loadVideoById(urlObject);
+    this.currentVideoService.loadVideoById(urlObject);
   }
 
   setVideoDuration() {
@@ -1030,7 +1088,7 @@ export class SyncService {
     this.videoComponent.setPlaybackRates();
   }
 
-  getUserId(): number {
+  getUserId(): string {
     return this.synctubeComponent.getUserId();
   }
 
@@ -1038,7 +1096,7 @@ export class SyncService {
     return this.synctubeComponent.getUser();
   }
 
-  getRaumId(): number {
+  getRaumId(): string {
     return this.synctubeComponent.getRaumId();
   }
 
@@ -1109,20 +1167,16 @@ export class SyncService {
   }
 
   toggleSubtitle(_module, option, value) {
-    this.setOption(_module, option, value);
-  }
-
-  setOption(_module, option, value) {
-    this.videoComponent.setOption(_module, option, value);
   }
 
   toggleDisplayOptions() {
     this.videoComponent.toggleDisplayOptions();
   }
 
+  /*
   setSize(width: number, height: number) {
     this.videoComponent.setSize(width, height);
-  }
+  }*/
 
   toggleFullscreen() {
     this.videoComponent.toggleDisplayFullscreen();
@@ -1138,7 +1192,7 @@ export class SyncService {
     return this.cookieService.check(SyncService.cookieKey);
   }
 
-  setCookie(userId: number) {
+  setCookie(userId: string) {
     this.cookieService.set(SyncService.cookieKey, "" + userId, 30);
   }
 
@@ -1156,7 +1210,7 @@ export class SyncService {
 
   jumpBySeconds(offset: number) {
     if (this.isLocalUserAdmin() && this.currentVideoExists()) {
-      let raumId: number = this.getRaumId();
+      let raumId: string = this.getRaumId();
       let user: User = this.getLocalUser();
       let videoId: string = this.getVideo().videoId;
       let currentTime: number = this.getCurrentTime();

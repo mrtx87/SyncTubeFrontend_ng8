@@ -16,7 +16,6 @@ export class Video {
 
     //Debug
 
-
     clone(): Video {
         let v: Video = new Video();
         v.videoId = this.videoId;
@@ -31,6 +30,7 @@ export class Video {
         if(this.thumbnail) {
             v.thumbnail = this.thumbnail;
         }
+        v.api = this.api;
         return v;
     }
 

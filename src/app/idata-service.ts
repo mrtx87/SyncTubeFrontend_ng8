@@ -12,10 +12,11 @@ export interface IDataService {
     http: HttpClient;
     synctubeComponent: SyncTubeComponent;
     APIKEY: string;
+    nextPageToken: string;
 
     search(searchQuery: SearchQuery) : boolean;
 
-    searchQuery(query: string, normalQuery: boolean, timestamp?: number);
+    searchQuery(query: string, normalQuery: boolean, timestamp?: number, nextPageToken?: string);
 
     searchPlaylist(query: string, mode: boolean, nextPageToken?: string, title?: string);
    

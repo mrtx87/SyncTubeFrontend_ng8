@@ -1,5 +1,5 @@
 export class User {
-    userId : number; 
+    userId : string; 
     userName : String;
     admin : Boolean;
     isMute: Boolean;

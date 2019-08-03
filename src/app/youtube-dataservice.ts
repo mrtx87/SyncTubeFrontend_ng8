@@ -9,16 +9,17 @@ import { SearchQuery } from './sync-tube/search-query';
 
 export class YoutubeDataService implements IDataService {
 
+    nextPageToken: string;
     id: number;
     name: string;
     http: HttpClient;
     synctubeComponent: SyncTubeComponent;
     APIKEY: string = "AIzaSyBJKPvOKMDqPzaR-06o1-Mfixvq2CRlS5M";
 
-    constructor(http: HttpClient, synctubeComponent: SyncTubeComponent, type: number, name: string) {
+    constructor(http: HttpClient, synctubeComponent: SyncTubeComponent, id: number, name: string) {
         this.http = http;
         this.synctubeComponent = synctubeComponent;
-        this.id = type;
+        this.id = id;
         this.name = name;
     }
 
@@ -38,11 +39,12 @@ export class YoutubeDataService implements IDataService {
 
     }
 
-    searchQuery(query: string, normalQuery: boolean, timestamp?: number) {
+    searchQuery(query: string, normalQuery: boolean, timestamp?: number, nextPageToken?: string) {
         this.http
             .get(
                 "https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&key=" +
                 this.APIKEY +
+                (nextPageToken ? "&pageToken=" + nextPageToken : "") +
                 "&q=" +
                 query
             )
@@ -74,17 +76,28 @@ export class YoutubeDataService implements IDataService {
                         video.title = item.snippet.title;
                         video.description = item.snippet.description;
                         video.publishedAt = item.snippet.publishedAt;
+                        video.api = this.id;
                         return video;
                     });
                 if (normalQuery) {
-                    this.synctubeComponent.searchResults = vids;
-                } else {
+                    if (nextPageToken) {
+                        for(let video of vids){
+                            this.synctubeComponent.searchResults.push(video);
+                        }
+                    } else {
+                        this.synctubeComponent.searchResults = vids;
+                    }
+                    this.nextPageToken = (data.nextPageToken) ? data.nextPageToken : null;
+                    this.synctubeComponent.updateCurrentScrollTop();
+                } else { //youtube video link 
                     let vid: Video = vids[0];
                     if (timestamp) {
                         vid.timestamp = timestamp;
                     }
                     this.synctubeComponent.searchResults = [vid];
                 }
+
+                this.synctubeComponent.isLoadingVideos = false;
             });
     }
 

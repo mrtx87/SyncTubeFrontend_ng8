@@ -11,7 +11,7 @@ import { VimeoVideo } from './vimeo.video ';
 
 export class VimeoDataService implements IDataService {
   
-
+  nextPageToken: string;
   id: number;
   name: string;
   http: HttpClient;

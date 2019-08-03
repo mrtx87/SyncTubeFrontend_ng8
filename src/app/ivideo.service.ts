@@ -1,8 +1,21 @@
+import { SyncService } from './sync.service';
+import { SupportedApi } from './supported-api';
+
 export interface IVideoService{
 
+    name:string;
+    iframe: any;
+    videoPlayer: any;
+    syncService: SyncService;
+    supportedApi: SupportedApi;
+    reframed: boolean;
 
     init();
     loadVideoById(urlObject: any): void;
+    hide(): void;
+    unHide(): void;
+    isHidden(): boolean;
+
 
     mute(): void ;
     unMute(): void;
@@ -10,15 +23,15 @@ export interface IVideoService{
     pauseVideo(): void;
     stopVideo(): void;
     seekTo(seconds: number, allowSeekAhead: Boolean);
-    setVolume();
+    setVolume(value: number);
     isMuted(): Boolean;
 
     getVideoDuration(): number;
     getCurrentTime(): number;
     getPlayerState(): number
-    getReceivedPlayerState(): number;
     getAvailableQualityLevels(): string[];
     setPlaybackQuality(suggestedQuality: string);
+    getPlaybackQuality(): string;
     getAvailablePlaybackRates(): Array<number>;
     setPlaybackRate(rate: number);
     getPlaybackRate(): number;
