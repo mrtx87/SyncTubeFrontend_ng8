@@ -192,6 +192,9 @@ export class SyncService {
         that.sendRequestPublicRaeume();
         that.synctubeComponent.revealContent = true;
       }
+      
+        that.synctubeComponent.toastr.success('Hello world!', 'Toastr fun!');
+      
     });
   }
 

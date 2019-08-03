@@ -11,6 +11,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { NoFloatPipe } from './noFloat.pipe';
 import { ChatMessagePipe } from './chatmessage.pipe';
 import { CookieService } from 'ngx-cookie-service';
+import { ToastrModule } from 'ngx-toastr';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 
 
 
@@ -28,7 +31,9 @@ import { CookieService } from 'ngx-cookie-service';
     BrowserModule,
     FormsModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    BrowserAnimationsModule, // required animations module
+    ToastrModule.forRoot()
   
   ],
   providers: [CookieService],

@@ -10,6 +10,7 @@ import { SearchQuery } from './search-query';
 import { ImportedPlaylist } from '../video/playlist';
 import { Observable } from 'rxjs';
 import { SupportedApi } from '../supported-api';
+import { ToastrService } from 'ngx-toastr';
 
 
 
@@ -127,8 +128,11 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     }
   }
 
+  get toastr() : ToastrService{
+    return this.toastr_;
+  }
 
-  constructor(private syncService: SyncService, private route: ActivatedRoute) {
+  constructor(private syncService: SyncService, private toastr_: ToastrService, private route: ActivatedRoute) {
 
     this.syncService.registerSyncTubeComponent(this);
 
