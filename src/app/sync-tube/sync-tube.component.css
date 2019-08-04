@@ -8,6 +8,7 @@
 
 .s2glogo {
   filter: invert(100%) sepia(0%) saturate(7449%) hue-rotate(143deg) brightness(126%) contrast(96%);
+  padding-right: 10px;
 }
 
 .raumTitle-container {
@@ -136,7 +137,7 @@
   margin: 0 auto;
   width: auto;
   height: 20px;
-  color: #5e5e5e;
+  color: var(--color10);
   margin-bottom: 25px;
 }
 
@@ -154,6 +155,20 @@
   border: none;
   background-color: var(--color9);
   color: white;
+}
+
+.change-button{
+  margin:0 auto; border: 1px solid black;
+  border-radius:4px;
+  padding-left: 10px;
+  padding-right: 10px; 
+  padding-top: 5px; 
+  background-color:var(--color5);
+  font-size: 18px;
+}
+
+.change-button:hover {
+  background-color: var(--color11);
 }
 
 .admin-panel-title, .controls-panel-title, .playlist-panel-title {
@@ -215,6 +230,10 @@
   height: 2.5vh;
   margin: 0 10px;
   border: none;
+  background-color: var(--color9);
+  color: white;
+  padding-left: 8px;
+  border-radius: 3px;
 }
 
 .top-panel {
@@ -395,18 +414,27 @@
   margin: 0 5px;
   border: none;*/
   margin-left: 10px;
-  width: 80%;
+  width: 77%;
   border: none;
   height: 25px;
+  background-color: var(--color8);
+  padding-left: 8px;
+  color: white;
+  border-radius: 3px;
+
 }
 
 .send-chat-button {
   margin: 0 auto;
   padding-left: 10px;
-  margin-left: 3px;
   padding-right: 10px;
   padding-top: 3px;
+  border-radius: 3px;
   background-color: var(--color5);
+}
+
+.send-chat-button:hover{
+  background-color: var(--color11);
 }
 
 .text-container {
