@@ -162,7 +162,7 @@
 
       <div [hidden]="displayTab != 1" class="chat-messages-container">
         <div class="top-chat-container">
-          <img src="assets/star.svg" class="star-img" />
+          <img (click)="displayToastrHistory = !displayToastrHistory" src="assets/star.svg" class="star-img" />
         </div>
         <div #scrollChat *ngIf="user" class="scrollable-content" id="scrollChat">
           <div [className]="
@@ -494,4 +494,11 @@
   <h3>Wollen Sie {{ kickingUser.userName }} aus dem Raum kicken?</h3>
   <div class="approved-button" (click)="approvedKick()">JA</div>
   <div class="disapproved-button" (click)="disapprovedKick()">NEIN</div>
+</div>
+
+<div [hidden]="!displayToastrHistory" class="toastr-history-container ellipsis">
+  <div style="font-size:3vh;">Event History</div>
+  <div class="toastr" *ngFor="let toastrMessage of toastrMessages">
+    {{toastrMessage.message}}<br> {{toastrMessage.createdAt | date: "dd.MM.yyyy hh:mm"}}
+  </div>
 </div>

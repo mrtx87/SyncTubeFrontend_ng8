@@ -727,7 +727,7 @@ label {
   justify-content: center;
   width: 5%;
   min-width: 5%;
-  filter:invert(1);
+  filter: invert(1);
 }
 
 .history-row-spacer {
@@ -781,7 +781,6 @@ label {
 
 .playlist-controls-left-inactive:hover, .playlist-controls-right-inactive:hover {
   background-color: var(--color3);
-
 }
 
 .playlist-controls-right {
@@ -1220,4 +1219,18 @@ label {
   width: 100%;
   display: flex;
   flex-direction: column;
+}
+
+.toastr-history-container {
+  position:fixed;
+  right:0px;
+  top:25vh;
+  width: 50vw;
+  height:50vh;
+  max-width: 400px;
+  background-color: #cececea4;
+  display:flex;
+  flex-direction: column;
+  padding: 1%;
+
 }

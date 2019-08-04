@@ -50,6 +50,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   displayCinemaMode: Boolean = false;
   displayFullscreen: Boolean = false;
   displayHistory: Boolean = false;
+  displayToastrHistory: Boolean = false;
 
   title = 'SyncTube';
 
@@ -379,7 +380,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
   sendChatMessage() {
-    if (!this.user.isMute) {
+    if (!this.user.mute) {
       let message: Message = new Message();
       message.type = "user-chat"
       message.user = this.user;

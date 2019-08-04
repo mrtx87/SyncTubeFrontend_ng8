@@ -18,4 +18,5 @@ export class ToastrMessageTypes {
     MUTE_USER : string = "mute-user";
     CHANGED_USER_NAME : string = "changed-user-name";
     PARDONED_KICKED_USER : string = "pardon-kicked-user";
+    ONLY_LOGGING: string = 'only-logging';
 }

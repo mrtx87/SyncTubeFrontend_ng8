@@ -114,9 +114,18 @@ export class SyncService {
 
   retrieveToastrMessages() {
     let that = this;
-    this.http.get("http://localhost:8080/room/" + this.getRaumId() +"/userId/" + this.getUserId() + "/toastr-messages", {}).subscribe(function (response) {
+    this.http.get("http://localhost:8080/room/" + this.getRaumId() + "/userId/" + this.getUserId() + "/toastr-messages", {}).subscribe(function (response) {
       that.synctubeComponent.toastrMessages = <ToastrMessage[]>response;
       console.log(that.synctubeComponent.toastrMessages)
+    }
+    );
+  }
+
+  retrieveChatMessages() {
+    let that = this;
+    this.http.get("http://localhost:8080/room/" + this.getRaumId() + "/userId/" + this.getUserId() + "/chat-messages", {}).subscribe(function (response) {
+      that.synctubeComponent.chatMessages = <ChatMessage[]>response;
+      console.log(that.synctubeComponent.chatMessages)
     }
     );
   }
@@ -267,16 +276,21 @@ export class SyncService {
         this.createClient(message);
         this.replaceUrl(message.raumId);
         this.updateVideo(message);
+        this.setInitalPlaybackRate(message.currentPlaybackRate);
+
         this.getRaumPlaylist(this.getRaumId());
         this.getHistory(this.getRaumId(), this.getUserId());
-        this.setInitalPlaybackRate(message.currentPlaybackRate);
         this.retrieveToastrMessages();
+        this.retrieveChatMessages();
 
         break;
       case this.messageTypes.UPDATE_CLIENT:
         this.updateClientChat(message);
         break;
       case this.messageTypes.INSERT_NEW_VIDEO:
+        this.updateVideo(message);
+        this.switchVideo(message);
+        this.synctubeComponent.chatMessages.push(message.chatMessage);
         break;
       case this.messageTypes.CHAT_MESSAGE:
         this.synctubeComponent.addChatMessage(message.chatMessage);
@@ -303,14 +317,35 @@ export class SyncService {
         this.updateClientChat(message);
         break;
       case this.messageTypes.TO_PUBLIC_ROOM:
+        this.setRaumStatus(message.raumStatus);
+        this.updateClientChat(message);
         break;
       case this.messageTypes.TO_PRIVATE_ROOM:
+        this.setRaumStatus(message.raumStatus);
+        this.updateClientChat(message);
+        this.setLocalUser(message.user);
         break;
       case this.messageTypes.SWITCH_VIDEO:
+        this.updateVideo(message);
+        this.switchVideo(message);
+        this.updateHistory(message);
         break;
       case this.messageTypes.UPDATE_KICKED_USERS:
+        this.updateKickedUsers(message);
+        break;
+      case this.messageTypes.KICKED_USER:
+        this.resetClient();
         break;
       case this.messageTypes.UPDATE_PLAYLIST:
+        if (message.video) {
+          this.updateVideo(message);
+          this.switchVideo(message);
+          this.updateHistory(message);
+        }
+        if (message.chatMessage) {
+          this.synctubeComponent.chatMessages.push(message.chatMessage);
+        }
+        this.getRaumPlaylist(this.getRaumId());
         break;
       case this.messageTypes.REQUEST_SYNC_TIMESTAMP:
         let v: Video = new Video();
@@ -319,10 +354,21 @@ export class SyncService {
         this.sendCurrentTimeStamp(this.getLocalUser(), this.getRaumId(), v);
         break;
       case this.messageTypes.REMOVE_VIDEO_PLAYLIST:
+        this.synctubeComponent.playlist = this.getLocalPlaylist().filter(
+          vid => vid.id !== message.playlistVideo.id
+        );
+        this.updateVideo(message);
+        this.switchVideo(message);
         break;
       case this.messageTypes.UPDATE_KICK_CLIENT:
+        this.updateKickedUsers(message);
+        this.updateClientChat(message);
+        this.setRaumId(message.raumId);
+        this.replaceUrl(message.raumId);
         break;
       case this.messageTypes.REFRESH_ROOM_ID:
+        this.setRaumId(message.raumId);
+        this.replaceUrl(message.raumId);
         break;
       case this.messageTypes.REFRESH_USER_AND_LIST:
         this.updateClientChat(message);
@@ -339,113 +385,27 @@ export class SyncService {
       case this.messageTypes.IMPORTED_PLAYLIST:
         break;
       case this.messageTypes.CHANGED_PLAYBACK_RATE:
+        this.setPlaybackRate(message.currentPlaybackRate);
         break;
-      case this.messageTypes.MUTE_USER:
+      case this.messageTypes.MUTE_USER: // TODO:
         break;
       case this.messageTypes.PARDONED_KICKED_USER:
+        // TODO:
         break;
       case this.messageTypes.TOGGLE_PLAYLIST_RUNNING_ORDER:
+        this.synctubeComponent.randomOrder = message.randomOrder;
         break;
       case this.messageTypes.TOGGLE_PLAYLIST_LOOP:
+        this.synctubeComponent.loop = message.loop;
         break;
-      default: this.toastr.error("error", "ERROR", { timeOut: 2000 })
+      case 'error':
+        this.toastr.error("error", "ERROR", { disableTimeOut: true, tapToDismiss: true })
+        break;
+      default: this.toastr.warning("unkown behaviour", "warning", { disableTimeOut: true, tapToDismiss: true })
         break;
 
     }
-    console.log(this.toastr.toasts);
 
-    if (message.type == "update-kick-client") {
-      console.log(message);
-      this.updateKickedUsers(message);
-      this.updateClientChat(message);
-      this.setRaumId(message.raumId);
-      this.replaceUrl(message.raumId);
-      return;
-    }
-
-    if (message.type == "update-kicked-users") {
-      console.log(message);
-      this.updateKickedUsers(message);
-      return;
-    }
-
-    if (message.type == "to-public-room") {
-      console.log("[to public room: ]" + message);
-      this.setRaumStatus(message.raumStatus);
-      this.updateClientChat(message);
-      return;
-    }
-
-    if (message.type == "to-private-room") {
-      console.log("[to private room: ]" + message);
-      this.setRaumStatus(message.raumStatus);
-      this.updateClientChat(message);
-      this.setLocalUser(message.user);
-      return;
-    }
-
-    if (message.type == "remove-video-playlist") {
-      this.synctubeComponent.playlist = this.getLocalPlaylist().filter(
-        vid => vid.id !== message.playlistVideo.id
-      );
-      this.updateVideo(message);
-      this.switchVideo(message);
-
-      return;
-    }
-
-    if (message.type == "switch-video") {
-      this.updateVideo(message);
-      this.switchVideo(message);
-      this.updateHistory(message);
-      return;
-    }
-
-    if (message.type == "update-playlist") {
-      console.log(message.users);
-      if (message.video) {
-        this.updateVideo(message);
-        this.switchVideo(message);
-        this.updateHistory(message);
-      }
-      if (message.chatMessage) {
-        this.synctubeComponent.chatMessages.push(message.chatMessage);
-      }
-      this.getRaumPlaylist(this.getRaumId());
-      return;
-    }
-
-    if (message.type == "toggle-playlist-running-order") {
-      this.synctubeComponent.randomOrder = message.randomOrder;
-    }
-
-    if (message.type == "toggle-playlist-loop") {
-      this.synctubeComponent.loop = message.loop;
-    }
-
-    if (message.type == "change-playback-rate") {
-      this.setPlaybackRate(message.currentPlaybackRate);
-      return;
-    }
-
-    if (message.type == "insert-new-video") {
-      this.updateVideo(message);
-      this.switchVideo(message);
-      this.synctubeComponent.chatMessages.push(message.chatMessage);
-      return;
-    }
-
-    if (message.type == "kicked-user") {
-      console.log(message);
-      this.resetClient();
-      return;
-    }
-
-    if (message.type == "refresh-raumid") {
-      console.log(message);
-      this.setRaumId(message.raumId);
-      this.replaceUrl(message.raumId);
-    }
 
     if (message.type == "error") {
       console.log("[ERROR from Server]");
@@ -461,65 +421,66 @@ export class SyncService {
   displayAsToast(toastrMessage: ToastrMessage) {
     if (toastrMessage) {
       this.addToToastrMessages(toastrMessage);
-      // this.toastr.success("Raum #" + this.getRaumId() + " wurde von " + this.getLocalUser().userName + ' erstellt', 'Raum erstellt:', ToastrConfigs.SUCCESS);
-      switch (toastrMessage.type) {
-        case this.toastrMessageTypes.CREATE_ROOM:
-          this.toastr.success(toastrMessage.message, 'Raum erstellt:', ToastrConfigs.SUCCESS);
-          break;
-        case this.toastrMessageTypes.JOIN_ROOM:
-          this.toastr.info(toastrMessage.message, 'Raum beigetreten:', ToastrConfigs.INFO);
-          break;
-        case this.toastrMessageTypes.DISCONNECT:
-          this.toastr.info(toastrMessage.message, 'Raum verlassen:', ToastrConfigs.INFO);
-          break;
-        case this.toastrMessageTypes.ASSIGNED_AS_ADMIN:
-          this.toastr.success(toastrMessage.message, 'zum Admin ernannt:', ToastrConfigs.SUCCESS);
-          break;
-        case this.toastrMessageTypes.TO_PUBLIC_ROOM:
-          this.toastr.info(toastrMessage.message, 'Raumstatus:', ToastrConfigs.INFO);
-          break;
-        case this.toastrMessageTypes.TO_PRIVATE_ROOM:
-          this.toastr.info(toastrMessage.message, 'Raumstatus:', ToastrConfigs.INFO);
-          break;
-        case this.toastrMessageTypes.KICKED_USER:
-          this.toastr.error(toastrMessage.message, 'You were kicked!', ToastrConfigs.ERROR);
-          break;
-        case this.toastrMessageTypes.UPDATE_KICK_CLIENT:
-          this.toastr.warning(toastrMessage.message, 'User kicked:', ToastrConfigs.WARNING);
-          break;
-        case this.toastrMessageTypes.REFRESH_ROOM_ID:
-          this.toastr.info(toastrMessage.message, 'RaumId Update:', ToastrConfigs.INFO);
-          break;
-        case this.toastrMessageTypes.ADDED_VIDEO_TO_PLAYLIST:
-          this.toastr.info(toastrMessage.message, 'Playlist Update:', ToastrConfigs.INFO);
-          break;
-        case this.toastrMessageTypes.UPDATE_TITLE_AND_DESCRIPTION:
-          this.toastr.info(toastrMessage.message, 'Raum Update:', ToastrConfigs.INFO);
-          break;
-        case this.toastrMessageTypes.REMOVE_VIDEO_PLAYLIST:
-          this.toastr.info(toastrMessage.message, 'Playlist Update:', ToastrConfigs.INFO);
-          break;
-        case this.toastrMessageTypes.IMPORTED_PLAYLIST:
-          this.toastr.success(toastrMessage.message, 'Playlist Update:', ToastrConfigs.SUCCESS);
-          break;
-        case this.toastrMessageTypes.INTEGRATED_PLAYLIST:
-          this.toastr.success(toastrMessage.message, 'Playlist Update:', ToastrConfigs.SUCCESS);
-          break;
-        case this.toastrMessageTypes.CHANGED_PLAYBACK_RATE:
-          this.toastr.info(toastrMessage.message, 'Playbackrate Update:', ToastrConfigs.INFO);
-          break;
-        case this.toastrMessageTypes.MUTE_USER:
-          this.toastr.warning(toastrMessage.message, 'User Update:', ToastrConfigs.WARNING);
-          break;
-        case this.toastrMessageTypes.CHANGED_USER_NAME:
-          this.toastr.info(toastrMessage.message, 'User Update:', ToastrConfigs.INFO);
-          break;
-        case this.toastrMessageTypes.PARDONED_KICKED_USER:
-          this.toastr.info(toastrMessage.message, 'User Update:', ToastrConfigs.INFO);
-          break;
 
+      if (!toastrMessage.onlyLogging) {
+        // this.toastr.success("Raum #" + this.getRaumId() + " wurde von " + this.getLocalUser().userName + ' erstellt', 'Raum erstellt:', ToastrConfigs.SUCCESS);
+        switch (toastrMessage.type) {
+          case this.toastrMessageTypes.CREATE_ROOM:
+            this.toastr.success(toastrMessage.message, 'Raum erstellt:', ToastrConfigs.SUCCESS);
+            break;
+          case this.toastrMessageTypes.JOIN_ROOM:
+            this.toastr.info(toastrMessage.message, 'Raum beigetreten:', ToastrConfigs.INFO);
+            break;
+          case this.toastrMessageTypes.DISCONNECT:
+            this.toastr.info(toastrMessage.message, 'Raum verlassen:', ToastrConfigs.INFO);
+            break;
+          case this.toastrMessageTypes.ASSIGNED_AS_ADMIN:
+            this.toastr.success(toastrMessage.message, 'zum Admin ernannt:', ToastrConfigs.SUCCESS);
+            break;
+          case this.toastrMessageTypes.TO_PUBLIC_ROOM:
+            this.toastr.info(toastrMessage.message, 'Raumstatus:', ToastrConfigs.INFO);
+            break;
+          case this.toastrMessageTypes.TO_PRIVATE_ROOM:
+            this.toastr.info(toastrMessage.message, 'Raumstatus:', ToastrConfigs.INFO);
+            break;
+          case this.toastrMessageTypes.KICKED_USER:
+            this.toastr.error(toastrMessage.message, 'You were kicked!', ToastrConfigs.ERROR);
+            break;
+          case this.toastrMessageTypes.UPDATE_KICK_CLIENT:
+            this.toastr.warning(toastrMessage.message, 'User kicked:', ToastrConfigs.WARNING);
+            break;
+          case this.toastrMessageTypes.REFRESH_ROOM_ID:
+            this.toastr.info(toastrMessage.message, 'RaumId Update:', ToastrConfigs.INFO);
+            break;
+          case this.toastrMessageTypes.ADDED_VIDEO_TO_PLAYLIST:
+            this.toastr.info(toastrMessage.message, 'Playlist Update:', ToastrConfigs.INFO);
+            break;
+          case this.toastrMessageTypes.UPDATE_TITLE_AND_DESCRIPTION:
+            this.toastr.info(toastrMessage.message, 'Raum Update:', ToastrConfigs.INFO);
+            break;
+          case this.toastrMessageTypes.REMOVE_VIDEO_PLAYLIST:
+            this.toastr.info(toastrMessage.message, 'Playlist Update:', ToastrConfigs.INFO);
+            break;
+          case this.toastrMessageTypes.IMPORTED_PLAYLIST:
+            this.toastr.success(toastrMessage.message, 'Playlist Update:', ToastrConfigs.SUCCESS);
+            break;
+          case this.toastrMessageTypes.INTEGRATED_PLAYLIST:
+            this.toastr.success(toastrMessage.message, 'Playlist Update:', ToastrConfigs.SUCCESS);
+            break;
+          case this.toastrMessageTypes.CHANGED_PLAYBACK_RATE:
+            this.toastr.info(toastrMessage.message, 'Playbackrate Update:', ToastrConfigs.INFO);
+            break;
+          case this.toastrMessageTypes.MUTE_USER:
+            this.toastr.warning(toastrMessage.message, 'User Update:', ToastrConfigs.WARNING);
+            break;
+          case this.toastrMessageTypes.CHANGED_USER_NAME:
+            this.toastr.info(toastrMessage.message, 'User Update:', ToastrConfigs.INFO);
+            break;
+          case this.toastrMessageTypes.PARDONED_KICKED_USER:
+            this.toastr.info(toastrMessage.message, 'User Update:', ToastrConfigs.INFO);
+            break;
+        }
       }
-
     }
   }
 
