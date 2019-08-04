@@ -50,7 +50,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   displayCinemaMode: Boolean = false;
   displayFullscreen: Boolean = false;
   displayHistory: Boolean = false;
-  displayToastrHistory: Boolean = false;
+  displayToastrHistory: Boolean = false; 
 
   title = 'SyncTube';
 
@@ -110,7 +110,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
         break;
       case KEY_CODE.RIGHT_ARROW: ///forwards 10sec
         break;
-      case KEY_CODE.BACKSPACE: //to startpage
+      case KEY_CODE.BACKSPACE: //to startpage //TODO:
         break;
       /*case KEY_CODE.KEY_W: 
       break;*/
