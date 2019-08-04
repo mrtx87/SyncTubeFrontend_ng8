@@ -306,7 +306,8 @@
           </div>
         </div>
         <div class="footer">
-          <input class="w-100" (keyup.enter)="sendChatMessage()" [(ngModel)]="chatMessageText" type="text" placeholder="Eine Nachricht senden" />
+          <input class="w-100" (keyup.enter)="sendChatMessage()" [(ngModel)]="chatMessageText" type="text"
+            placeholder="Eine Nachricht senden" />
           <div (click)="sendChatMessage()" class="send-chat-button">
             Senden
           </div>
@@ -375,9 +376,9 @@
             </div>
             <div class="history-video-data">
               <!-- title="{{pvideo_.description}}"> -->
-
               <div class="history-video-infos">
                 {{ hvideo_.title }}
+                {{ hvideo_.publishedAt | date: "dd.MM.yyyy hh:mm"}}
               </div>
               <div class="history-video-controls">
               </div>
@@ -499,7 +500,16 @@
 
 <div [hidden]="!displayToastrHistory" class="toastr-history-container ellipsis">
   <div style="font-size:3vh;">Event History</div>
-  <div [className]="determineToastrClass(toastrMessage)" *ngFor="let toastrMessage of toastrMessages">
-    {{toastrMessage.message}}<br> {{toastrMessage.createdAt | date: "dd.MM.yyyy hh:mm"}}
+  <div class="toastr-history-toasts">
+    <div class="single-toast" *ngFor="let toastrMessage of toastrMessages">
+      <div class="single-toast-left ellipsis">
+        {{toastrMessage.message}}
+      </div>
+      <div class="single-toast-right">
+        <div [className]="'toast-success toast-color-block'"></div>
+        {{toastrMessage.createdAt | date: "dd.MM.yyyy hh:mm"}}
+      </div>
+    </div>
   </div>
+
 </div>

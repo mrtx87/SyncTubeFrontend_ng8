@@ -55,6 +55,12 @@ export class SyncService {
   static paused: number = 2;
   static buffering: number = 3;
   static placed: number = 5; //video platziert
+  // jump rates for video.components
+  static FIVE_SEC_FORTH: number = 5;
+  static FIVE_SEC_BACK: number = -5;
+  static TEN_SEC_FORTH: number = 10;
+  static TEN_SEC_BACK: number = -10;
+
 
   static cookieKey: string = "U_COOKIE";
 
@@ -1288,12 +1294,8 @@ export class SyncService {
     }
   }
 
-  startDisplaylingsecondsBack() {
-    this.videoComponent.startDisplaylingsecondsBack();
-  }
-
-  startDisplaylingsecondsForward() {
-    this.videoComponent.startDisplaylingsecondsForward();
+  startDisplayingSeconds() {
+    this.videoComponent.startDisplayingSeconds();
   }
 
   parseYoutubeUrl(url: string): Video {
