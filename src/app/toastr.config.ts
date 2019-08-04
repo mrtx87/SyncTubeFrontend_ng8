@@ -13,6 +13,7 @@ export class ToastrConfig {
   enableHtml: boolean = false;
   progressBar: boolean = false;
   progressAnimation: ProgressAnimationType = 'increasing';
+  tapToDismiss: true;
   positionClass: string = 'toast-top-right';
 
   constructor(timeOut: number, closeButton?: boolean, disableTimeOut?: boolean, easing?: string, easeTime?: number, enableHtml?: boolean, progressBar?: boolean, progressAnimation?: ProgressAnimationType) {

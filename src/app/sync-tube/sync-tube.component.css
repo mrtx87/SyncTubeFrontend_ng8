@@ -683,6 +683,11 @@ label {
   margin-bottom: 2px;
 }
 
+.active {
+  background-color: var(--color4);
+  color: black;
+}
+
 .playlist-video-infos, .history-video-infos {
   padding: 5px;
   height: 60px;
@@ -722,6 +727,7 @@ label {
   justify-content: center;
   width: 5%;
   min-width: 5%;
+  filter:invert(1);
 }
 
 .history-row-spacer {
@@ -773,6 +779,11 @@ label {
   transition-duration: 0.2s;
 }
 
+.playlist-controls-left-inactive:hover, .playlist-controls-right-inactive:hover {
+  background-color: var(--color3);
+
+}
+
 .playlist-controls-right {
   display: flex;
   width: 20%;
@@ -796,7 +807,6 @@ label {
 
 .history-control-icon {
   height: 25px;
-  filter: invert(99%) sepia(92%) saturate(7056%) hue-rotate(54deg) brightness(92%) contrast(100%);
   -webkit-transition-duration: 0.2s;
   transition-duration: 0.2s;
 }

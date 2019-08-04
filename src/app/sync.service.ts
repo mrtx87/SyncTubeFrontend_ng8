@@ -112,6 +112,15 @@ export class SyncService {
     return this.toastr_;
   }
 
+  retrieveToastrMessages() {
+    let that = this;
+    this.http.get("http://localhost:8080/room/" + this.getRaumId() +"/userId/" + this.getUserId() + "/toastr-messages", {}).subscribe(function (response) {
+      that.synctubeComponent.toastrMessages = <ToastrMessage[]>response;
+      console.log(that.synctubeComponent.toastrMessages)
+    }
+    );
+  }
+
   retrieveToastrMessageTypes() {
     let that = this;
     this.http.get("http://localhost:8080/toastr-message-types", {}).subscribe(function (response) {
@@ -247,30 +256,51 @@ export class SyncService {
 
     switch (message.type) {
       case this.messageTypes.CREATE_ROOM:
-          this.createClient(message);
-          this.replaceUrl(message.raumId);
-          this.updateVideo(message);
-          this.getRaumPlaylist(this.getRaumId());
-          console.log(message.users);
+        this.createClient(message);
+        this.replaceUrl(message.raumId);
+        this.updateVideo(message);
+        this.getRaumPlaylist(this.getRaumId());
+        console.log(message.users);
         break;
       case this.messageTypes.JOIN_ROOM:
+        this.joinReponseMessage = message;
+        this.createClient(message);
+        this.replaceUrl(message.raumId);
+        this.updateVideo(message);
+        this.getRaumPlaylist(this.getRaumId());
+        this.getHistory(this.getRaumId(), this.getUserId());
+        this.setInitalPlaybackRate(message.currentPlaybackRate);
+        this.retrieveToastrMessages();
+
         break;
       case this.messageTypes.UPDATE_CLIENT:
+        this.updateClientChat(message);
         break;
       case this.messageTypes.INSERT_NEW_VIDEO:
         break;
+      case this.messageTypes.CHAT_MESSAGE:
+        this.synctubeComponent.addChatMessage(message.chatMessage);
+        this.synctubeComponent.forceScrollToChatBottom = true;
+        break;
       case this.messageTypes.SEEK_TO_TIMESTAMP:
+        this.videoComponent.currentTimestamp = message.video.timestamp;
+        this.videoComponent.currentTimeProgressbar = message.video.timestamp;
+        this.videoComponent.currentDisplayedTime = message.video.timestamp;
+        this.seekTo(this.videoComponent.currentTimestamp, true);
+        this.togglePlayVideo(this.getReceivedPlayerState());
         break;
       case this.messageTypes.TOGGLE_PLAY:
-          this.videoComponent.currentDisplayedTime = message.video.timestamp;
-          this.videoComponent.currentTimeProgressbar = message.video.timestamp;
-          this.seekTo(message.video.timestamp, true);
-          this.togglePlayVideo(message.playerState);
-          this.updateVideo(message);
+        this.videoComponent.currentDisplayedTime = message.video.timestamp;
+        this.videoComponent.currentTimeProgressbar = message.video.timestamp;
+        this.seekTo(message.video.timestamp, true);
+        this.togglePlayVideo(message.playerState);
+        this.updateVideo(message);
         break;
       case this.messageTypes.DISCONNECT:
         break;
       case this.messageTypes.ASSIGNED_AS_ADMIN:
+        this.assignedAsAdmin(message.user);
+        this.updateClientChat(message);
         break;
       case this.messageTypes.TO_PUBLIC_ROOM:
         break;
@@ -280,7 +310,13 @@ export class SyncService {
         break;
       case this.messageTypes.UPDATE_KICKED_USERS:
         break;
+      case this.messageTypes.UPDATE_PLAYLIST:
+        break;
       case this.messageTypes.REQUEST_SYNC_TIMESTAMP:
+        let v: Video = new Video();
+        v.videoId = this.getVideo().videoId;
+        v.timestamp = this.getCurrentTime();
+        this.sendCurrentTimeStamp(this.getLocalUser(), this.getRaumId(), v);
         break;
       case this.messageTypes.REMOVE_VIDEO_PLAYLIST:
         break;
@@ -289,12 +325,16 @@ export class SyncService {
       case this.messageTypes.REFRESH_ROOM_ID:
         break;
       case this.messageTypes.REFRESH_USER_AND_LIST:
+        this.updateClientChat(message);
+        this.setLocalUser(message.user);
         break;
       case this.messageTypes.REFRESH_USERLIST:
+        this.updateClientChat(message);
         break;
       case this.messageTypes.ADDED_VIDEO_TO_PLAYLIST:
         break;
       case this.messageTypes.UPDATE_TITLE_AND_DESCRIPTION:
+        this.updateRaumTitleAndDescription(message.raumTitle, message.raumDescription);
         break;
       case this.messageTypes.IMPORTED_PLAYLIST:
         break;
@@ -308,78 +348,11 @@ export class SyncService {
         break;
       case this.messageTypes.TOGGLE_PLAYLIST_LOOP:
         break;
-      default: this.toastr.error("error", "ERROR", {timeOut:2000})
+      default: this.toastr.error("error", "ERROR", { timeOut: 2000 })
         break;
 
     }
-
-    if (message.type == this.messageTypes.ASSIGNED_AS_ADMIN) {
-      console.log(message);
-      this.assignedAsAdmin(message.user);
-      this.updateClientChat(message);
-      return;
-    }
-
-    if (message.type == "update-title-and-description") {
-      this.updateRaumTitleAndDescription(
-        message.raumTitle,
-        message.raumDescription
-      );
-      return;
-    }
-
-    if (message.type == "all-chat-messages") {
-      console.log(message); //SERVER SENDING ALL ?
-      this.synctubeComponent.addAllChatMessages(message.chatMessages);
-      this.synctubeComponent.forceScrollToChatBottom = true;
-      return;
-    }
-
-    if (message.type == "seekto-timestamp") {
-      console.log(message);
-      this.videoComponent.currentTimestamp = message.video.timestamp;
-      this.videoComponent.currentTimeProgressbar = message.video.timestamp;
-      this.videoComponent.currentDisplayedTime = message.video.timestamp;
-      this.seekTo(this.videoComponent.currentTimestamp, true);
-      this.togglePlayVideo(this.getReceivedPlayerState());
-      return;
-    }
-
-    if (message.type == "chat-message") {
-      console.log(message);
-      this.synctubeComponent.addChatMessage(message.chatMessage);
-      this.synctubeComponent.forceScrollToChatBottom = true;
-      return;
-    }
-
-    if (message.type == "refresh-userlist") {
-      console.log(message);
-      this.updateClientChat(message);
-
-      return;
-    }
-
-    if (message.type == "refresh-user-and-list") {
-      console.log(message);
-      this.updateClientChat(message);
-      this.setLocalUser(message.user);
-
-      return;
-    }
-    if (message.type == "update-client") {
-      console.log(message);
-      this.updateClientChat(message);
-      return;
-    }
-
-    if (message.type == "request-sync-timestamp") {
-      console.log(message);
-      let v: Video = new Video();
-      v.videoId = this.getVideo().videoId;
-      v.timestamp = this.getCurrentTime();
-      this.sendCurrentTimeStamp(this.getLocalUser(), this.getRaumId(), v);
-      return;
-    }
+    console.log(this.toastr.toasts);
 
     if (message.type == "update-kick-client") {
       console.log(message);
@@ -450,26 +423,6 @@ export class SyncService {
       this.synctubeComponent.loop = message.loop;
     }
 
-    if (message.type == "create-room") {
-
-      return;
-    }
-
-    if (message.type == "join-room") {
-      this.joinReponseMessage = message;
-      this.createClient(message);
-      this.replaceUrl(message.raumId);
-      this.updateVideo(message);
-      //this.switchVideo(message);
-
-      this.getRaumPlaylist(this.getRaumId());
-      this.getHistory(this.getRaumId(), this.getUserId());
-      this.setInitalPlaybackRate(message.currentPlaybackRate)
-
-      console.log(message.users);
-      return;
-    }
-
     if (message.type == "change-playback-rate") {
       this.setPlaybackRate(message.currentPlaybackRate);
       return;
@@ -498,10 +451,16 @@ export class SyncService {
       console.log("[ERROR from Server]");
       return;
     }
+
+  }
+
+  addToToastrMessages(toastrMessage: ToastrMessage) {
+    this.synctubeComponent.toastrMessages.push(toastrMessage);
   }
 
   displayAsToast(toastrMessage: ToastrMessage) {
     if (toastrMessage) {
+      this.addToToastrMessages(toastrMessage);
       // this.toastr.success("Raum #" + this.getRaumId() + " wurde von " + this.getLocalUser().userName + ' erstellt', 'Raum erstellt:', ToastrConfigs.SUCCESS);
       switch (toastrMessage.type) {
         case this.toastrMessageTypes.CREATE_ROOM:
