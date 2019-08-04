@@ -6,7 +6,7 @@
       <option *ngFor="let supportedApi_ of supportedApis" [ngValue]="supportedApi_">{{supportedApi_.name}} </option>
     </select>
     <input *ngIf="raumId && user.admin" (keyup.enter)="search()" [(ngModel)]="searchInput" class="user-query"
-      type="text" />
+      type="text" placeholder="Suchen" />
     <div class="room-status-panel">
       <label [hidden]="!raumId || !raumStatus">Private <img class="rsp-lock" src="assets/padlock.svg" /></label>
       <label [hidden]="!raumId || raumStatus">Public <img class="rsp-lock" src="assets/padlock-unlock.svg" /></label>
@@ -308,7 +308,7 @@
         <div class="footer">
           <input class="w-100" (keyup.enter)="sendChatMessage()" [(ngModel)]="chatMessageText" type="text" />
           <div (click)="sendChatMessage()" class="send-chat-button">
-            senden
+            Senden
           </div>
         </div>
       </div>
@@ -458,8 +458,7 @@
           <div class="description">
             <label>Hier können Sie den Raumtitel bestimmen</label>
           </div>
-          <div (click)="sendUpdateTitleAndDescription()"
-            style="margin:0 auto; border: 1px solid black; border-radius:4px; padding-left: 10px; padding-right: 10px; padding-top: 5px; background-color:var(--color5);">
+          <div (click)="sendUpdateTitleAndDescription()" class="change-button">
             Ändern
           </div>
           <div class="admin-panel-row">

@@ -17,6 +17,8 @@ app-root {
   --color7: #0d0d11;
   --color8: #21212c;
   --color9: #282835;
+  --color10: #5e5e5e;
+  --color11: rgb(100, 193, 247);
 }
 
 body {
