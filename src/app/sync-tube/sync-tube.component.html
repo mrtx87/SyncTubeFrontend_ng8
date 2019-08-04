@@ -498,7 +498,7 @@
 
 <div [hidden]="!displayToastrHistory" class="toastr-history-container ellipsis">
   <div style="font-size:3vh;">Event History</div>
-  <div class="toastr" *ngFor="let toastrMessage of toastrMessages">
+  <div [className]="determineToastrClass(toastrMessage)" *ngFor="let toastrMessage of toastrMessages">
     {{toastrMessage.message}}<br> {{toastrMessage.createdAt | date: "dd.MM.yyyy hh:mm"}}
   </div>
 </div>
