@@ -504,7 +504,7 @@
         {{toastrMessage.message}}
       </div>
       <div class="single-toast-right">
-        <div [className]="'toast-success toast-color-block'"></div>
+        <div class="{{ toastrMessage.toastrType ? toastrMessage.toastrType : 'toast-info'}}"> </div>
         {{toastrMessage.createdAt | date: "dd.MM.yyyy hh:mm"}}
       </div>
     </div>

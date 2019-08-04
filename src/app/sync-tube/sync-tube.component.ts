@@ -596,10 +596,6 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   getLocalPlaylist(): Video[] {
     return this.playlist;
   }
-
-  determineToastrClass(toastrMessage: ToastrMessage): string {
-    return "toast-success";
-  }
 }
 
 export enum KEY_CODE {

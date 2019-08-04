@@ -62,6 +62,7 @@ export class SyncService {
   static TEN_SEC_BACK: number = -10;
 
 
+
   static cookieKey: string = "U_COOKIE";
 
   private _selectedVideoApi: Number;
@@ -112,6 +113,7 @@ export class SyncService {
   constructor(private http: HttpClient, private cookieService: CookieService, private toastr_: ToastrService) {
     this.retrieveMessageTypes();
     this.retrieveToastrMessageTypes();
+
   }
 
   get toastr(): ToastrService {
@@ -121,7 +123,10 @@ export class SyncService {
   retrieveToastrMessages() {
     let that = this;
     this.http.get("http://localhost:8080/room/" + this.getRaumId() + "/userId/" + this.getUserId() + "/toastr-messages", {}).subscribe(function (response) {
-      that.synctubeComponent.toastrMessages = <ToastrMessage[]>response;
+      let incomingToastrMessages: ToastrMessage[] =  <ToastrMessage[]> response;
+      for(let itm of incomingToastrMessages) {
+        that.synctubeComponent.toastrMessages.push(itm);
+      }
       console.log(that.synctubeComponent.toastrMessages)
     }
     );
@@ -140,7 +145,9 @@ export class SyncService {
     let that = this;
     this.http.get("http://localhost:8080/toastr-message-types", {}).subscribe(function (response) {
       that.toastrMessageTypes = <ToastrMessageTypes>response;
-      console.log(that.toastrMessageTypes)
+      
+
+
     }
     );
   }
@@ -267,7 +274,6 @@ export class SyncService {
 
   handleMessage(message: Message) {
 
-    this.displayAsToast(message.toastrMessage);
 
     switch (message.type) {
       case this.messageTypes.CREATE_ROOM:
@@ -411,6 +417,7 @@ export class SyncService {
         break;
 
     }
+    this.displayAsToast(message.toastrMessage);
 
 
     if (message.type == "error") {
@@ -426,8 +433,6 @@ export class SyncService {
 
   displayAsToast(toastrMessage: ToastrMessage) {
     if (toastrMessage) {
-      this.addToToastrMessages(toastrMessage);
-
       if (!toastrMessage.onlyLogging) {
         // this.toastr.success("Raum #" + this.getRaumId() + " wurde von " + this.getLocalUser().userName + ' erstellt', 'Raum erstellt:', ToastrConfigs.SUCCESS);
         switch (toastrMessage.type) {
@@ -487,8 +492,11 @@ export class SyncService {
             break;
         }
       }
+      this.addToToastrMessages(toastrMessage);
     }
   }
+
+  
 
   setRaumId(raumId: string) {
     this.synctubeComponent.raumId = raumId;

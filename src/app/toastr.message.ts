@@ -1,28 +1,27 @@
 import { User } from './sync-tube/user';
 
 export class ToastrMessage {
-    index: number;
     type: string;
-    raumId:string;
+    raumId: string;
 
     message: string;
     origin: string;
     target: string;
 
     createdAt: Date;
-    onlyLogging:boolean;
+    onlyLogging: boolean;
+    toastrType: string;
 
-    constructor(    index: number,type: string,raumId:string,message: string,origin: string, target: string,createdAt: Date, onlyLogging:boolean) {
 
+    constructor(type: string, raumId: string, message: string, origin: string, target: string, createdAt: Date, onlyLogging: boolean, toastrType: string) {
         this.raumId = raumId;
-        this.index = index;
         this.type = type;
         this.message = message;
-        this.createdAt  = createdAt;
+        this.createdAt = createdAt;
         this.onlyLogging = onlyLogging;
         this.origin = origin;
         this.target = target;
-
+        this.toastrType = toastrType;
     }
 
 }

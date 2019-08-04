@@ -1309,19 +1309,33 @@ label {
 
 .toast-success {
   background-color: #51A351;
+  width: 3vw;
+  height: 3vh;
+  min-width: 3vw;
+  min-height: 3vh;
+  border-radius: 5px;
 }
 
 .toast-error {
   background-color: #BD362F;
-  margin: 0.5%;
-}
+  width: 3vw;
+  height: 3vh;
+  min-width: 3vw;
+  min-height: 3vh;
+  border-radius: 5px;}
 
 .toast-info {
   background-color: #2F96B4;
-  margin: 0.5%;
-}
+  width: 3vw;
+  height: 3vh;
+  min-width: 3vw;
+  min-height: 3vh;
+  border-radius: 5px;}
 
 .toast-warning {
   background-color: #F89406;
-  margin: 0.5%;
-}
+  width: 3vw;
+  height: 3vh;
+  min-width: 3vw;
+  min-height: 3vh;
+  border-radius: 5px;}
