@@ -1,26 +1,28 @@
-import { Component, OnInit, HostListener, AfterViewChecked } from '@angular/core';
-import { SyncService } from '../sync.service';
-import { Raum } from '../raum';
-import { ActivatedRoute } from '@angular/router';
-import { Message } from '../message';
-import { ChatMessage } from '../chat-message';
-import { User } from './user';
-import { Video } from '../video/video';
-import { SearchQuery } from './search-query';
-import { ImportedPlaylist } from '../video/playlist';
-import { Observable } from 'rxjs';
-import { SupportedApi } from '../supported-api';
-import { ToastrMessage } from '../toastr.message';
-
-
+import {
+  Component,
+  OnInit,
+  HostListener,
+  AfterViewChecked
+} from "@angular/core";
+import { SyncService } from "../sync.service";
+import { Raum } from "../raum";
+import { ActivatedRoute } from "@angular/router";
+import { Message } from "../message";
+import { ChatMessage } from "../chat-message";
+import { User } from "./user";
+import { Video } from "../video/video";
+import { SearchQuery } from "./search-query";
+import { ImportedPlaylist } from "../video/playlist";
+import { Observable } from "rxjs";
+import { SupportedApi } from "../supported-api";
+import { ToastrMessage } from "../toastr.message";
 
 @Component({
-  selector: 'app-sync-tube',
-  templateUrl: './sync-tube.component.html',
-  styleUrls: ['./sync-tube.component.css']
+  selector: "app-sync-tube",
+  templateUrl: "./sync-tube.component.html",
+  styleUrls: ["./sync-tube.component.css"]
 })
 export class SyncTubeComponent implements OnInit, AfterViewChecked {
-
   //APIS STUFF
   supportedApis: SupportedApi[];
   selectedDataApi: SupportedApi;
@@ -46,13 +48,12 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   displayTab: number = 1;
 
-
   displayCinemaMode: Boolean = false;
   displayFullscreen: Boolean = false;
   displayHistory: Boolean = false;
   displayToastrHistory: Boolean = false;
 
-  title = 'SyncTube';
+  title = "SyncTube";
 
   //currentUser
   user: User;
@@ -102,61 +103,80 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   revealContent: Boolean = false;
 
   /* Keyboard controlings */
-  @HostListener('window:keyup', ['$event'])
+  @HostListener("window:keyup", ["$event"])
   keyEvent(event: KeyboardEvent) {
-    console.log(event); //DEBUG
     switch (event.keyCode) {
-      case KEY_CODE.LEFT_ARROW:  ///backwards 10sec
+      case KEY_CODE.LEFT_ARROW:
+        this.syncService.videoComponent.jumpBySeconds(SyncService.TEN_SEC_BACK);
         break;
-      case KEY_CODE.RIGHT_ARROW: ///forwards 10sec
+      case KEY_CODE.RIGHT_ARROW:
+        this.syncService.videoComponent.jumpBySeconds(
+          SyncService.TEN_SEC_FORTH
+        );
         break;
       case KEY_CODE.BACKSPACE: //to startpage
+        // delete raumId ?
         break;
-      /*case KEY_CODE.KEY_W: 
-      break;*/
-      case KEY_CODE.KEY_A: //backwards 10sec*/
+      case KEY_CODE.KEY_A:
+        this.syncService.videoComponent.jumpBySeconds(SyncService.TEN_SEC_BACK);
         break;
-      /*case KEY_CODE.KEY_S: 
-      break;*/
-      case KEY_CODE.KEY_D: //forwards 10sec
+      case KEY_CODE.KEY_S:
+        this.syncService.videoComponent.triggerTogglePlay();
         break;
-      case KEY_CODE.SPACE: this.syncService.videoComponent.triggerTogglePlay();
+      case KEY_CODE.KEY_D:
+        this.syncService.videoComponent.jumpBySeconds(
+          SyncService.TEN_SEC_FORTH
+        );
         break;
-      case KEY_CODE.KEY_F: //Fullscreen 
+      case KEY_CODE.SPACE:
+        this.syncService.videoComponent.triggerTogglePlay();
         break;
+      case KEY_CODE.KEY_F:
+        this.syncService.videoComponent.toggleDisplayFullscreen();
+        break;
+      case KEY_CODE.KEY_K:
+        this.syncService.videoComponent.triggerTogglePlay();
+        break;
+      case KEY_CODE.KEY_J:
+        this.syncService.videoComponent.jumpBySeconds(
+          SyncService.FIVE_SEC_BACK
+        );
+        break;
+      case KEY_CODE.KEY_L:
+        this.syncService.videoComponent.jumpBySeconds(
+          SyncService.FIVE_SEC_FORTH
+        );
+        break;
+        case KEY_CODE.PERIOD: // increase playback rate
+          this.playbackRates
+        break;
+        case KEY_CODE.COMMA: // increase playback rate
 
-    }
+        break;
+      }
   }
 
-
-
   constructor(private syncService: SyncService, private route: ActivatedRoute) {
-
     this.syncService.registerSyncTubeComponent(this);
 
     this.syncService.retrieveSupportedApis();
 
     this.syncService.connect();
-
   }
-
 
   updateCurrentScrollTop(): void {
     this.currentScrollTop = this.scrollContent.scrollTop;
   }
 
-
   ngAfterViewChecked(): void {
-
-    this.scrollChat = document.getElementById("scrollChat")
-    this.scrollContent = document.getElementById("scrollContent")
+    this.scrollChat = document.getElementById("scrollChat");
+    this.scrollContent = document.getElementById("scrollContent");
     this.searchResultsContainer = document.getElementById("search-results");
 
     if (this.forceScrollToSearch) {
       this.scrollToSearchResults();
       this.forceScrollToSearch = false;
     }
-
 
     if (this.forceScrollToVideo) {
       this.scrollToSearchVideo();
@@ -165,8 +185,12 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
     if (!this.isLoadingVideos && false) {
       this.isLoadingVideos = true;
-      this.syncService.currentDataService.searchQuery("", true, null, this.syncService.currentDataService.nextPageToken);
-
+      this.syncService.currentDataService.searchQuery(
+        "",
+        true,
+        null,
+        this.syncService.currentDataService.nextPageToken
+      );
     }
 
     /*console.log("SCROLLTOP: " + this.scrollContent.scrollTop)
@@ -178,7 +202,6 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     if (this.scrollChat && this.forceScrollToChatBottom) {
       this.scrollChat.scrollTop = this.scrollChat.scrollHeight;
     }*/
-
 
     if (this.scrollChat && this.forceScrollToChatBottom) {
       this.scrollToBottomOfChat();
@@ -200,7 +223,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.scrollContent.scrollTop = this.scrollContent.scrollHeight * 0.4;
   }
 
-  @HostListener('window:beforeunload', ['$event'])
+  @HostListener("window:beforeunload", ["$event"])
   beforeunloadHandler($event: any) {
     this.syncService.sendDisconnectMessage(this.user, this.raumId);
     this.syncService.localCloseConnection();
@@ -219,21 +242,41 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
   sendAddVideoToPlaylistAsNext(video_: Video) {
-    this.syncService.sendAddVideoToPlaylistAsNext(this.raumId, this.user, video_);
+    this.syncService.sendAddVideoToPlaylistAsNext(
+      this.raumId,
+      this.user,
+      video_
+    );
   }
 
   sendAddVideoToPlaylistAsCurrent(video_: Video) {
-    this.syncService.sendAddVideoToPlaylistAsCurrent(this.raumId, this.user, video_);
+    this.syncService.sendAddVideoToPlaylistAsCurrent(
+      this.raumId,
+      this.user,
+      video_
+    );
   }
 
   sendUpdateTitleAndDescription() {
-    if (this.raumTitleChange !== this.raumTitle || this.raumDescription !== this.raumDescriptionChange) {
-      this.syncService.sendUpdateTitleAndDescription(this.user, this.raumId, this.raumTitleChange, this.raumDescriptionChange);
+    if (
+      this.raumTitleChange !== this.raumTitle ||
+      this.raumDescription !== this.raumDescriptionChange
+    ) {
+      this.syncService.sendUpdateTitleAndDescription(
+        this.user,
+        this.raumId,
+        this.raumTitleChange,
+        this.raumDescriptionChange
+      );
     }
   }
 
   sendAutoNextPlaylistVideo() {
-    this.syncService.sendAutoNextPlaylistVideo(this.getUser(), this.getRaumId(), 1);
+    this.syncService.sendAutoNextPlaylistVideo(
+      this.getUser(),
+      this.getRaumId(),
+      1
+    );
   }
 
   sendChangeUserName(oldUserName: string) {
@@ -251,25 +294,34 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
   sendPardonKickedUser(kickedUser: User) {
-    this.syncService.sendPardonKickedUser(this.getUser(), this.getRaumId(), kickedUser);
+    this.syncService.sendPardonKickedUser(
+      this.getUser(),
+      this.getRaumId(),
+      kickedUser
+    );
   }
 
   sendToggleMuteUser(user: User) {
     this.syncService.sendToggleMuteUser(this.getUser(), this.getRaumId(), user);
-
   }
 
   togglePlaylistLoop() {
-    this.syncService.sendTogglePlaylistLoop(this.getUser(), this.getRaumId(), this.loop);
+    this.syncService.sendTogglePlaylistLoop(
+      this.getUser(),
+      this.getRaumId(),
+      this.loop
+    );
   }
 
   togglePlaylistRunningOrder() {
-    this.syncService.sendTogglePlaylistRunningOrder(this.getUser(), this.getRaumId(), this.randomOrder);
+    this.syncService.sendTogglePlaylistRunningOrder(
+      this.getUser(),
+      this.getRaumId(),
+      this.randomOrder
+    );
   }
 
-  switchSelectedApi() {
-
-  }
+  switchSelectedApi() {}
 
   clearRoomVars() {
     this.raumId = null;
@@ -289,7 +341,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.videoDuration = 0;
     this.receivedPlayerState = 0;
     this.publicRaeume = null;
-    this.importedPlaylist = null;;
+    this.importedPlaylist = null;
   }
 
   createRaum() {
@@ -305,20 +357,32 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
   sendRemovePlaylistVideo(pvideo_: Video) {
-    this.syncService.sendRemoveVideoFromPlaylist(this.raumId, this.user, pvideo_);
+    this.syncService.sendRemoveVideoFromPlaylist(
+      this.raumId,
+      this.user,
+      pvideo_
+    );
   }
 
   sendImportPlaylist() {
     if (this.importedPlaylist && this.user.admin) {
       this.importedPlaylist.mode = 0;
-      this.syncService.sendImportPlaylist(this.raumId, this.user, this.importedPlaylist);
+      this.syncService.sendImportPlaylist(
+        this.raumId,
+        this.user,
+        this.importedPlaylist
+      );
     }
   }
 
   sendIntegratePlaylist() {
     if (this.importedPlaylist && this.user.admin) {
       this.importedPlaylist.mode = 1;
-      this.syncService.sendImportPlaylist(this.raumId, this.user, this.importedPlaylist);
+      this.syncService.sendImportPlaylist(
+        this.raumId,
+        this.user,
+        this.importedPlaylist
+      );
     }
   }
 
@@ -327,9 +391,12 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.hasImportedPlaylist = false;
     this.searchResults = [];
     this.syncService.currentDataService.nextPageToken = null;
-    let searchQuery: SearchQuery = this.syncService.currentDataService.processInput(this.searchInput);
-    this.forceScrollToSearch = this.syncService.currentDataService.search(searchQuery);
-
+    let searchQuery: SearchQuery = this.syncService.currentDataService.processInput(
+      this.searchInput
+    );
+    this.forceScrollToSearch = this.syncService.currentDataService.search(
+      searchQuery
+    );
   }
 
   getReceivedPlayerState(): number {
@@ -339,7 +406,11 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   sendSwitchPlaylistVideo(pvideo_: Video) {
     if (this.user.admin) {
       this.forceScrollToVideo = true;
-      this.syncService.sendSwitchPlaylistVideo(this.getUser(), this.getRaumId(), pvideo_);
+      this.syncService.sendSwitchPlaylistVideo(
+        this.getUser(),
+        this.getRaumId(),
+        pvideo_
+      );
     }
   }
 
@@ -349,13 +420,17 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
       this.hasImportedPlaylist = false;
       this.searchResults = [];
 
-      this.syncService.currentDataService.searchPlaylist(video_.playlistId, false, null, video_.title);
+      this.syncService.currentDataService.searchPlaylist(
+        video_.playlistId,
+        false,
+        null,
+        video_.title
+      );
     }
   }
 
-
   getPathId(): string {
-    return this.route.snapshot.paramMap.get('id');
+    return this.route.snapshot.paramMap.get("id");
   }
 
   updatePlaylist(playlist: Video[]) {
@@ -366,13 +441,10 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     return this.syncService.parseYoutubeUrl(url);
   }
 
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 
   addChatMessage(chatMessage: ChatMessage) {
     this.chatMessages.push(chatMessage);
-
   }
 
   addAllChatMessages(allChatMessages: ChatMessage[]) {
@@ -382,7 +454,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   sendChatMessage() {
     if (!this.user.mute) {
       let message: Message = new Message();
-      message.type = "user-chat"
+      message.type = "user-chat";
       message.user = this.user;
       message.raumId = this.raumId;
       message.chatMessage = this.createChatMessage();
@@ -433,9 +505,12 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.kickingUser = null;
   }
 
-
   approvedAdmin() {
-    this.syncService.sendAssignAdmin(this.raumId, this.user, this.designatedAdmin);
+    this.syncService.sendAssignAdmin(
+      this.raumId,
+      this.user,
+      this.designatedAdmin
+    );
     this.designatedAdmin = null;
   }
 
@@ -460,13 +535,11 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
   toKick(designatedUser: User) {
-    console.log("KICKINGUSER:" + designatedUser)
+    console.log("KICKINGUSER:" + designatedUser);
     this.kickingUser = designatedUser;
   }
 
-  copyUrlToClipboard() {
-
-  }
+  copyUrlToClipboard() {}
 
   getRaumUrl(): string {
     return "localhost:4200/rooms/" + this.getRaumId;
@@ -477,7 +550,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
   displayConfigToggle() {
-    console.log(this.configRaumStatus)
+    console.log(this.configRaumStatus);
   }
 
   getVideo(): Video {
@@ -509,17 +582,17 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
   jumpBySeconds(offset: number) {
-    this.syncService.jumpBySeconds(offset)
+    this.syncService.jumpBySeconds(offset);
   }
 
   tenSecBack() {
     this.jumpBySeconds(-10);
-    this.syncService.startDisplaylingsecondsBack();
+    this.syncService.startDisplayingSeconds();
   }
 
   tenSecForward() {
     this.jumpBySeconds(10);
-    this.syncService.startDisplaylingsecondsForward();
+    this.syncService.startDisplayingSeconds();
   }
 
   getLocalPlaylist(): Video[] {
@@ -628,5 +701,3 @@ export enum KEY_CODE {
   CLOSE_BRACKET = 221,
   SINGLE_QUOTE = 222
 }
-
-
