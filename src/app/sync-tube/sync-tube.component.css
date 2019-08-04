@@ -233,6 +233,7 @@
   background-color: var(--color9);
   color: white;
   padding-left: 8px;
+  border-radius: 3px;
 }
 
 .top-panel {
@@ -413,9 +414,14 @@
   margin: 0 5px;
   border: none;*/
   margin-left: 10px;
-  width: 80%;
+  width: 77%;
   border: none;
   height: 25px;
+  background-color: var(--color8);
+  padding-left: 8px;
+  color: white;
+  border-radius: 3px;
+
 }
 
 .send-chat-button {
