@@ -4,7 +4,6 @@
 
 .page-title {
   font-size: 2em;
-  
 }
 
 .s2glogo {
@@ -154,7 +153,7 @@
   resize: none;
   border: none;
   background-color: var(--color9);
-  color:white;
+  color: white;
 }
 
 .admin-panel-title, .controls-panel-title, .playlist-panel-title {
@@ -321,9 +320,8 @@
 
 .chat-messages-container {
   background-color: var(--color7);
-  height: 84vh;
+  height: 81vh;
   width: 100%;
-  
 }
 
 .scrollable-content {
@@ -350,7 +348,7 @@
   width: fit-content;
   max-width: 75%;
   padding: 5px 5px 0px 5px;
-  color:black;
+  color: black;
 }
 
 .message-row-container-user {
@@ -372,7 +370,7 @@
   max-width: 75%;
   padding: 5px 5px 0px 5px;
   background-color: white;
-  color:black;
+  color: black;
 }
 
 .insert-video-row-container-user, .insert-playlist-row-container-user {
@@ -405,6 +403,7 @@
 .send-chat-button {
   margin: 0 auto;
   padding-left: 10px;
+  margin-left: 3px;
   padding-right: 10px;
   padding-top: 3px;
   background-color: var(--color5);
@@ -429,6 +428,16 @@
   justify-content: flex-end;
   width: 100%;
   font-size: 9px;
+}
+
+.top-chat-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  min-height: 3vh;
+  height: 3vh;
+  width: 100%;
+  border-bottom: 1px solid white;
 }
 
 .chat-row {
@@ -578,7 +587,7 @@ label {
   -webkit-transition-duration: 0.4s;
   transition-duration: 0.4s;
   color: white;
-  float:left;
+  float: left;
 }
 
 .room-preview:hover {
@@ -659,7 +668,6 @@ label {
   width: 10%;
   height: auto;
   opacity: 0.6;
-
 }
 
 .information-panel:hover {
@@ -673,6 +681,11 @@ label {
   background-color: var(--color8);
   color: white;
   margin-bottom: 2px;
+}
+
+.active {
+  background-color: var(--color4);
+  color: black;
 }
 
 .playlist-video-infos, .history-video-infos {
@@ -714,6 +727,7 @@ label {
   justify-content: center;
   width: 5%;
   min-width: 5%;
+  filter: invert(1);
 }
 
 .history-row-spacer {
@@ -734,7 +748,6 @@ label {
   height: 82px;
 }
 
-
 .playlist-controls {
   display: flex;
   align-items: center;
@@ -750,7 +763,7 @@ label {
   width: 80%;
   justify-content: center;
   align-items: center;
-  height:30px;
+  height: 30px;
   -webkit-transition-duration: 0.2s;
   transition-duration: 0.2s;
 }
@@ -760,10 +773,14 @@ label {
   width: 80%;
   justify-content: center;
   align-items: center;
-  height:30px;
+  height: 30px;
   background-color: var(--color8);
   -webkit-transition-duration: 0.2s;
   transition-duration: 0.2s;
+}
+
+.playlist-controls-left-inactive:hover, .playlist-controls-right-inactive:hover {
+  background-color: var(--color3);
 }
 
 .playlist-controls-right {
@@ -771,7 +788,7 @@ label {
   width: 20%;
   justify-content: center;
   align-items: center;
-  height:30px;
+  height: 30px;
   -webkit-transition-duration: 0.2s;
   transition-duration: 0.2s;
 }
@@ -782,20 +799,18 @@ label {
   justify-content: center;
   align-items: center;
   background-color: var(--color8);
-  height:30px;
+  height: 30px;
   -webkit-transition-duration: 0.2s;
   transition-duration: 0.2s;
 }
 
 .history-control-icon {
   height: 25px;
-  filter: 
-  invert(99%) sepia(92%) saturate(7056%) hue-rotate(54deg) brightness(92%) contrast(100%);
   -webkit-transition-duration: 0.2s;
   transition-duration: 0.2s;
 }
 
-.history-control-icon:hover {
+.history-control-icon-inactive:hover {
   height: 28px;
   -webkit-transition-duration: 0.2s;
   transition-duration: 0.2s;
@@ -822,7 +837,6 @@ label {
 .random-container img:hover, .repeat-container img:hover, .next-playlist-video-container img:hover {
   height: 80%;
   opacity: 1;
-  
   /*border: 2px solid var(--color3);*/
   /*border-radius: 5px;*/
 }
@@ -1203,6 +1217,20 @@ label {
 
 .kicked-users-list-container {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.toastr-history-container {
+  position:fixed;
+  right:0px;
+  top:25vh;
+  width: 50vw;
+  height:50vh;
+  max-width: 400px;
+  background-color: #cececea4;
   display:flex;
   flex-direction: column;
+  padding: 1%;
+
 }

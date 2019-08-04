@@ -122,7 +122,7 @@ export class YoutubeDataService implements IDataService {
                 let nextPageToken: string = data.nextPageToken;
                 console.log(data);
                 let vids: Video[] = items
-                    .filter(i => (i.snippet.resourceId.videoId ? true : false))
+                    .filter(i => (i.snippet.resourceId.videoId && i.snippet.thumbnails? true : false))
                     .map(it => it.snippet)
                     .map(item => {
                         return this.mapVideo(item);

@@ -22,6 +22,10 @@ import { VimeoDataService } from './vimeo.dataservice.';
 import { IVideoService } from './ivideo.service';
 import { ToastrConfig } from './toastr.config';
 import { ToastrService } from 'ngx-toastr';
+import { ToastrConfigs } from './toastr.configs';
+import { ToastrMessageTypes } from './toastr.message.types';
+import { MessageTypes } from './message.types';
+import { ToastrMessage } from './toastr.message';
 
 @Injectable({
   providedIn: "root"
@@ -40,6 +44,9 @@ export class SyncService {
   synctubeComponent: SyncTubeComponent;
   videoComponent: VideoComponent;
   joinReponseMessage: Message;
+
+  toastrMessageTypes: ToastrMessageTypes;
+  messageTypes: MessageTypes;
 
   //PLAYERSTATES
   static notStarted: number = -1;
@@ -97,11 +104,49 @@ export class SyncService {
   }
 
   constructor(private http: HttpClient, private cookieService: CookieService, private toastr_: ToastrService) {
-
+    this.retrieveMessageTypes();
+    this.retrieveToastrMessageTypes();
   }
 
-  get toastr() : ToastrService {
+  get toastr(): ToastrService {
     return this.toastr_;
+  }
+
+  retrieveToastrMessages() {
+    let that = this;
+    this.http.get("http://localhost:8080/room/" + this.getRaumId() + "/userId/" + this.getUserId() + "/toastr-messages", {}).subscribe(function (response) {
+      that.synctubeComponent.toastrMessages = <ToastrMessage[]>response;
+      console.log(that.synctubeComponent.toastrMessages)
+    }
+    );
+  }
+
+  retrieveChatMessages() {
+    let that = this;
+    this.http.get("http://localhost:8080/room/" + this.getRaumId() + "/userId/" + this.getUserId() + "/chat-messages", {}).subscribe(function (response) {
+      that.synctubeComponent.chatMessages = <ChatMessage[]>response;
+      console.log(that.synctubeComponent.chatMessages)
+    }
+    );
+  }
+
+  retrieveToastrMessageTypes() {
+    let that = this;
+    this.http.get("http://localhost:8080/toastr-message-types", {}).subscribe(function (response) {
+      that.toastrMessageTypes = <ToastrMessageTypes>response;
+      console.log(that.toastrMessageTypes)
+    }
+    );
+  }
+
+
+  retrieveMessageTypes() {
+    let that = this;
+    this.http.get("http://localhost:8080/message-types", {}).subscribe(function (response) {
+      that.messageTypes = <MessageTypes>response;
+      console.log(that.messageTypes)
+    }
+    );
   }
 
   retrieveSupportedApis() {
@@ -197,9 +242,12 @@ export class SyncService {
         that.sendRequestPublicRaeume();
         that.synctubeComponent.revealContent = true;
       }
-      
-        that.toastr.info("Video wurde hinzugefügt",'',new ToastrConfig(1500, false, false, null, 300, true, true));
-      
+
+      // that.toastr.success("Video wurde hinzugefügt",'Testnachricht', new ToastrConfig(2000, null, null, null, null, false, false));
+      // that.toastr.warning("Video wurde hinzugefügt",'Testnachricht', new ToastrConfig(2000, null, null, null, null, false, false));
+      // that.toastr.error("Video wurde hinzugefügt",'Testnachricht', new ToastrConfig(2000, null, null, null, null, false, false));
+
+
     });
   }
 
@@ -212,205 +260,227 @@ export class SyncService {
   }
 
   handleMessage(message: Message) {
-    if (message.type == "toggle-play") {
-      console.log(message);
 
-      this.videoComponent.currentDisplayedTime = message.video.timestamp;
-      this.videoComponent.currentTimeProgressbar = message.video.timestamp;
-      this.seekTo(message.video.timestamp, true);
-      this.togglePlayVideo(message.playerState);
-      this.updateVideo(message);
+    this.displayAsToast(message.toastrMessage);
 
-      return;
-    }
+    switch (message.type) {
+      case this.messageTypes.CREATE_ROOM:
+        this.createClient(message);
+        this.replaceUrl(message.raumId);
+        this.updateVideo(message);
+        this.getRaumPlaylist(this.getRaumId());
+        console.log(message.users);
+        break;
+      case this.messageTypes.JOIN_ROOM:
+        this.joinReponseMessage = message;
+        this.createClient(message);
+        this.replaceUrl(message.raumId);
+        this.updateVideo(message);
+        this.setInitalPlaybackRate(message.currentPlaybackRate);
 
-    if (message.type == "assigned-as-admin") {
-      console.log(message);
-      this.assignedAsAdmin(message.user);
-      this.updateClientChat(message);
-      return;
-    }
+        this.getRaumPlaylist(this.getRaumId());
+        this.getHistory(this.getRaumId(), this.getUserId());
+        this.retrieveToastrMessages();
+        this.retrieveChatMessages();
 
-    if (message.type == "update-title-and-description") {
-      this.updateRaumTitleAndDescription(
-        message.raumTitle,
-        message.raumDescription
-      );
-      return;
-    }
-
-    if (message.type == "all-chat-messages") {
-      console.log(message); //SERVER SENDING ALL ?
-      this.synctubeComponent.addAllChatMessages(message.chatMessages);
-      this.synctubeComponent.forceScrollToChatBottom = true;
-      return;
-    }
-
-    if (message.type == "seekto-timestamp") {
-      console.log(message);
-      this.videoComponent.currentTimestamp = message.video.timestamp;
-      this.videoComponent.currentTimeProgressbar = message.video.timestamp;
-      this.videoComponent.currentDisplayedTime = message.video.timestamp;
-      this.seekTo(this.videoComponent.currentTimestamp, true);
-      this.togglePlayVideo(this.getReceivedPlayerState());
-      return;
-    }
-
-    if (message.type == "chat-message") {
-      console.log(message);
-      this.synctubeComponent.addChatMessage(message.chatMessage);
-      this.synctubeComponent.forceScrollToChatBottom = true;
-      return;
-    }
-
-    if (message.type == "refresh-userlist") {
-      console.log(message);
-      this.updateClientChat(message);
-
-      return;
-    }
-
-    if (message.type == "refresh-user-and-list") {
-      console.log(message);
-      this.updateClientChat(message);
-      this.setLocalUser(message.user);
-
-      return;
-    }
-    if (message.type == "update-client") {
-      console.log(message);
-      this.updateClientChat(message);
-      return;
-    }
-
-    if (message.type == "request-sync-timestamp") {
-      console.log(message);
-      let v: Video = new Video();
-      v.videoId = this.getVideo().videoId;
-      v.timestamp = this.getCurrentTime();
-      this.sendCurrentTimeStamp(this.getLocalUser(), this.getRaumId(), v);
-      return;
-    }
-
-    if (message.type == "update-kick-client") {
-      console.log(message);
-      this.updateKickedUsers(message);
-      this.updateClientChat(message);
-      this.setRaumId(message.raumId);
-      this.replaceUrl(message.raumId);
-      return;
-    }
-
-    if (message.type == "update-kicked-users") {
-      console.log(message);
-      this.updateKickedUsers(message);
-      return;
-    }
-
-    if (message.type == "to-public-room") {
-      console.log("[to public room: ]" + message);
-      this.setRaumStatus(message.raumStatus);
-      this.updateClientChat(message);
-      return;
-    }
-
-    if (message.type == "to-private-room") {
-      console.log("[to private room: ]" + message);
-      this.setRaumStatus(message.raumStatus);
-      this.updateClientChat(message);
-      this.setLocalUser(message.user);
-      return;
-    }
-
-    if (message.type == "remove-video-playlist") {
-      this.synctubeComponent.playlist = this.getLocalPlaylist().filter(
-        vid => vid.id !== message.playlistVideo.id
-      );
-      this.updateVideo(message);
-      this.switchVideo(message);
-
-      return;
-    }
-
-    if (message.type == "switch-video") {
-      this.updateVideo(message);
-      this.switchVideo(message);
-      this.updateHistory(message);
-      return;
-    }
-
-    if (message.type == "update-playlist") {
-      console.log(message.users);
-      if (message.video) {
+        break;
+      case this.messageTypes.UPDATE_CLIENT:
+        this.updateClientChat(message);
+        break;
+      case this.messageTypes.INSERT_NEW_VIDEO:
+        this.updateVideo(message);
+        this.switchVideo(message);
+        this.synctubeComponent.chatMessages.push(message.chatMessage);
+        break;
+      case this.messageTypes.CHAT_MESSAGE:
+        this.synctubeComponent.addChatMessage(message.chatMessage);
+        this.synctubeComponent.forceScrollToChatBottom = true;
+        break;
+      case this.messageTypes.SEEK_TO_TIMESTAMP:
+        this.videoComponent.currentTimestamp = message.video.timestamp;
+        this.videoComponent.currentTimeProgressbar = message.video.timestamp;
+        this.videoComponent.currentDisplayedTime = message.video.timestamp;
+        this.seekTo(this.videoComponent.currentTimestamp, true);
+        this.togglePlayVideo(this.getReceivedPlayerState());
+        break;
+      case this.messageTypes.TOGGLE_PLAY:
+        this.videoComponent.currentDisplayedTime = message.video.timestamp;
+        this.videoComponent.currentTimeProgressbar = message.video.timestamp;
+        this.seekTo(message.video.timestamp, true);
+        this.togglePlayVideo(message.playerState);
+        this.updateVideo(message);
+        break;
+      case this.messageTypes.DISCONNECT:
+        break;
+      case this.messageTypes.ASSIGNED_AS_ADMIN:
+        this.assignedAsAdmin(message.user);
+        this.updateClientChat(message);
+        break;
+      case this.messageTypes.TO_PUBLIC_ROOM:
+        this.setRaumStatus(message.raumStatus);
+        this.updateClientChat(message);
+        break;
+      case this.messageTypes.TO_PRIVATE_ROOM:
+        this.setRaumStatus(message.raumStatus);
+        this.updateClientChat(message);
+        this.setLocalUser(message.user);
+        break;
+      case this.messageTypes.SWITCH_VIDEO:
         this.updateVideo(message);
         this.switchVideo(message);
         this.updateHistory(message);
-      }
-      if (message.chatMessage) {
-        this.synctubeComponent.chatMessages.push(message.chatMessage);
-      }
-      this.getRaumPlaylist(this.getRaumId());
-      return;
+        break;
+      case this.messageTypes.UPDATE_KICKED_USERS:
+        this.updateKickedUsers(message);
+        break;
+      case this.messageTypes.KICKED_USER:
+        this.resetClient();
+        break;
+      case this.messageTypes.UPDATE_PLAYLIST:
+        if (message.video) {
+          this.updateVideo(message);
+          this.switchVideo(message);
+          this.updateHistory(message);
+        }
+        if (message.chatMessage) {
+          this.synctubeComponent.chatMessages.push(message.chatMessage);
+        }
+        this.getRaumPlaylist(this.getRaumId());
+        break;
+      case this.messageTypes.REQUEST_SYNC_TIMESTAMP:
+        let v: Video = new Video();
+        v.videoId = this.getVideo().videoId;
+        v.timestamp = this.getCurrentTime();
+        this.sendCurrentTimeStamp(this.getLocalUser(), this.getRaumId(), v);
+        break;
+      case this.messageTypes.REMOVE_VIDEO_PLAYLIST:
+        this.synctubeComponent.playlist = this.getLocalPlaylist().filter(
+          vid => vid.id !== message.playlistVideo.id
+        );
+        this.updateVideo(message);
+        this.switchVideo(message);
+        break;
+      case this.messageTypes.UPDATE_KICK_CLIENT:
+        this.updateKickedUsers(message);
+        this.updateClientChat(message);
+        this.setRaumId(message.raumId);
+        this.replaceUrl(message.raumId);
+        break;
+      case this.messageTypes.REFRESH_ROOM_ID:
+        this.setRaumId(message.raumId);
+        this.replaceUrl(message.raumId);
+        break;
+      case this.messageTypes.REFRESH_USER_AND_LIST:
+        this.updateClientChat(message);
+        this.setLocalUser(message.user);
+        break;
+      case this.messageTypes.REFRESH_USERLIST:
+        this.updateClientChat(message);
+        break;
+      case this.messageTypes.ADDED_VIDEO_TO_PLAYLIST:
+        break;
+      case this.messageTypes.UPDATE_TITLE_AND_DESCRIPTION:
+        this.updateRaumTitleAndDescription(message.raumTitle, message.raumDescription);
+        break;
+      case this.messageTypes.IMPORTED_PLAYLIST:
+        break;
+      case this.messageTypes.CHANGED_PLAYBACK_RATE:
+        this.setPlaybackRate(message.currentPlaybackRate);
+        break;
+      case this.messageTypes.MUTE_USER: // TODO:
+        break;
+      case this.messageTypes.PARDONED_KICKED_USER:
+        // TODO:
+        break;
+      case this.messageTypes.TOGGLE_PLAYLIST_RUNNING_ORDER:
+        this.synctubeComponent.randomOrder = message.randomOrder;
+        break;
+      case this.messageTypes.TOGGLE_PLAYLIST_LOOP:
+        this.synctubeComponent.loop = message.loop;
+        break;
+      case 'error':
+        this.toastr.error("error", "ERROR", { disableTimeOut: true, tapToDismiss: true })
+        break;
+      default: this.toastr.warning("unkown behaviour", "warning", { disableTimeOut: true, tapToDismiss: true })
+        break;
+
     }
 
-    if (message.type == "toggle-playlist-running-order") {
-      this.synctubeComponent.randomOrder = message.randomOrder;
-    }
-
-    if (message.type == "toggle-playlist-loop") {
-      this.synctubeComponent.loop = message.loop;
-    }
-
-    if (message.type == "create-room") {
-      this.createClient(message);
-      this.replaceUrl(message.raumId);
-      this.updateVideo(message);
-      this.getRaumPlaylist(this.getRaumId());
-      console.log(message.users);
-      return;
-    }
-
-    if (message.type == "join-room") {
-      this.joinReponseMessage = message;
-      this.createClient(message);
-      this.replaceUrl(message.raumId);
-      this.updateVideo(message);
-      //this.switchVideo(message);
-
-      this.getRaumPlaylist(this.getRaumId());
-      this.getHistory(this.getRaumId(), this.getUserId());
-      this.setInitalPlaybackRate(message.currentPlaybackRate)
-      console.log(message.users);
-      return;
-    }
-
-    if (message.type == "change-playback-rate") {
-      this.setPlaybackRate(message.currentPlaybackRate);
-      return;
-    }
-
-    if (message.type == "insert-new-video") {
-      this.updateVideo(message);
-      this.switchVideo(message);
-      this.synctubeComponent.chatMessages.push(message.chatMessage);
-      return;
-    }
-
-    if (message.type == "kicked-user") {
-      console.log(message);
-      this.resetClient();
-      return;
-    }
-
-    if (message.type == "refresh-raumid") {
-      console.log(message);
-      this.setRaumId(message.raumId);
-      this.replaceUrl(message.raumId);
-    }
 
     if (message.type == "error") {
       console.log("[ERROR from Server]");
       return;
+    }
+
+  }
+
+  addToToastrMessages(toastrMessage: ToastrMessage) {
+    this.synctubeComponent.toastrMessages.push(toastrMessage);
+  }
+
+  displayAsToast(toastrMessage: ToastrMessage) {
+    if (toastrMessage) {
+      this.addToToastrMessages(toastrMessage);
+
+      if (!toastrMessage.onlyLogging) {
+        // this.toastr.success("Raum #" + this.getRaumId() + " wurde von " + this.getLocalUser().userName + ' erstellt', 'Raum erstellt:', ToastrConfigs.SUCCESS);
+        switch (toastrMessage.type) {
+          case this.toastrMessageTypes.CREATE_ROOM:
+            this.toastr.success(toastrMessage.message, 'Raum erstellt:', ToastrConfigs.SUCCESS);
+            break;
+          case this.toastrMessageTypes.JOIN_ROOM:
+            this.toastr.info(toastrMessage.message, 'Raum beigetreten:', ToastrConfigs.INFO);
+            break;
+          case this.toastrMessageTypes.DISCONNECT:
+            this.toastr.info(toastrMessage.message, 'Raum verlassen:', ToastrConfigs.INFO);
+            break;
+          case this.toastrMessageTypes.ASSIGNED_AS_ADMIN:
+            this.toastr.success(toastrMessage.message, 'zum Admin ernannt:', ToastrConfigs.SUCCESS);
+            break;
+          case this.toastrMessageTypes.TO_PUBLIC_ROOM:
+            this.toastr.info(toastrMessage.message, 'Raumstatus:', ToastrConfigs.INFO);
+            break;
+          case this.toastrMessageTypes.TO_PRIVATE_ROOM:
+            this.toastr.info(toastrMessage.message, 'Raumstatus:', ToastrConfigs.INFO);
+            break;
+          case this.toastrMessageTypes.KICKED_USER:
+            this.toastr.error(toastrMessage.message, 'You were kicked!', ToastrConfigs.ERROR);
+            break;
+          case this.toastrMessageTypes.UPDATE_KICK_CLIENT:
+            this.toastr.warning(toastrMessage.message, 'User kicked:', ToastrConfigs.WARNING);
+            break;
+          case this.toastrMessageTypes.REFRESH_ROOM_ID:
+            this.toastr.info(toastrMessage.message, 'RaumId Update:', ToastrConfigs.INFO);
+            break;
+          case this.toastrMessageTypes.ADDED_VIDEO_TO_PLAYLIST:
+            this.toastr.info(toastrMessage.message, 'Playlist Update:', ToastrConfigs.INFO);
+            break;
+          case this.toastrMessageTypes.UPDATE_TITLE_AND_DESCRIPTION:
+            this.toastr.info(toastrMessage.message, 'Raum Update:', ToastrConfigs.INFO);
+            break;
+          case this.toastrMessageTypes.REMOVE_VIDEO_PLAYLIST:
+            this.toastr.info(toastrMessage.message, 'Playlist Update:', ToastrConfigs.INFO);
+            break;
+          case this.toastrMessageTypes.IMPORTED_PLAYLIST:
+            this.toastr.success(toastrMessage.message, 'Playlist Update:', ToastrConfigs.SUCCESS);
+            break;
+          case this.toastrMessageTypes.INTEGRATED_PLAYLIST:
+            this.toastr.success(toastrMessage.message, 'Playlist Update:', ToastrConfigs.SUCCESS);
+            break;
+          case this.toastrMessageTypes.CHANGED_PLAYBACK_RATE:
+            this.toastr.info(toastrMessage.message, 'Playbackrate Update:', ToastrConfigs.INFO);
+            break;
+          case this.toastrMessageTypes.MUTE_USER:
+            this.toastr.warning(toastrMessage.message, 'User Update:', ToastrConfigs.WARNING);
+            break;
+          case this.toastrMessageTypes.CHANGED_USER_NAME:
+            this.toastr.info(toastrMessage.message, 'User Update:', ToastrConfigs.INFO);
+            break;
+          case this.toastrMessageTypes.PARDONED_KICKED_USER:
+            this.toastr.info(toastrMessage.message, 'User Update:', ToastrConfigs.INFO);
+            break;
+        }
+      }
     }
   }
 
@@ -497,7 +567,7 @@ export class SyncService {
   }*/
 
   updateHistory(message: Message) {
-    if(message && message.video) {
+    if (message && message.video) {
       this.synctubeComponent.history.push(message.video);
     }
   }

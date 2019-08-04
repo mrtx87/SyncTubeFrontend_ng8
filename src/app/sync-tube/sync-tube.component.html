@@ -161,8 +161,8 @@
       </div>
 
       <div [hidden]="displayTab != 1" class="chat-messages-container">
-        <div style="min-height:5px; height:5px; width:100%;">
-          <!-- spacer -->
+        <div class="top-chat-container">
+          <img (click)="displayToastrHistory = !displayToastrHistory" src="assets/star.svg" class="star-img" />
         </div>
         <div #scrollChat *ngIf="user" class="scrollable-content" id="scrollChat">
           <div [className]="
@@ -320,7 +320,7 @@
           <!-- <div [className]="!randomOrder ? 'active-playlist-control inorder-container' : 'inorder-container'" (click)="togglePlaylistRunningOrder()"> <img src="assets/playlist.svg"> </div>-->
 
           <div (click)="displayHistory=false" [className]="
-          !displayHistory ? 'playlist-controls-left' : 'playlist-controls-left-inactive'" >
+          !displayHistory ? 'playlist-controls-left' : 'playlist-controls-left-inactive'">
             <div class="random-container" (click)="togglePlaylistRunningOrder()">
               <img [hidden]="randomOrder" src="assets/shuffle.svg" class="playlist-button-off" />
               <img [hidden]="!randomOrder" src="assets/shuffle.svg" class="playlist-button-on" />
@@ -334,9 +334,10 @@
               <img src="assets/play-next-button.svg" />
             </div>
           </div>
-          <div (click)="displayHistory=true"  [className]="
+          <div (click)="displayHistory=true" [className]="
           displayHistory ? 'playlist-controls-right' : 'playlist-controls-right-inactive'" title="Videohistory">
-            <img [className]="displayHistory ? 'history-control-icon' : 'history-control-icon-inactive'" src="assets/history.svg" />
+            <img [className]="displayHistory ? 'history-control-icon' : 'history-control-icon-inactive'"
+              src="assets/history2.svg" />
           </div>
 
         </div>
@@ -350,7 +351,7 @@
             <div (click)="sendSwitchPlaylistVideo(pvideo_)">
               <img class="playlist-thumbnail" src="{{pvideo_.thumbnail}}" />
             </div>
-            <div class="playlist-video-data">
+            <div [className]="video.id === pvideo_.id ? 'playlist-video-data active' : 'playlist-video-data'">
               <!-- title="{{pvideo_.description}}"> -->
 
               <div (click)="sendSwitchPlaylistVideo(pvideo_)" class="playlist-video-infos">
@@ -365,8 +366,7 @@
         </div>
 
         <div [hidden]="!displayHistory" class="history-videos-container">
-          <div class="history-video-content"
-            *ngFor="let hvideo_ of history; let i = index">
+          <div class="history-video-content" *ngFor="let hvideo_ of history; let i = index">
             <div class="history-row-spacer">
               {{i+1}}
             </div>
@@ -494,4 +494,11 @@
   <h3>Wollen Sie {{ kickingUser.userName }} aus dem Raum kicken?</h3>
   <div class="approved-button" (click)="approvedKick()">JA</div>
   <div class="disapproved-button" (click)="disapprovedKick()">NEIN</div>
+</div>
+
+<div [hidden]="!displayToastrHistory" class="toastr-history-container ellipsis">
+  <div style="font-size:3vh;">Event History</div>
+  <div class="toastr" *ngFor="let toastrMessage of toastrMessages">
+    {{toastrMessage.message}}<br> {{toastrMessage.createdAt | date: "dd.MM.yyyy hh:mm"}}
+  </div>
 </div>
