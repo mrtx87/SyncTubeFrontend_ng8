@@ -462,11 +462,13 @@
           <div (click)="sendUpdateTitleAndDescription()" class="change-button">
             Ändern
           </div>
-          <div class="admin-panel-row">
-            <label *ngIf="user.admin" [hidden]="!raumStatus" class="w-90">Reset Url</label>
-            <img *ngIf="user.admin" [hidden]="!raumStatus" (click)="refreshJoinUrl()" title="refreshes the join url"
-              class="refresh-img" src="assets/refresh.svg" />
+          <div *ngIf="user.admin" [hidden]="!raumStatus" (click)="refreshJoinUrl()" class="change-url-container" title="refreshes the join url">
+              <div class="admin-panel-row">
+                  <img class="refresh-img" src="assets/refresh.svg" />
+                  <label class="w-90">Reset Url</label>
+                </div>            
           </div>
+          
 
           <label style="font-size:25px;">Kicked Users</label>
           <div class="kicked-users-list-container">
