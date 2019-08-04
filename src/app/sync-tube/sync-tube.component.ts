@@ -51,7 +51,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   displayCinemaMode: Boolean = false;
   displayFullscreen: Boolean = false;
   displayHistory: Boolean = false;
-  displayToastrHistory: Boolean = false;
+  displayToastrHistory: Boolean = false; 
 
   title = "SyncTube";
 
@@ -597,6 +597,10 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
 
   getLocalPlaylist(): Video[] {
     return this.playlist;
+  }
+
+  determineToastrClass(toastrMessage: ToastrMessage): string {
+    return 'toast-success';
   }
 }
 
