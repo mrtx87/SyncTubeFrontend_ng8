@@ -51,7 +51,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   displayCinemaMode: Boolean = false;
   displayFullscreen: Boolean = false;
   displayHistory: Boolean = false;
-  displayToastrHistory: Boolean = false; 
+  displayToastrHistory: Boolean = false;
 
   title = "SyncTube";
 
@@ -147,13 +147,11 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
           SyncService.FIVE_SEC_FORTH
         );
         break;
-        case KEY_CODE.PERIOD: // increase playback rate
-          this.playbackRates
+      case KEY_CODE.PERIOD: // increase playback rate
         break;
-        case KEY_CODE.COMMA: // increase playback rate
-
+      case KEY_CODE.COMMA: // increase playback rate
         break;
-      }
+    }
   }
 
   constructor(private syncService: SyncService, private route: ActivatedRoute) {
@@ -600,7 +598,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
   determineToastrClass(toastrMessage: ToastrMessage): string {
-    return 'toast-success';
+    return "toast-success";
   }
 }
 
