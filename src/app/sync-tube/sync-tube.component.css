@@ -142,6 +142,7 @@
   margin-bottom: 10px;
   -webkit-transition-duration: 0.4s;
   transition-duration: 0.4s;
+  font-size: 0.75vw;
 }
 
 .admin-panel-row:hover .refresh-img {
@@ -154,6 +155,7 @@
   font-size: 18px;
   -webkit-transition-duration: 0.4s;
   transition-duration: 0.4s;
+  font-size: 0.825vw;
 }
 
 .admin-panel-row:active {
@@ -468,10 +470,23 @@
   padding-top: 3px;
   border-radius: 3px;
   background-color: var(--color5);
+  font-size: 14px;
+  -webkit-transition-duration: 0.2s;
+  transition-duration: 0.2s;
 }
 
 .send-chat-button:hover {
   background-color: var(--color11);
+  font-size:16px;
+  -webkit-transition-duration: 0.2s;
+  transition-duration: 0.2s;
+}
+
+.send-chat-button:active {
+  background-color: var(--color3);
+  font-size:16px;
+  -webkit-transition-duration: 0.2s;
+  transition-duration: 0.2s;
 }
 
 .text-container {
