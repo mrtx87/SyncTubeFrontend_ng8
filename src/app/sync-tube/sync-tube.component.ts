@@ -103,54 +103,84 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   revealContent: Boolean = false;
 
   /* Keyboard controlings */
+
   @HostListener("window:keyup", ["$event"])
   keyEvent(event: KeyboardEvent) {
-    switch (event.keyCode) {
-      case KEY_CODE.LEFT_ARROW:
-        this.syncService.videoComponent.jumpBySeconds(SyncService.TEN_SEC_BACK);
-        break;
-      case KEY_CODE.RIGHT_ARROW:
-        this.syncService.videoComponent.jumpBySeconds(
-          SyncService.TEN_SEC_FORTH
-        );
-        break;
-      case KEY_CODE.BACKSPACE: //to startpage
-        // delete raumId ?
-        break;
-      case KEY_CODE.KEY_A:
-        this.syncService.videoComponent.jumpBySeconds(SyncService.TEN_SEC_BACK);
-        break;
-      case KEY_CODE.KEY_S:
-        this.syncService.videoComponent.triggerTogglePlay();
-        break;
-      case KEY_CODE.KEY_D:
-        this.syncService.videoComponent.jumpBySeconds(
-          SyncService.TEN_SEC_FORTH
-        );
-        break;
-      case KEY_CODE.SPACE:
-        this.syncService.videoComponent.triggerTogglePlay();
-        break;
-      case KEY_CODE.KEY_F:
-        this.syncService.videoComponent.toggleDisplayFullscreen();
-        break;
-      case KEY_CODE.KEY_K:
-        this.syncService.videoComponent.triggerTogglePlay();
-        break;
-      case KEY_CODE.KEY_J:
-        this.syncService.videoComponent.jumpBySeconds(
-          SyncService.FIVE_SEC_BACK
-        );
-        break;
-      case KEY_CODE.KEY_L:
-        this.syncService.videoComponent.jumpBySeconds(
-          SyncService.FIVE_SEC_FORTH
-        );
-        break;
-      case KEY_CODE.PERIOD: // increase playback rate
-        break;
-      case KEY_CODE.COMMA: // increase playback rate
-        break;
+    console.log(event.target);
+    let target: any = event.target;
+    let tagName: string = (<string>target.localName).toLowerCase();
+    if (tagName !== "input" && tagName !== "textarea") {
+      switch (event.keyCode) {
+        case KEY_CODE.LEFT_ARROW:
+          this.syncService.videoComponent.jumpBySeconds(
+            SyncService.TEN_SEC_BACK
+          );
+          break;
+        case KEY_CODE.RIGHT_ARROW:
+          this.syncService.videoComponent.jumpBySeconds(
+            SyncService.TEN_SEC_FORTH
+          );
+          break;
+        case KEY_CODE.BACKSPACE: //to startpage
+          // delete raumId ?
+          break;
+        case KEY_CODE.KEY_A:
+          this.syncService.videoComponent.jumpBySeconds(
+            SyncService.TEN_SEC_BACK
+          );
+          break;
+        case KEY_CODE.KEY_S:
+          this.syncService.videoComponent.triggerTogglePlay();
+          break;
+        case KEY_CODE.KEY_D:
+          this.syncService.videoComponent.jumpBySeconds(
+            SyncService.TEN_SEC_FORTH
+          );
+          break;
+        case KEY_CODE.SPACE:
+          this.syncService.videoComponent.triggerTogglePlay();
+          break;
+        case KEY_CODE.KEY_F:
+          this.syncService.videoComponent.toggleDisplayFullscreen();
+          break;
+        case KEY_CODE.KEY_K:
+          this.syncService.videoComponent.triggerTogglePlay();
+          break;
+        case KEY_CODE.KEY_J:
+          this.syncService.videoComponent.jumpBySeconds(
+            SyncService.FIVE_SEC_BACK
+          );
+          break;
+        case KEY_CODE.KEY_L:
+          this.syncService.videoComponent.jumpBySeconds(
+            SyncService.FIVE_SEC_FORTH
+          );
+          break;
+        case KEY_CODE.PERIOD: // increase playback rate
+          {
+            let playBackRates = this.syncService.currentVideoService.getAvailablePlaybackRates();
+            // playBackRates[(playBackRates.length)-1]; // highest
+            let currentPlaybackRate: number = this.syncService.currentVideoService.getPlaybackRate();
+            if (currentPlaybackRate + 0.25 <= 2) {
+              this.syncService.videoComponent.sendChangePlaybackRate(
+                currentPlaybackRate + 0.25
+              );
+            }
+          }
+          break;
+        case KEY_CODE.COMMA: // increase playback rate
+          {
+            let playBackRates = this.syncService.currentVideoService.getAvailablePlaybackRates();
+            // playBackRates[(playBackRates.length)-1]; // highest
+            let currentPlaybackRate: number = this.syncService.currentVideoService.getPlaybackRate();
+            if (currentPlaybackRate - 0.25 > 0) {
+              this.syncService.videoComponent.sendChangePlaybackRate(
+                currentPlaybackRate - 0.25
+              );
+            }
+          }
+          break;
+      }
     }
   }
 

@@ -1,7 +1,7 @@
-<div [className]="!syncService.synctubeComponent.displayFullscreen ? 'main' : 'main-fullscreen'">
+<div [className]="!syncService.synctubeComponent.displayFullscreen ? 'main' : 'main-fullscreen'" (keyup.s) ="triggerTogglePlay()" >
   <!-- OverLay for Click and DblClick-->
   <div (mousemove)="startDisplayingAllControls()" (click)="triggerTogglePlay()" (dblclick)="toggleFullscreen()"
-    [className]="!syncService.synctubeComponent.displayFullscreen ? 'overlay-container' : 'overlay-container-fullscreen'">
+  [className]="!syncService.synctubeComponent.displayFullscreen ? 'overlay-container' : 'overlay-container-fullscreen'">
   </div>
 
   <!-- Options -> PlaybackRates Controls-->
@@ -25,7 +25,7 @@
 
   <!-- Video Controls-->
   <div class="controls-all" [hidden]="!displayAllControls" (mousemove)="time = 0">
-    <input [(ngModel)]="currentTimeProgressbar" *ngIf="syncService.synctubeComponent.user.admin"
+  <input [(ngModel)]="currentTimeProgressbar" *ngIf="syncService.synctubeComponent.user.admin"
       (click)="onChangeProgressBar()" type="range" min="0" max="{{videoDuration | noFloat}}" class="bar-slider"
       id="myRange">
     <div class="controls">
