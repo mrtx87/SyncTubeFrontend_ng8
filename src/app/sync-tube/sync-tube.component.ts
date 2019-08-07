@@ -216,8 +216,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
       this.syncService.currentDataService.searchQuery(
         "",
         true,
-        null,
-        this.syncService.currentDataService.nextPageToken
+        null
       );
     }
 
@@ -418,7 +417,6 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.importedPlaylist = new ImportedPlaylist();
     this.hasImportedPlaylist = false;
     this.searchResults = [];
-    this.syncService.currentDataService.nextPageToken = null;
     let searchQuery: SearchQuery = this.syncService.currentDataService.processInput(
       this.searchInput
     );
@@ -480,7 +478,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   }
 
   sendChatMessage() {
-    if (!this.user.mute) {
+    if (!this.user.mute && this.chatMessageText.length > 0) {
       let message: Message = new Message();
       message.type = "user-chat";
       message.user = this.user;

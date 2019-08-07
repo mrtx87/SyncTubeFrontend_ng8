@@ -12,7 +12,6 @@ export interface IDataService {
     http: HttpClient;
     synctubeComponent: SyncTubeComponent;
     APIKEY: string;
-    nextPageToken: string;
 
     search(searchQuery: SearchQuery) : boolean;
 
