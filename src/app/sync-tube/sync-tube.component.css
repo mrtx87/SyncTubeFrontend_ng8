@@ -132,7 +132,6 @@
 
 .admin-panel-row {
   display: flex;
-  justify-content: flex-start;
   width: 34%;
   height: 47px;
   min-height: 15%;
@@ -141,7 +140,6 @@
   border-radius: 3px;
   margin-top: 10px;
   margin-bottom: 10px;
-  float: right;
 }
 
 .admin-panel-row:hover .refresh-img {
@@ -155,6 +153,8 @@
 
 .change-url-container {
   width: 100%;
+  display:flex;
+  justify-content: flex-end;
 }
 
 .description {
