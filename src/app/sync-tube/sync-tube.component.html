@@ -14,7 +14,7 @@
   </div>
 
   <div class="top-panel-right">
-    <h3 class="raumTitle-container">{{ raumTitle }}</h3>
+    <h1 class="raumTitle-container">{{ raumTitle }}</h1>
   </div>
 </div>
 
@@ -23,7 +23,6 @@
   <!--  Visible when no room is created or joined -->
   <div *ngIf="!raumId" class="content-container">
     <h2 style="color:white">Create a new Room</h2>
-
     <div class="create">
       <button (click)="createRaum()" class="button">
         <h3>New Room</h3>
@@ -60,7 +59,7 @@
           <img *ngIf="!pRoom.video" class="thumbnail" src="https://i.ytimg.com/vi/UH1ThWZ9hXU/hqdefault.jpg" />
           <div class="public-room-infos">
             <div class="public-room-description ellipsis">
-              <strong>Beschreibung</strong><br />{{ (pRoom.description) ? pRoom.description : 'no room description'}}
+              <strong>Beschreibung</strong><br/>{{ (pRoom.description) ? pRoom.description : 'no room description'}}
             </div>
             <div class="public-room-video-title ellipsis">
               <strong>Videotitel</strong><br />{{ (pRoom.video) ? pRoom.video.title : 'no video title' }}
@@ -430,8 +429,8 @@
       <div class="left-container" *ngIf="user.admin" [hidden]="displayTab != 4">
         <div *ngIf="user.admin" class="admin-panel-container">
           <div *ngIf="raumId" class="raum-toggle">
-            <label class="w-60" *ngIf="raumStatus">Private</label>
-            <label class="w-60" *ngIf="!raumStatus">Public</label>
+            <label class="h3 w-80" *ngIf="raumStatus">Private</label>
+            <label class="h3 w-80" *ngIf="!raumStatus">Public</label>
             <label *ngIf="user.admin" class="switch">
               <input (click)="sendToggleRaumStatus($event)" class="toggle-input" [(ngModel)]="raumStatus"
                 type="checkbox" />

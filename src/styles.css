@@ -1,35 +1,40 @@
 
-app-root {
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-
+:root {
   --color1: #011627;
-  --color2: #C9C9C9;
-  --color3: #FF3366;
-  --color4: #2EC4B6;
-  --color5: #20A4F3;
+  --color2: #c9c9c9;
+  --color3: #ff3366;
+  --color4: #2ec4b6;
+  --color5: #20a4f3;
   --color6: #12121875;
   --color7: #0d0d11;
   --color8: #21212c;
   --color9: #282835;
   --color10: #5e5e5e;
   --color11: rgb(100, 193, 247);
+
+  --tinyInfo: 0.6rem;
+  --smallText: 0.8rem;
+  --standardText: 14px;
+  --largeText: 1.25rem;
+  --smallTitle: 1.75rem;
+  --mediumTitle: 2.5rem;
+  --largeTitle: 2vw;
+
+  font-size:   var(--standardText);
+
 }
+
+
 
 body {
   /*background-color: #011627;*/
   background-image: url("assets/testwallpaper.gif");
-  font-family: 'Reem Kufi', sans-serif;
+  font-family: "Reem Kufi", sans-serif;
   overflow-x: hidden;
   overflow-y: hidden;
- }
+}
 
- /* 
+/* 
  font-family: 'Reem Kufi', sans-serif;
  font-family: 'Puritan', sans-serif;
  font-family: 'Alef', sans-serif;
@@ -37,22 +42,35 @@ body {
  font-family: 'Cabin', sans-serif;
  */
 
-  h1  {
-   font-size:3.755em;
-   margin: 8px;
- }
-a { 
+a {
   color: #011627;
-
 }
- h2 {
-  font-size:3em;
+
+h1, .h1 {
+  font-size: var(--largeTitle);
+  margin: 6px;
+}
+
+h2, .h2 {
+  font-size: var(--mediumTitle);
   margin: 5px;
 }
 
-h3 {
-  font-size:2.25em;
-  margin: 3px;
+h3, .h3 {
+  font-size: var(--smallTitle);
+  margin: 5px;
+}
+
+.largeText {
+  font-size: var(--largeText);
+}
+
+.standardText {
+  font-size: var(--standardText);
+}
+
+.smallText {
+  font-size: var(--smallText);
 }
 
 /* needed for correct fullscreen behaviour */
@@ -62,12 +80,12 @@ h3 {
 
 .video {
   width: 100%;
-  height:auto;
+  height: auto;
 }
 
 .video-fullscreen {
-    width: 100%;
-    height: auto;
+  width: 100%;
+  height: auto;
 }
 
 ::-webkit-scrollbar {
