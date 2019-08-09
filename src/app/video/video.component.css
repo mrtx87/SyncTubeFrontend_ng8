@@ -298,15 +298,13 @@ label {
 }
 
 .play-button {
-  width: 2%;
+  width: 5%;
   padding: 0 1vh;
   max-width: 3vh;
   filter: invert(1);
 }
 
-.pause-button {
-  max-width: 1.5vh;
-}
+
 
 .next-button {
   width: 2%;

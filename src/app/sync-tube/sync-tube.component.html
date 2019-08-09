@@ -446,20 +446,17 @@
 
           <div class="create-room-title-container">
             <label>Raumtitel</label>
-            <input [(ngModel)]="raumTitleChange" class="input-room-title" type="text" />
+            <input (keyup.enter)="sendUpdateTitleAndDescription()" [(ngModel)]="raumTitleChange" class="input-room-title" type="text" />
           </div>
           <div class="description">
             <label>Hier können Sie den Raumtitel bestimmen</label>
           </div>
           <div class="create-room-description-container">
             <label>Beschreibung</label>
-            <textarea rows="4" [(ngModel)]="raumDescriptionChange" class="input-description"></textarea>
+            <textarea (keyup.enter)="sendUpdateTitleAndDescription()" rows="4" [(ngModel)]="raumDescriptionChange" class="input-description"></textarea>
           </div>
           <div class="description">
             <label>Hier können Sie den Raumtitel bestimmen</label>
-          </div>
-          <div (click)="sendUpdateTitleAndDescription()" class="change-button">
-            Ändern
           </div>
           <div *ngIf="user.admin" [hidden]="!raumStatus" (click)="refreshJoinUrl()" class="change-url-container" title="refreshes the join url">
               <div class="admin-panel-row">
