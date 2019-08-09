@@ -52,6 +52,9 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   displayFullscreen: Boolean = false;
   displayHistory: Boolean = false;
   displayToastrHistory: Boolean = false;
+  displaySwitchRoomStatusTooltip: Boolean = false;
+  displayRenameRoomTitleTooltip: Boolean = false;
+  displayEditRoomDescriptionTooltip: Boolean = false;
 
   title = "SyncTube";
 

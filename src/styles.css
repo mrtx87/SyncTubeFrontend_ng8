@@ -22,6 +22,8 @@
 
   font-size:   var(--standardText);
 
+  
+
 }
 
 
@@ -71,6 +73,18 @@ h3, .h3 {
 
 .smallText {
   font-size: var(--smallText);
+}
+
+.largeTitle{
+  font-size: var(--largeTitle);
+}
+
+.mediumTitle{
+  font-size: var(--mediumTitle);
+}
+
+.smallTitle{
+  font-size: var(--smallTitle);
 }
 
 /* needed for correct fullscreen behaviour */

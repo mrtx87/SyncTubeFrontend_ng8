@@ -71,6 +71,14 @@
   display: none !important;
 }
 
+.flex-row{
+  display: flex;
+}
+
+.flex-column{
+  display: flex;
+}
+
 .enter-raum-id {
   width: 75%;
 }
@@ -163,22 +171,32 @@
   justify-content: flex-end;
 }
 
-.description {
+.info {
+  height:20px;
+  min-height:20px;
 }
 
-.create-room-title-container, .create-room-description-container {
+.rename-room-title-container, .rename-room-description-container {
   display: flex;
   flex-direction: column;
   margin-bottom: 7px;
-<<<<<<< HEAD
   font-size: var(--smallTitle);
-=======
->>>>>>> 71f2fdc38cd15b68f824be7a2f58e787cc40b5c9
+}
+
+.rename-room-title-panel, .rename-room-description-panel {
+  display: flex;
+  width: 100%;
+
+}
+
+.rename-room-title-panel img, .rename-room-description-panel  img, .raum-toggle img {
+  width:1.25vw;
+  margin: auto 0.5vw;
+  filter:invert(1);
 }
 
 .input-room-title, .input-description {
   width: 90%;
-  margin: 0 auto;
   resize: none;
   border: none;
   background-color: var(--color9);
@@ -290,10 +308,7 @@
 .room-status-panel {
   position: fixed;
   right: 5px;
-<<<<<<< HEAD
   font-size: var(--smallTitle);
-=======
->>>>>>> 71f2fdc38cd15b68f824be7a2f58e787cc40b5c9
   color: #ffffff;
 }
 
@@ -580,9 +595,6 @@ input[type="range"][orient="vertical"] {
   height: 5vh;
 }
 
-label {
-  margin: 0% 10px;
-}
 
 .room-preview {
   background: var(--color6);
@@ -863,7 +875,7 @@ label {
   margin: 0.5%;
   /*background-color: #17183b;*/
   background-color: var(--color6);
-  font-size: 12px;
+  font-size: var(--smallText);
   color: white;
   height: fit-content;
 }
@@ -943,7 +955,6 @@ label {
 }
 
 .search-result-date {
-  font-size: 10px;
   margin: auto 5px;
 }
 
@@ -1204,6 +1215,24 @@ label {
   width: 25%;
 }
 
+.mb-1  {
+margin-bottom: 1vh;
+}
+
+.mb-2  {
+  margin-bottom: 2vh;
+
+}
+.mb-3  {
+  margin-bottom: 3vh;
+
+}
+
+
+.raum-status-container {
+  font-size:var(--smallTitle);
+}
+
 .display-fullscreen {
   position: fixed;
   display: flex;
@@ -1357,4 +1386,16 @@ label {
   min-width: 3vw;
   min-height: 3vh;
   border-radius: 5px;
+}
+
+.largeTitle{
+  font-size: var(--largeTitle);
+}
+
+.mediumTitle{
+  font-size: var(--mediumTitle);
+}
+
+.smallTitle{
+  font-size: var(--smallTitle);
 }
