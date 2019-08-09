@@ -3,7 +3,6 @@
 }
 
 .page-title {
-  font-size: 2em;
 }
 
 .s2glogo {
@@ -82,7 +81,6 @@
 }
 
 .config-raumstatus-container {
-  font-size: 20px;
   color: white;
   width: 70px;
 }
@@ -142,7 +140,6 @@
   margin-bottom: 10px;
   -webkit-transition-duration: 0.4s;
   transition-duration: 0.4s;
-  font-size: 0.75vw;
 }
 
 .admin-panel-row:hover .refresh-img {
@@ -152,10 +149,8 @@
 
 .admin-panel-row:hover {
   background-color: var(--color9);
-  font-size: 18px;
   -webkit-transition-duration: 0.4s;
   transition-duration: 0.4s;
-  font-size: 0.825vw;
 }
 
 .admin-panel-row:active {
@@ -169,18 +164,16 @@
 }
 
 .description {
-  margin: 0 auto;
-  width: auto;
-  height: 20px;
-  color: var(--color10);
-  margin-bottom: 25px;
 }
 
 .create-room-title-container, .create-room-description-container {
   display: flex;
   flex-direction: column;
   margin-bottom: 7px;
+<<<<<<< HEAD
   font-size: var(--smallTitle);
+=======
+>>>>>>> 71f2fdc38cd15b68f824be7a2f58e787cc40b5c9
 }
 
 .input-room-title, .input-description {
@@ -197,7 +190,6 @@
   align-items: center;
   justify-content: center;
   background-color: var(--color5);
-  font-size: 16px;
   width:25%;
   -webkit-transition-duration: 0.2s;
   transition-duration: 0.2s;
@@ -206,7 +198,6 @@
 
 .change-button:hover {
   background-color: var(--color11);
-  font-size: 19px;
   -webkit-transition-duration: 0.2s;
   transition-duration: 0.2s;
 }
@@ -215,7 +206,6 @@
   text-align: center;
   border-bottom: 1px solid black;
   width: 100%;
-  font-size: 16px;
   font-weight: bold;
 }
 
@@ -300,7 +290,10 @@
 .room-status-panel {
   position: fixed;
   right: 5px;
+<<<<<<< HEAD
   font-size: var(--smallTitle);
+=======
+>>>>>>> 71f2fdc38cd15b68f824be7a2f58e787cc40b5c9
   color: #ffffff;
 }
 
@@ -471,21 +464,18 @@
   padding-top: 3px;
   border-radius: 3px;
   background-color: var(--color5);
-  font-size: 14px;
   -webkit-transition-duration: 0.2s;
   transition-duration: 0.2s;
 }
 
 .send-chat-button:hover {
   background-color: var(--color11);
-  font-size:16px;
   -webkit-transition-duration: 0.2s;
   transition-duration: 0.2s;
 }
 
 .send-chat-button:active {
   background-color: var(--color3);
-  font-size:16px;
   -webkit-transition-duration: 0.2s;
   transition-duration: 0.2s;
 }
@@ -500,7 +490,6 @@
 .userid-container {
   display: flex;
   justify-content: flex-start;
-  font-size: 12px;
   font-weight: bold;
 }
 
@@ -969,6 +958,45 @@ label {
   border-radius: 6px;
 }
 
+.pardon-User-Container{
+  width: 94.5%;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.flipbox{
+  
+  height: 45px;
+    width: 23px;
+    border: 3px solid rgb(0, 0, 0);
+  
+}
+.flipbox-active{
+  position: relative;
+  left: .5px;
+  top: 1px;
+  height: 43px;
+  width: 21px;
+  background-color: rgb(0, 0, 0);
+  transform-origin: left;
+}
+
+.door-knob {
+  height: 4px;
+  width: 4px;
+  border-radius: 3px;
+  background-color:  #ffffff;
+  position: relative;
+  left: 15px;
+  top: 22px;
+}
+
+.flipbox .flipbox-active:hover{
+  transform: perspective(300px) rotateY(40deg);
+}
+
+
 .identity {
   background-color: var(--color8);
 }
@@ -1034,6 +1062,7 @@ label {
   align-items: center;
   margin: auto 10px;
 }
+
 
 .mute-user, .star, .delete-icon {
   height: 35px;

@@ -472,8 +472,13 @@
               <div class="username-container">
                 {{ kickedUser.userName }}
               </div>
-              <div class="delete-icon-container">
-                <img (click)="sendPardonKickedUser(kickedUser)" class="delete-icon" src="assets/delete.svg" />
+              <div (click)="sendPardonKickedUser(kickedUser)" class="pardon-User-Container">
+                <div class="flipbox">
+                  <div class="flipbox-active">
+                    <div class="door-knob">
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
