@@ -18,8 +18,7 @@
   </div>
 </div>
 
-<div></div>
-<div *ngIf="revealContent">
+<div style="display:flex; flex-direction:column;" *ngIf="revealContent">
   <!--  Visible when no room is created or joined -->
   <div *ngIf="!raumId" class="content-container">
     <h2 style="color:white">Create a new Room</h2>
@@ -39,7 +38,8 @@
         </label>
       </div>
     </div>
-    <!--
+  </div>
+  <!--
     <h2>Join Room</h2>
 
     <div class="join">
@@ -49,7 +49,7 @@
         <h3>Join Room</h3>
       </button>
     </div> -->
-    <br /><br />
+  <div *ngIf="!raumId">
     <h2 style="color:white">Public Rooms</h2>
     <div *ngIf="publicRaeume" class="public-rooms-container">
       <div (click)="joinRaumById(pRoom.raumId)" class="room-preview" *ngFor="let pRoom of publicRaeume | async">
@@ -72,8 +72,8 @@
         </div>
       </div>
     </div>
-
   </div>
+
 
   <!-- Visible when room is created or joined -->
   <div [hidden]="!raumId" [className]="
@@ -201,8 +201,8 @@
           </div>
         </div>
         <div class="footer">
-          <input class="w-100" (keyup.enter)="sendChatMessage()" [(ngModel)]="chatMessageText" type="text"
-            placeholder="Eine Nachricht senden" />
+          <input #chatInput id="chatInput" class="w-100" (keyup.enter)="sendChatMessage()" [(ngModel)]="chatMessageText"
+            type="text" placeholder="Eine Nachricht senden" />
           <div (click)="sendChatMessage()" class="send-chat-button">
             Senden
           </div>
@@ -325,11 +325,12 @@
       <div class="left-container" *ngIf="user.admin" [hidden]="displayTab != 4">
         <div *ngIf="user.admin" class="admin-panel-container">
           <div *ngIf="raumId" class="raum-toggle">
-            <div class= "w-80 flex-row">
+            <div class="w-80 flex-row">
               <label class="raum-status-container" [hidden]="!raumStatus">Private</label>
               <label class="raum-status-container" [hidden]="raumStatus">Public</label>
-              <img (mouseenter) = "displaySwitchRoomStatusTooltip = true"  (mouseleave)="displaySwitchRoomStatusTooltip = false" src="assets/information-button.svg">
-           </div>
+              <img (mouseenter)="displaySwitchRoomStatusTooltip = true"
+                (mouseleave)="displaySwitchRoomStatusTooltip = false" src="assets/information-button.svg">
+            </div>
             <label *ngIf="user.admin" class="switch">
               <input (click)="sendToggleRaumStatus($event)" class="toggle-input" [(ngModel)]="raumStatus"
                 type="checkbox" />
@@ -346,25 +347,27 @@
           <div class="rename-room-title-container">
             <div class="rename-room-title-panel">
               <label>Raumtitel</label>
-              <img (mouseenter) = "displayRenameRoomTitleTooltip = true"  (mouseleave)="displayRenameRoomTitleTooltip = false" src="assets/information-button.svg">
+              <img (mouseenter)="displayRenameRoomTitleTooltip = true"
+                (mouseleave)="displayRenameRoomTitleTooltip = false" src="assets/information-button.svg">
             </div>
             <input (keyup.enter)="sendUpdateTitleAndDescription()" [(ngModel)]="raumTitleChange"
               class="input-room-title" type="text" />
           </div>
           <div class="info mb-1">
-            <label [hidden] ="!displayRenameRoomTitleTooltip">Hier können Sie den Raumtitel bestimmen.</label>
+            <label [hidden]="!displayRenameRoomTitleTooltip">Hier können Sie den Raumtitel bestimmen.</label>
           </div>
           <div class="rename-room-description-container">
             <div class="rename-room-description-panel">
-                <label>Beschreibung</label>
-                <img (mouseenter) = "displayEditRoomDescriptionTooltip = true" (mouseleave) = "displayEditRoomDescriptionTooltip=false" src="assets/information-button.svg">
+              <label>Beschreibung</label>
+              <img (mouseenter)="displayEditRoomDescriptionTooltip = true"
+                (mouseleave)="displayEditRoomDescriptionTooltip=false" src="assets/information-button.svg">
             </div>
-           
+
             <textarea (keyup.enter)="sendUpdateTitleAndDescription()" rows="4" [(ngModel)]="raumDescriptionChange"
               class="input-description"></textarea>
           </div>
           <div class="info mb-1">
-            <label [hidden] = "!displayEditRoomDescriptionTooltip">Hier können Sie die Raumbeschreibung bestimmen.</label>
+            <label [hidden]="!displayEditRoomDescriptionTooltip">Hier können Sie die Raumbeschreibung bestimmen.</label>
           </div>
           <div *ngIf="user.admin" (click)="refreshJoinUrl()" class="change-url-container"
             title="refreshes the join url">
@@ -375,7 +378,7 @@
           </div>
 
 
-          <label class = "smallTitle">Kicked Users</label>
+          <label class="smallTitle">Kicked Users</label>
           <div class="kicked-users-list-container">
             <div class="kicked-user-container" *ngFor="let kickedUser of kickedUsers">
               <div class="username-container">

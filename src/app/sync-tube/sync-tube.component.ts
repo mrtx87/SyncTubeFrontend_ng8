@@ -2,7 +2,8 @@ import {
   Component,
   OnInit,
   HostListener,
-  AfterViewChecked
+  AfterViewChecked,
+  AfterViewInit
 } from "@angular/core";
 import { SyncService } from "../sync.service";
 import { Raum } from "../raum";
@@ -22,7 +23,10 @@ import { ToastrMessage } from "../toastr.message";
   templateUrl: "./sync-tube.component.html",
   styleUrls: ["./sync-tube.component.css"]
 })
-export class SyncTubeComponent implements OnInit, AfterViewChecked {
+export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewInit {
+  ngAfterViewInit(): void {
+
+  }
   //APIS STUFF
   supportedApis: SupportedApi[];
   selectedDataApi: SupportedApi;
@@ -35,6 +39,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
   searchResultsContainer: any;
   currentScrollTop: number = 0;
   isLoadingVideos: boolean = false;
+  chatInputfield: any;
 
   forceScrollToSearch: boolean = false;
   forceScrollToVideo: boolean = false;
@@ -193,6 +198,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.syncService.retrieveSupportedApis();
 
     this.syncService.connect();
+
   }
 
   updateCurrentScrollTop(): void {
@@ -351,7 +357,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     );
   }
 
-  switchSelectedApi() {}
+  switchSelectedApi() { }
 
   clearRoomVars() {
     this.raumId = null;
@@ -363,8 +369,8 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.video = null;
 
     //restliche daten die wir brauchen vom server z.B. users in raum, playlist etc
-    this.users = null;
-    this.playbackRates = null;
+    this.users = [];
+    this.playbackRates = [];
     this.chatMessages = [];
     this.searchResults = null;
     this.playlist = [];
@@ -470,13 +476,30 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     return this.syncService.parseYoutubeUrl(url);
   }
 
-  ngOnInit() {}
+  getChatInputfield() : any{
+    if (!this.chatInputfield) {
+      this.chatInputfield = document.getElementById("chatInput");
+
+    }
+    console.log(this.chatInputfield)
+    return this.chatInputfield;
+  }
+
+  ngOnInit() {
+
+  }
 
   addChatMessage(chatMessage: ChatMessage) {
+    if (!this.chatMessages) {
+      this.chatMessages = [];
+    }
     this.chatMessages.push(chatMessage);
   }
 
   addAllChatMessages(allChatMessages: ChatMessage[]) {
+    if (!this.chatMessages) {
+      this.chatMessages = [];
+    }
     allChatMessages.forEach(m => this.chatMessages.push(m));
   }
 
@@ -490,6 +513,8 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
       this.syncService.sendChatMessage(message);
     }
     this.chatMessageText = "";
+
+    this.getChatInputfield().focus();
   }
 
   createChatMessage(): ChatMessage {
@@ -568,7 +593,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked {
     this.kickingUser = designatedUser;
   }
 
-  copyUrlToClipboard() {}
+  copyUrlToClipboard() { }
 
   getRaumUrl(): string {
     return "localhost:4200/rooms/" + this.getRaumId;

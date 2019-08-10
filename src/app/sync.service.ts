@@ -135,8 +135,7 @@ export class SyncService {
   retrieveChatMessages() {
     let that = this;
     this.http.get("http://localhost:8080/room/" + this.getRaumId() + "/userId/" + this.getUserId() + "/chat-messages", {}).subscribe(function (response) {
-      that.synctubeComponent.chatMessages = <ChatMessage[]>response;
-      console.log(that.synctubeComponent.chatMessages)
+        that.synctubeComponent.addAllChatMessages(<ChatMessage[]>response)
     }
     );
   }
@@ -294,7 +293,6 @@ export class SyncService {
         this.getHistory(this.getRaumId(), this.getUserId());
         this.retrieveToastrMessages();
         this.retrieveChatMessages();
-
         break;
       case this.messageTypes.UPDATE_CLIENT:
         this.updateClientChat(message);
@@ -508,6 +506,8 @@ export class SyncService {
     this.synctubeComponent.chatMessages = [];
     this.synctubeComponent.raumStatus = undefined;
     this.synctubeComponent.videoDuration = 0;
+    this.synctubeComponent.clearRoomVars();
+
   }
 
   getReceivedPlayerState(): number {
