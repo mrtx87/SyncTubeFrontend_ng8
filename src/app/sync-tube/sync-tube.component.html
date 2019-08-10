@@ -369,9 +369,9 @@
           <div class="info mb-1">
             <label [hidden]="!displayEditRoomDescriptionTooltip">Hier können Sie die Raumbeschreibung bestimmen.</label>
           </div>
-          <div *ngIf="user.admin" (click)="refreshJoinUrl()" class="change-url-container"
+          <div *ngIf="user.admin" class="change-url-container"
             title="refreshes the join url">
-            <div class="admin-panel-row">
+            <div class="admin-panel-row" (click)="refreshJoinUrl()">
               <img class="refresh-img" src="assets/refresh.svg" />
               <label class="w-90">Reset Url</label>
             </div>
