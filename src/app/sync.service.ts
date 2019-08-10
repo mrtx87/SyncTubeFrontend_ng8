@@ -30,7 +30,7 @@ import { ToastrConfigs } from "./toastr.configs";
 import { ToastrMessageTypes } from "./toastr.message.types";
 import { MessageTypes } from "./message.types";
 import { ToastrMessage } from "./toastr.message";
-import { AppCookie } from './app.cookie';
+import { AppCookie } from "./app.cookie";
 
 @Injectable({
   providedIn: "root"
@@ -127,13 +127,13 @@ export class SyncService {
     this.http
       .get(
         "http://localhost:8080/room/" +
-          this.getRaumId() +
-          "/userId/" +
-          this.getUserId() +
-          "/toastr-messages",
+        this.getRaumId() +
+        "/userId/" +
+        this.getUserId() +
+        "/toastr-messages",
         {}
       )
-      .subscribe(function(response) {
+      .subscribe(function (response) {
         let incomingToastrMessages: ToastrMessage[] = <ToastrMessage[]>response;
         for (let itm of incomingToastrMessages) {
           that.synctubeComponent.toastrMessages.push(itm);
@@ -147,13 +147,13 @@ export class SyncService {
     this.http
       .get(
         "http://localhost:8080/room/" +
-          this.getRaumId() +
-          "/userId/" +
-          this.getUserId() +
-          "/chat-messages",
+        this.getRaumId() +
+        "/userId/" +
+        this.getUserId() +
+        "/chat-messages",
         {}
       )
-      .subscribe(function(response) {
+      .subscribe(function (response) {
         that.synctubeComponent.addAllChatMessages(<ChatMessage[]>response);
       });
   }
@@ -162,7 +162,7 @@ export class SyncService {
     let that = this;
     this.http
       .get("http://localhost:8080/toastr-message-types", {})
-      .subscribe(function(response) {
+      .subscribe(function (response) {
         that.toastrMessageTypes = <ToastrMessageTypes>response;
       });
   }
@@ -171,7 +171,7 @@ export class SyncService {
     let that = this;
     this.http
       .get("http://localhost:8080/message-types", {})
-      .subscribe(function(response) {
+      .subscribe(function (response) {
         that.messageTypes = <MessageTypes>response;
         console.log(that.messageTypes);
       });
@@ -305,7 +305,7 @@ export class SyncService {
     this.stompClient = Stomp.over(this.ws);
     let that = this;
 
-    this.stompClient.connect({}, function() {
+    this.stompClient.connect({}, function () {
       that.stompClient.subscribe("/chat/" + user.userId, messageFromServer =>
         that.handleServerResponse(messageFromServer)
       );
@@ -687,7 +687,7 @@ export class SyncService {
       this.synctubeComponent.forceScrollToChatBottom = true;
 
       let that = this;
-      let wait = setInterval(function() {
+      let wait = setInterval(function () {
         if (that.getPlayerState() == SyncService.playing) {
           that.setVideoDuration();
           that.setPlaybackRates();
@@ -1113,7 +1113,7 @@ export class SyncService {
   sendToPublicRoomRequest(raumId: string, user: User) {
     console.log("[switch-to-public-room:] " + user);
     this.stompClient.send(
-      "/app/send/to-public-room",
+      '/app/send/to-public-room',
       {},
       JSON.stringify({ raumId: raumId, user: user })
     );
@@ -1154,10 +1154,10 @@ export class SyncService {
     this.http
       .get(
         "http://localhost:8080/room/" +
-          raumId +
-          "/userId/" +
-          userId +
-          "/history"
+        raumId +
+        "/userId/" +
+        userId +
+        "/history"
       )
       .subscribe((history: Video[]) => {
         console.log(history);
@@ -1176,13 +1176,12 @@ export class SyncService {
 
     if (importedPlaylist) {
       // /room/{raumId}/playlist/
+      importedPlaylist.user = user;
       this.http
         .post(
           "http://localhost:8080/room/" +
-            raumId +
-            "/userId/" +
-            user.userId +
-            "/playlist",
+          raumId +
+          "/playlist",
           importedPlaylist
         )
         .subscribe(response => {
@@ -1236,9 +1235,9 @@ export class SyncService {
   ) {
     console.log(
       "[add-video-to-playlist-asnext:] " +
-        user +
-        " | video: " +
-        playlistvideo.videoId
+      user +
+      " | video: " +
+      playlistvideo.videoId
     );
     if (playlistvideo) {
       this.stompClient.send(
@@ -1260,9 +1259,9 @@ export class SyncService {
   ) {
     console.log(
       "[add-video-to-playlist-ascurrent:] " +
-        user +
-        " | video: " +
-        playlistvideo.videoId
+      user +
+      " | video: " +
+      playlistvideo.videoId
     );
     if (playlistvideo) {
       this.stompClient.send(
@@ -1346,7 +1345,7 @@ export class SyncService {
     return this.videoComponent.isMuted();
   }
 
-  togglePlay() {}
+  togglePlay() { }
 
   toggleMute() {
     if (this.isMuted()) {
@@ -1400,7 +1399,7 @@ export class SyncService {
     }
   }
 
-  toggleSubtitle(_module, option, value) {}
+  toggleSubtitle(_module, option, value) { }
 
   toggleDisplayOptions() {
     this.videoComponent.toggleDisplayOptions();
@@ -1426,7 +1425,7 @@ export class SyncService {
   }
 
   setCookie(cookie: AppCookie) {
-    this.cookieService.set(SyncService.cookieKey,  JSON.stringify(cookie), 30);
+    this.cookieService.set(SyncService.cookieKey, JSON.stringify(cookie), 30);
   }
 
   isLocalUserAdmin(): Boolean {

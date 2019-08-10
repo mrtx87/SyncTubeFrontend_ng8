@@ -1,4 +1,5 @@
 import { Video } from './video';
+import { User } from '../sync-tube/user';
 
 export class ImportedPlaylist {
 
@@ -7,6 +8,7 @@ export class ImportedPlaylist {
     title: string;
     items: Video[]; 
     size: number;
+    user: User;
     
     }
     
