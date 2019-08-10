@@ -366,16 +366,23 @@
             <textarea (keyup.enter)="sendUpdateTitleAndDescription()" rows="4" [(ngModel)]="raumDescriptionChange"
               class="input-description"></textarea>
           </div>
-          <div class="info mb-1">
+          <div class="info">
             <label [hidden]="!displayEditRoomDescriptionTooltip">Hier können Sie die Raumbeschreibung bestimmen.</label>
           </div>
-          <div *ngIf="user.admin" class="change-url-container"
-            title="refreshes the join url">
-            <div class="admin-panel-row" (click)="refreshJoinUrl()">
-              <img class="refresh-img" src="assets/refresh.svg" />
-              <label class="w-90">Reset Url</label>
+          <div style="display:flex; width:100%; ">
+            <div class="title_description_reset_url_panel mb-1">
+              <div (click)="sendUpdateTitleAndDescription()" [hidden]="!titleOrDescriptionHasChanged()" class="smallText update-btn">update <br> titel &
+                beschreibung</div>
+            </div>
+
+            <div *ngIf="user.admin" class="change-url-container" title="refreshes the join url">
+              <div class="admin-panel-row" (click)="refreshJoinUrl()">
+                <img class="refresh-img" src="assets/refresh.svg" />
+                <label class="w-90">Reset Url</label>
+              </div>
             </div>
           </div>
+
 
 
           <label class="smallTitle">Kicked Users</label>

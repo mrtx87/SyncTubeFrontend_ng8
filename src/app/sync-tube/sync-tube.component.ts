@@ -652,6 +652,14 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
   getLocalPlaylist(): Video[] {
     return this.playlist;
   }
+
+  titleOrDescriptionHasChanged() {
+    if(this.raumDescriptionChange !== this.raumDescription || this.raumTitleChange !== this.raumTitle) {
+      return true;
+    }
+    return false;
+  }
+
 }
 
 export enum KEY_CODE {
