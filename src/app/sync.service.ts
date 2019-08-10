@@ -7,35 +7,38 @@ import { VideoComponent } from "./video/video.component";
 import { SyncTubeComponent } from "./sync-tube/sync-tube.component";
 import { ChatMessage } from "./chat-message";
 import { User } from "./sync-tube/user";
-import { HttpClient, HttpParams, HttpXsrfTokenExtractor } from "@angular/common/http";
+import {
+  HttpClient,
+  HttpParams,
+  HttpXsrfTokenExtractor
+} from "@angular/common/http";
 import { Video } from "./video/video";
 import { CookieService } from "ngx-cookie-service";
 import { SearchQuery } from "./sync-tube/search-query";
 import { ImportedPlaylist } from "./video/playlist";
-import { Observable } from 'rxjs';
-import { IDataService } from './idata-service';
-import { SupportedApi } from './supported-api';
-import { YoutubeDataService } from './youtube-dataservice';
-import { SupportedApiType } from './supported-api-type';
-import { DailymotionDataService } from './dailymotion.dataservice';
-import { VimeoDataService } from './vimeo.dataservice.';
-import { IVideoService } from './ivideo.service';
-import { ToastrConfig } from './toastr.config';
-import { ToastrService } from 'ngx-toastr';
-import { ToastrConfigs } from './toastr.configs';
-import { ToastrMessageTypes } from './toastr.message.types';
-import { MessageTypes } from './message.types';
-import { ToastrMessage } from './toastr.message';
+import { Observable } from "rxjs";
+import { IDataService } from "./idata-service";
+import { SupportedApi } from "./supported-api";
+import { YoutubeDataService } from "./youtube-dataservice";
+import { SupportedApiType } from "./supported-api-type";
+import { DailymotionDataService } from "./dailymotion.dataservice";
+import { VimeoDataService } from "./vimeo.dataservice.";
+import { IVideoService } from "./ivideo.service";
+import { ToastrConfig } from "./toastr.config";
+import { ToastrService } from "ngx-toastr";
+import { ToastrConfigs } from "./toastr.configs";
+import { ToastrMessageTypes } from "./toastr.message.types";
+import { MessageTypes } from "./message.types";
+import { ToastrMessage } from "./toastr.message";
+import { AppCookie } from './app.cookie';
 
 @Injectable({
   providedIn: "root"
 })
 export class SyncService {
-
-
   /***
- * add stats page for admins (debug)
- */
+   * add stats page for admins (debug)
+   */
 
   v: any;
   ws: SockJS;
@@ -61,13 +64,10 @@ export class SyncService {
   static TEN_SEC_FORTH: number = 10;
   static TEN_SEC_BACK: number = -10;
 
-
-
   static cookieKey: string = "U_COOKIE";
 
   private _selectedVideoApi: Number;
   supportedApis: SupportedApi[];
-
 
   private _videoServices: Map<Number, IVideoService>;
   private _dataServices: Map<Number, IDataService>;
@@ -101,7 +101,6 @@ export class SyncService {
     return this.dataServices.get(key);
   }
 
-
   get currentVideoService(): IVideoService {
     return this.videoServices.get(this.selectedVideoApi);
   }
@@ -110,10 +109,13 @@ export class SyncService {
     return this.videoServices.get(key);
   }
 
-  constructor(private http: HttpClient, private cookieService: CookieService, private toastr_: ToastrService) {
+  constructor(
+    private http: HttpClient,
+    private cookieService: CookieService,
+    private toastr_: ToastrService
+  ) {
     this.retrieveMessageTypes();
     this.retrieveToastrMessageTypes();
-
   }
 
   get toastr(): ToastrService {
@@ -122,56 +124,72 @@ export class SyncService {
 
   retrieveToastrMessages() {
     let that = this;
-    this.http.get("http://localhost:8080/room/" + this.getRaumId() + "/userId/" + this.getUserId() + "/toastr-messages", {}).subscribe(function (response) {
-      let incomingToastrMessages: ToastrMessage[] =  <ToastrMessage[]> response;
-      for(let itm of incomingToastrMessages) {
-        that.synctubeComponent.toastrMessages.push(itm);
-      }
-      console.log(that.synctubeComponent.toastrMessages)
-    }
-    );
+    this.http
+      .get(
+        "http://localhost:8080/room/" +
+          this.getRaumId() +
+          "/userId/" +
+          this.getUserId() +
+          "/toastr-messages",
+        {}
+      )
+      .subscribe(function(response) {
+        let incomingToastrMessages: ToastrMessage[] = <ToastrMessage[]>response;
+        for (let itm of incomingToastrMessages) {
+          that.synctubeComponent.toastrMessages.push(itm);
+        }
+        console.log(that.synctubeComponent.toastrMessages);
+      });
   }
 
   retrieveChatMessages() {
     let that = this;
-    this.http.get("http://localhost:8080/room/" + this.getRaumId() + "/userId/" + this.getUserId() + "/chat-messages", {}).subscribe(function (response) {
-        that.synctubeComponent.addAllChatMessages(<ChatMessage[]>response)
-    }
-    );
+    this.http
+      .get(
+        "http://localhost:8080/room/" +
+          this.getRaumId() +
+          "/userId/" +
+          this.getUserId() +
+          "/chat-messages",
+        {}
+      )
+      .subscribe(function(response) {
+        that.synctubeComponent.addAllChatMessages(<ChatMessage[]>response);
+      });
   }
 
   retrieveToastrMessageTypes() {
     let that = this;
-    this.http.get("http://localhost:8080/toastr-message-types", {}).subscribe(function (response) {
-      that.toastrMessageTypes = <ToastrMessageTypes>response;
-      
-
-
-    }
-    );
+    this.http
+      .get("http://localhost:8080/toastr-message-types", {})
+      .subscribe(function(response) {
+        that.toastrMessageTypes = <ToastrMessageTypes>response;
+      });
   }
-
 
   retrieveMessageTypes() {
     let that = this;
-    this.http.get("http://localhost:8080/message-types", {}).subscribe(function (response) {
-      that.messageTypes = <MessageTypes>response;
-      console.log(that.messageTypes)
-    }
-    );
+    this.http
+      .get("http://localhost:8080/message-types", {})
+      .subscribe(function(response) {
+        that.messageTypes = <MessageTypes>response;
+        console.log(that.messageTypes);
+      });
   }
 
   retrieveSupportedApis() {
-    this.http.get("http://localhost:8080/supported-apis", {}).subscribe(response => {
-      if (this.synctubeComponent) {
-        this.synctubeComponent.supportedApis = <SupportedApi[]>response
-        this.synctubeComponent.selectedDataApi = this.synctubeComponent.supportedApis[0];
-        this.supportedApis = <SupportedApi[]>response;
-      } else {
-        this.supportedApis = <SupportedApi[]>response;
-      }
-      this.buildAvailableDataServices();
-    });
+    this.http
+      .get("http://localhost:8080/supported-apis", {})
+      .subscribe(response => {
+        if (this.synctubeComponent) {
+          this.synctubeComponent.supportedApis = <SupportedApi[]>response;
+          this.synctubeComponent.selectedDataApi = this.synctubeComponent.supportedApis[0];
+          this.supportedApis = <SupportedApi[]>response;
+        } else {
+          this.supportedApis = <SupportedApi[]>response;
+        }
+        this.buildAvailableDataServices();
+      });
   }
 
   /*
@@ -189,18 +207,39 @@ export class SyncService {
       for (let supportedApi of this.supportedApis) {
         switch (supportedApi.id) {
           case SupportedApiType.Youtube:
-
-            let youTubeDataService: YoutubeDataService = new YoutubeDataService(this.http, this.synctubeComponent, SupportedApiType.Youtube, supportedApi.name);
+            let youTubeDataService: YoutubeDataService = new YoutubeDataService(
+              this.http,
+              this.synctubeComponent,
+              SupportedApiType.Youtube,
+              supportedApi.name
+            );
             this.dataServices.set(SupportedApiType.Youtube, youTubeDataService);
-            console.log("Successfully generated api: " + youTubeDataService.name);
+            console.log(
+              "Successfully generated api: " + youTubeDataService.name
+            );
             break;
           case SupportedApiType.Dailymotion:
-            let dailymotionDataService: DailymotionDataService = new DailymotionDataService(this.http, this.synctubeComponent, SupportedApiType.Dailymotion, supportedApi.name);
-            this.dataServices.set(SupportedApiType.Dailymotion, dailymotionDataService);
-            console.log("Successfully generated api: " + dailymotionDataService.name);
+            let dailymotionDataService: DailymotionDataService = new DailymotionDataService(
+              this.http,
+              this.synctubeComponent,
+              SupportedApiType.Dailymotion,
+              supportedApi.name
+            );
+            this.dataServices.set(
+              SupportedApiType.Dailymotion,
+              dailymotionDataService
+            );
+            console.log(
+              "Successfully generated api: " + dailymotionDataService.name
+            );
             break;
           case SupportedApiType.Vimeo:
-            let vimeoDataService: VimeoDataService = new VimeoDataService(this.http, this.synctubeComponent, SupportedApiType.Vimeo, supportedApi.name);
+            let vimeoDataService: VimeoDataService = new VimeoDataService(
+              this.http,
+              this.synctubeComponent,
+              SupportedApiType.Vimeo,
+              supportedApi.name
+            );
             this.dataServices.set(SupportedApiType.Vimeo, vimeoDataService);
             console.log("Successfully generated api: " + vimeoDataService.name);
             break;
@@ -211,7 +250,7 @@ export class SyncService {
       }
       return;
     }
-    console.log("Couldn't build Apis")
+    console.log("Couldn't build Apis");
   }
 
   registerSyncTubeComponent(synctubeComponent: SyncTubeComponent) {
@@ -224,16 +263,38 @@ export class SyncService {
 
   handleCookie(): User {
     let user: User;
-    if (this.cookieService.check(SyncService.cookieKey)) {
+    if (this.hasCookie()) {
       user = new User();
-      let cookie: string = this.getCookie();
-      user.userId = cookie;
+      let cookie: AppCookie = this.getCookie();
+      user.userId = cookie.userId;
+      user.userKey = cookie.userKey;
     } else {
       user = new User();
       user.userId = this.generateUserId();
+      user.userKey = this.generateUserKey();
     }
-    this.setCookie(user.userId);
+    let cookie = new AppCookie(user.userId, user.userKey);
+    this.setCookie(cookie);
     return user;
+  }
+
+  alphabet: string[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(
+    ""
+  );
+
+  generateUserKey(): string {
+    // 65-90, 97-122
+    // return (Math.random() > 0.5d) ?  (Math.random()*26+65) :  (Math.random()*26+97);
+    let key: string = "";
+    for (let i = 0; i < 16; i++) {
+      key += this.getRandomChar();
+    }
+    return key;
+  }
+
+  getRandomChar(): string {
+    let index = Math.trunc(Math.random() * this.alphabet.length);
+    return this.alphabet[index];
   }
 
   connect() {
@@ -244,8 +305,10 @@ export class SyncService {
     this.stompClient = Stomp.over(this.ws);
     let that = this;
 
-    this.stompClient.connect({}, function () {
-      that.stompClient.subscribe("/chat/" + user.userId, messageFromServer => that.handleServerResponse(messageFromServer));
+    this.stompClient.connect({}, function() {
+      that.stompClient.subscribe("/chat/" + user.userId, messageFromServer =>
+        that.handleServerResponse(messageFromServer)
+      );
 
       let raumId: string = that.synctubeComponent.getPathId();
       if (raumId) {
@@ -258,8 +321,6 @@ export class SyncService {
       // that.toastr.success("Video wurde hinzugefügt",'Testnachricht', new ToastrConfig(2000, null, null, null, null, false, false));
       // that.toastr.warning("Video wurde hinzugefügt",'Testnachricht', new ToastrConfig(2000, null, null, null, null, false, false));
       // that.toastr.error("Video wurde hinzugefügt",'Testnachricht', new ToastrConfig(2000, null, null, null, null, false, false));
-
-
     });
   }
 
@@ -272,8 +333,6 @@ export class SyncService {
   }
 
   handleMessage(message: Message) {
-
-
     switch (message.type) {
       case this.messageTypes.CREATE_ROOM:
         this.createClient(message);
@@ -390,7 +449,10 @@ export class SyncService {
       case this.messageTypes.ADDED_VIDEO_TO_PLAYLIST:
         break;
       case this.messageTypes.UPDATE_TITLE_AND_DESCRIPTION:
-        this.updateRaumTitleAndDescription(message.raumTitle, message.raumDescription);
+        this.updateRaumTitleAndDescription(
+          message.raumTitle,
+          message.raumDescription
+        );
         break;
       case this.messageTypes.IMPORTED_PLAYLIST:
         break;
@@ -408,21 +470,25 @@ export class SyncService {
       case this.messageTypes.TOGGLE_PLAYLIST_LOOP:
         this.synctubeComponent.loop = message.loop;
         break;
-      case 'error':
-        this.toastr.error("error", "ERROR", { disableTimeOut: true, tapToDismiss: true })
+      case "error":
+        this.toastr.error("error", "ERROR", {
+          disableTimeOut: true,
+          tapToDismiss: true
+        });
         break;
-      default: this.toastr.warning("unkown behaviour", "warning", { disableTimeOut: true, tapToDismiss: true })
+      default:
+        this.toastr.warning("unkown behaviour", "warning", {
+          disableTimeOut: true,
+          tapToDismiss: true
+        });
         break;
-
     }
     this.displayAsToast(message.toastrMessage);
-
 
     if (message.type == "error") {
       console.log("[ERROR from Server]");
       return;
     }
-
   }
 
   addToToastrMessages(toastrMessage: ToastrMessage) {
@@ -435,66 +501,136 @@ export class SyncService {
         // this.toastr.success("Raum #" + this.getRaumId() + " wurde von " + this.getLocalUser().userName + ' erstellt', 'Raum erstellt:', ToastrConfigs.SUCCESS);
         switch (toastrMessage.type) {
           case this.toastrMessageTypes.CREATE_ROOM:
-            this.toastr.success(toastrMessage.message, 'Raum erstellt:', ToastrConfigs.SUCCESS);
+            this.toastr.success(
+              toastrMessage.message,
+              "Raum erstellt:",
+              ToastrConfigs.SUCCESS
+            );
             break;
           case this.toastrMessageTypes.JOIN_ROOM:
-            this.toastr.info(toastrMessage.message, 'Raum beigetreten:', ToastrConfigs.INFO);
+            this.toastr.info(
+              toastrMessage.message,
+              "Raum beigetreten:",
+              ToastrConfigs.INFO
+            );
             break;
           case this.toastrMessageTypes.DISCONNECT:
-            this.toastr.info(toastrMessage.message, 'Raum verlassen:', ToastrConfigs.INFO);
+            this.toastr.info(
+              toastrMessage.message,
+              "Raum verlassen:",
+              ToastrConfigs.INFO
+            );
             break;
           case this.toastrMessageTypes.ASSIGNED_AS_ADMIN:
-            this.toastr.success(toastrMessage.message, 'zum Admin ernannt:', ToastrConfigs.SUCCESS);
+            this.toastr.success(
+              toastrMessage.message,
+              "zum Admin ernannt:",
+              ToastrConfigs.SUCCESS
+            );
             break;
           case this.toastrMessageTypes.TO_PUBLIC_ROOM:
-            this.toastr.info(toastrMessage.message, 'Raumstatus:', ToastrConfigs.INFO);
+            this.toastr.info(
+              toastrMessage.message,
+              "Raumstatus:",
+              ToastrConfigs.INFO
+            );
             break;
           case this.toastrMessageTypes.TO_PRIVATE_ROOM:
-            this.toastr.info(toastrMessage.message, 'Raumstatus:', ToastrConfigs.INFO);
+            this.toastr.info(
+              toastrMessage.message,
+              "Raumstatus:",
+              ToastrConfigs.INFO
+            );
             break;
           case this.toastrMessageTypes.KICKED_USER:
-            this.toastr.error(toastrMessage.message, 'You were kicked!', ToastrConfigs.ERROR);
+            this.toastr.error(
+              toastrMessage.message,
+              "You were kicked!",
+              ToastrConfigs.ERROR
+            );
             break;
           case this.toastrMessageTypes.UPDATE_KICK_CLIENT:
-            this.toastr.warning(toastrMessage.message, 'User kicked:', ToastrConfigs.WARNING);
+            this.toastr.warning(
+              toastrMessage.message,
+              "User kicked:",
+              ToastrConfigs.WARNING
+            );
             break;
           case this.toastrMessageTypes.REFRESH_ROOM_ID:
-            this.toastr.info(toastrMessage.message, 'RaumId Update:', ToastrConfigs.INFO);
+            this.toastr.info(
+              toastrMessage.message,
+              "RaumId Update:",
+              ToastrConfigs.INFO
+            );
             break;
           case this.toastrMessageTypes.ADDED_VIDEO_TO_PLAYLIST:
-            this.toastr.info(toastrMessage.message, 'Playlist Update:', ToastrConfigs.INFO);
+            this.toastr.info(
+              toastrMessage.message,
+              "Playlist Update:",
+              ToastrConfigs.INFO
+            );
             break;
           case this.toastrMessageTypes.UPDATE_TITLE_AND_DESCRIPTION:
-            this.toastr.info(toastrMessage.message, 'Raum Update:', ToastrConfigs.INFO);
+            this.toastr.info(
+              toastrMessage.message,
+              "Raum Update:",
+              ToastrConfigs.INFO
+            );
             break;
           case this.toastrMessageTypes.REMOVE_VIDEO_PLAYLIST:
-            this.toastr.info(toastrMessage.message, 'Playlist Update:', ToastrConfigs.INFO);
+            this.toastr.info(
+              toastrMessage.message,
+              "Playlist Update:",
+              ToastrConfigs.INFO
+            );
             break;
           case this.toastrMessageTypes.IMPORTED_PLAYLIST:
-            this.toastr.success(toastrMessage.message, 'Playlist Update:', ToastrConfigs.SUCCESS);
+            this.toastr.success(
+              toastrMessage.message,
+              "Playlist Update:",
+              ToastrConfigs.SUCCESS
+            );
             break;
           case this.toastrMessageTypes.INTEGRATED_PLAYLIST:
-            this.toastr.success(toastrMessage.message, 'Playlist Update:', ToastrConfigs.SUCCESS);
+            this.toastr.success(
+              toastrMessage.message,
+              "Playlist Update:",
+              ToastrConfigs.SUCCESS
+            );
             break;
           case this.toastrMessageTypes.CHANGED_PLAYBACK_RATE:
-            this.toastr.info(toastrMessage.message, 'Playbackrate Update:', ToastrConfigs.INFO);
+            this.toastr.info(
+              toastrMessage.message,
+              "Playbackrate Update:",
+              ToastrConfigs.INFO
+            );
             break;
           case this.toastrMessageTypes.MUTE_USER:
-            this.toastr.warning(toastrMessage.message, 'User Update:', ToastrConfigs.WARNING);
+            this.toastr.warning(
+              toastrMessage.message,
+              "User Update:",
+              ToastrConfigs.WARNING
+            );
             break;
           case this.toastrMessageTypes.CHANGED_USER_NAME:
-            this.toastr.info(toastrMessage.message, 'User Update:', ToastrConfigs.INFO);
+            this.toastr.info(
+              toastrMessage.message,
+              "User Update:",
+              ToastrConfigs.INFO
+            );
             break;
           case this.toastrMessageTypes.PARDONED_KICKED_USER:
-            this.toastr.info(toastrMessage.message, 'User Update:', ToastrConfigs.INFO);
+            this.toastr.info(
+              toastrMessage.message,
+              "User Update:",
+              ToastrConfigs.INFO
+            );
             break;
         }
       }
       this.addToToastrMessages(toastrMessage);
     }
   }
-
-  
 
   setRaumId(raumId: string) {
     this.synctubeComponent.raumId = raumId;
@@ -507,7 +643,6 @@ export class SyncService {
     this.synctubeComponent.raumStatus = undefined;
     this.synctubeComponent.videoDuration = 0;
     this.synctubeComponent.clearRoomVars();
-
   }
 
   getReceivedPlayerState(): number {
@@ -545,14 +680,14 @@ export class SyncService {
       this.loadVideoById({
         videoId: message.video.videoId,
         startSeconds: message.video.timestamp,
-        autoplay: (message.playerState != SyncService.playing) ? false : true
+        autoplay: message.playerState != SyncService.playing ? false : true
       });
       this.videoComponent.currentTimeProgressbar = message.video.timestamp;
       this.videoComponent.currentDisplayedTime = message.video.timestamp;
       this.synctubeComponent.forceScrollToChatBottom = true;
 
       let that = this;
-      let wait = setInterval(function () {
+      let wait = setInterval(function() {
         if (that.getPlayerState() == SyncService.playing) {
           that.setVideoDuration();
           that.setPlaybackRates();
@@ -572,7 +707,7 @@ export class SyncService {
       } else {
         videoService.hide();
       }
-    })
+    });
   }
 
   /*
@@ -634,14 +769,19 @@ export class SyncService {
   }
 
   generateUserId(): string {
-    return Math.floor(Date.now() / 1000) + "" + Math.floor(Math.random() * 10000);
+    return (
+      Math.floor(Date.now() / 1000) + "" + Math.floor(Math.random() * 10000)
+    );
   }
 
   sendRequestPublicRaeume() {
     console.log("[request public rooms]");
-    this.synctubeComponent.publicRaeume = <Observable<Raum[]>>this.http
-      .get("http://localhost:8080/publicrooms/userId/" + this.getUserId(), {})
-
+    this.synctubeComponent.publicRaeume = <Observable<Raum[]>>(
+      this.http.get(
+        "http://localhost:8080/publicrooms/userId/" + this.getUserId(),
+        {}
+      )
+    );
   }
 
   sendChatMessage(message: Message) {
@@ -663,7 +803,7 @@ export class SyncService {
   }
 
   sendJoinRaum(user: User, raumId: string) {
-    console.log("[join-raum:] " + user.userId + " " + raumId);
+    console.log("[join-raum:]  " + raumId);
     this.stompClient.send(
       "/app/send/join-room",
       {},
@@ -1012,7 +1152,13 @@ export class SyncService {
 
   getHistory(raumId: string, userId: string) {
     this.http
-      .get("http://localhost:8080/room/" + raumId + "/userId/" + userId + "/history")
+      .get(
+        "http://localhost:8080/room/" +
+          raumId +
+          "/userId/" +
+          userId +
+          "/history"
+      )
       .subscribe((history: Video[]) => {
         console.log(history);
         this.synctubeComponent.history = history;
@@ -1032,7 +1178,11 @@ export class SyncService {
       // /room/{raumId}/playlist/
       this.http
         .post(
-          "http://localhost:8080/room/" + raumId + "/userId/" + user.userId + "/playlist",
+          "http://localhost:8080/room/" +
+            raumId +
+            "/userId/" +
+            user.userId +
+            "/playlist",
           importedPlaylist
         )
         .subscribe(response => {
@@ -1086,9 +1236,9 @@ export class SyncService {
   ) {
     console.log(
       "[add-video-to-playlist-asnext:] " +
-      user +
-      " | video: " +
-      playlistvideo.videoId
+        user +
+        " | video: " +
+        playlistvideo.videoId
     );
     if (playlistvideo) {
       this.stompClient.send(
@@ -1110,9 +1260,9 @@ export class SyncService {
   ) {
     console.log(
       "[add-video-to-playlist-ascurrent:] " +
-      user +
-      " | video: " +
-      playlistvideo.videoId
+        user +
+        " | video: " +
+        playlistvideo.videoId
     );
     if (playlistvideo) {
       this.stompClient.send(
@@ -1196,7 +1346,7 @@ export class SyncService {
     return this.videoComponent.isMuted();
   }
 
-  togglePlay() { }
+  togglePlay() {}
 
   toggleMute() {
     if (this.isMuted()) {
@@ -1250,8 +1400,7 @@ export class SyncService {
     }
   }
 
-  toggleSubtitle(_module, option, value) {
-  }
+  toggleSubtitle(_module, option, value) {}
 
   toggleDisplayOptions() {
     this.videoComponent.toggleDisplayOptions();
@@ -1266,9 +1415,9 @@ export class SyncService {
     this.videoComponent.toggleDisplayFullscreen();
   }
 
-  getCookie(): string {
+  getCookie(): AppCookie {
     if (this.hasCookie()) {
-      return this.cookieService.get(SyncService.cookieKey);
+      return JSON.parse(this.cookieService.get(SyncService.cookieKey));
     }
   }
 
@@ -1276,8 +1425,8 @@ export class SyncService {
     return this.cookieService.check(SyncService.cookieKey);
   }
 
-  setCookie(userId: string) {
-    this.cookieService.set(SyncService.cookieKey, "" + userId, 30);
+  setCookie(cookie: AppCookie) {
+    this.cookieService.set(SyncService.cookieKey,  JSON.stringify(cookie), 30);
   }
 
   isLocalUserAdmin(): Boolean {
