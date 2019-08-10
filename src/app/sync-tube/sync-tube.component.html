@@ -73,7 +73,10 @@
       </div>
     </div>
   </div>
+</div>
 
+
+<div *ngIf="raumId"> <!-- [hidden]="!raumId" *ngIf="raumId"> -->
 
   <!-- Visible when room is created or joined -->
   <div [hidden]="!raumId" [className]="
@@ -371,8 +374,8 @@
           </div>
           <div style="display:flex; width:100%; ">
             <div class="title_description_reset_url_panel mb-1">
-              <div (click)="sendUpdateTitleAndDescription()" [hidden]="!titleOrDescriptionHasChanged()" class="smallText update-btn">update <br> titel &
-                beschreibung</div>
+              <div (click)="sendUpdateTitleAndDescription()" [hidden]="!titleOrDescriptionHasChanged()" class="smallText update-btn">update <br> Titel &
+                Beschreibung</div>
             </div>
 
             <div *ngIf="user.admin" class="change-url-container" title="refreshes the join url">
@@ -405,7 +408,9 @@
       </div>
     </div>
   </div>
+
 </div>
+
 <div *ngIf="designatedAdmin" class="prompt">
   <h3>Wollen Sie {{ designatedAdmin.userName }} zum Admin ernennen?</h3>
   <div class="approved-button" (click)="approvedAdmin()">JA</div>
@@ -431,5 +436,4 @@
       </div>
     </div>
   </div>
-
 </div>

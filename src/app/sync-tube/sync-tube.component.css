@@ -666,7 +666,9 @@ input[type="range"][orient="vertical"] {
   overflow-y: scroll;
   scroll-behavior: smooth;
   display: flex;
-  flex-wrap: wrap
+  flex-wrap: wrap;
+  height: 500px;
+
 }
 
 .information-panel {
