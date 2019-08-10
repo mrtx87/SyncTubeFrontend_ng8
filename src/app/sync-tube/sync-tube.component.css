@@ -1136,17 +1136,17 @@ input[type="range"][orient="vertical"] {
 .switch {
   position: relative;
   display: inline-block;
-  width: 80px;
-  height: 36px;
+  width: 60px;
+  height: 30px;
 }
 
 .slider {
   position: absolute;
   cursor: pointer;
-  top: 0;
+  top: 0px;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: 0px;
   background-color: var(--color3);
   -webkit-transition: 0.4s;
   transition: 0.4s;
@@ -1155,10 +1155,10 @@ input[type="range"][orient="vertical"] {
 .slider:before {
   position: absolute;
   content: "";
-  width: 38px;
+  width: 25px;
   top: 1px;
   bottom: 1px;
-  right: 38px;
+  right: 33px;
   background-color: white;
   -webkit-transition: 0.4s;
   transition: 0.4s;
@@ -1169,13 +1169,13 @@ input[type="range"][orient="vertical"] {
 }
 
 .toggle-input:checked+.slider:before {
-  -webkit-transform: translateX(35px);
-  -ms-transform: translateX(35px);
-  transform: translateX(35px);
+  -webkit-transform: translateX(30px);
+  -ms-transform: translateX(30px);
+  transform: translateX(30px);
 }
 
 .slider.round {
-  border-radius: 34px;
+  border-radius: 25px;
 }
 
 .slider.round:before {
