@@ -198,110 +198,6 @@
               </div>
             </div>
 
-            <!-- Insert Video Messages Containers -->
-            <div class="insert-video-row-container" *ngIf="
-                chatMessage.type == 'insert-video' &&
-                chatMessage.user.userId !== user.userId
-              ">
-              <div class="userid-container">
-                <span> Video eingefügt von &nbsp; </span>
-                <span> {{ chatMessage.user.userName }} </span>
-                <img *ngIf="chatMessage.user.admin" src="assets/star.svg" class="star-img" />
-
-              </div>
-              <div class="insert-video-content">
-
-                <div class="text-container">
-                  <a target="_blank" href="https://www.youtube.com/watch?v={{
-                      chatMessage.video.videoId
-                    }}">
-                    <div class="video-title">{{ chatMessage.video.title }}</div>
-                  </a>
-                  <div class="timestamp">
-                    <span> {{ chatMessage.timestamp }} </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="insert-video-row-container-user" *ngIf="
-                chatMessage.type === 'insert-video' &&
-                chatMessage.user.userId == user.userId
-              ">
-
-              <div class="userid-container">
-                <span> Video eingefügt von dir </span>
-
-
-              </div>
-              <div class="insert-video-content">
-
-                <div class="text-container">
-                  <a target="_blank" href="https://www.youtube.com/watch?v={{
-                      chatMessage.video.videoId
-                    }}">
-                    <div class="video-title">{{ chatMessage.video.title }}</div>
-                  </a>
-                  <div class="timestamp">
-                    <span> {{ chatMessage.timestamp }} </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!--  Playlist messages -->
-            <div class="insert-playlist-row-container-user" *ngIf="
-            chatMessage.type === 'insert-playlist' &&
-            chatMessage.user.userId == user.userId
-          ">
-
-              <div class="userid-container">
-                <span> Playlist eingefügt von dir </span>
-
-
-              </div>
-              <div class="insert-video-content">
-
-                <div class="text-container">
-                  <a target="_blank" href="https://www.youtube.com/watch?list={{
-                  chatMessage.video.videoId
-                }}">
-                    <div class="video-title">{{ chatMessage.video.title }}</div>
-                  </a>
-                  <div class="timestamp">
-                    <span> {{ chatMessage.timestamp }} </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="insert-playlist-row-container-user" *ngIf="
-            chatMessage.type === 'insert-playlist' &&
-            chatMessage.user.userId !== user.userId
-          ">
-
-              <div class="userid-container">
-                <span> Video eingefügt von &nbsp; </span>
-                <span> {{ chatMessage.user.userName }} </span>
-                <img *ngIf="chatMessage.user.admin" src="assets/star.svg" class="star-img" />
-
-              </div>
-              <div class="insert-video-content">
-
-                <div class="text-container">
-                  <a target="_blank" href="https://www.youtube.com/watch?list={{
-                  chatMessage.video.videoId
-                }}">
-                    <div class="video-title">{{ chatMessage.video.title }}</div>
-                  </a>
-                  <div class="timestamp">
-                    <span> {{ chatMessage.timestamp }} </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-
           </div>
         </div>
         <div class="footer">
@@ -442,9 +338,9 @@
           </div>
           <div class="info mb-1">
             <label [hidden]="!raumStatus || !displaySwitchRoomStatusTooltip">
-              Klicke um den Raumstatus öffentlich zu stellen</label>
+              Toggle um den Raumstatus öffentlich zu stellen</label>
             <label [hidden]="raumStatus || !displaySwitchRoomStatusTooltip">
-              Klicke um den Raumstatus privat zu stellen</label>
+              Toggle um den Raumstatus privat zu stellen</label>
           </div>
 
           <div class="rename-room-title-container">
@@ -470,7 +366,7 @@
           <div class="info mb-1">
             <label [hidden] = "!displayEditRoomDescriptionTooltip">Hier können Sie die Raumbeschreibung bestimmen.</label>
           </div>
-          <div *ngIf="user.admin" [hidden]="!raumStatus" (click)="refreshJoinUrl()" class="change-url-container"
+          <div *ngIf="user.admin" (click)="refreshJoinUrl()" class="change-url-container"
             title="refreshes the join url">
             <div class="admin-panel-row">
               <img class="refresh-img" src="assets/refresh.svg" />

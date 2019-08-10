@@ -134,6 +134,7 @@
   height: 35px;
   min-height: 15%;
   align-items: center;
+  margin-top: 1vh;
 }
 
 .admin-panel-row {
@@ -1160,7 +1161,7 @@ input[type="range"][orient="vertical"] {
 .slider:before {
   position: absolute;
   content: "";
-  width: 32px;
+  width: 38px;
   top: 1px;
   bottom: 1px;
   right: 38px;
