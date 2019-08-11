@@ -114,7 +114,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
 
   @HostListener("window:keyup", ["$event"])
   keyEvent(event: KeyboardEvent) {
-    console.log(event.target);
+    //console.log(event.target);
     let target: any = event.target;
     let tagName: string = (<string>target.localName).toLowerCase();
     if (tagName !== "input" && tagName !== "textarea") {
@@ -139,6 +139,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
           break;
         case KEY_CODE.KEY_S:
           this.syncService.videoComponent.triggerTogglePlay();
+          this.syncService.retrieveHistory();
           break;
         case KEY_CODE.KEY_D:
           this.syncService.videoComponent.jumpBySeconds(
@@ -232,7 +233,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
     /*console.log("SCROLLTOP: " + this.scrollContent.scrollTop)
     console.log("CLIENTHEIGHT: " + document.documentElement.clientHeight)
     console.log("CONTAINERHEIGHT: " + this.searchResultsContainer.scrollHeight)
-*/
+    */
 
     /*
     if (this.scrollChat && this.forceScrollToChatBottom) {
@@ -476,12 +477,12 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
     return this.syncService.parseYoutubeUrl(url);
   }
 
-  getChatInputfield() : any{
+  getChatInputfield(): any {
     if (!this.chatInputfield) {
       this.chatInputfield = document.getElementById("chatInput");
 
     }
-    console.log(this.chatInputfield)
+    //console.log(this.chatInputfield)
     return this.chatInputfield;
   }
 
@@ -604,7 +605,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
   }
 
   displayConfigToggle() {
-    console.log(this.configRaumStatus);
+    //console.log(this.configRaumStatus);
   }
 
   getVideo(): Video {
@@ -654,7 +655,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
   }
 
   titleOrDescriptionHasChanged() {
-    if(this.raumDescriptionChange !== this.raumDescription || this.raumTitleChange !== this.raumTitle) {
+    if (this.raumDescriptionChange !== this.raumDescription || this.raumTitleChange !== this.raumTitle) {
       return true;
     }
     return false;

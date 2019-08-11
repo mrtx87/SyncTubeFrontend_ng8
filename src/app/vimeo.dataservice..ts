@@ -31,7 +31,7 @@ export class VimeoDataService implements IDataService {
     if (searchQuery) {
 
       if (searchQuery.playlistId) {
-        console.log("playlist-ID: " + searchQuery.playlistId)
+        //console.log("playlist-ID: " + searchQuery.playlistId)
         this.searchPlaylist(searchQuery.playlistId, false);
         return true;
       }
@@ -55,7 +55,7 @@ export class VimeoDataService implements IDataService {
         query
       )
       .subscribe(searchResponse => {
-        console.log(searchResponse);
+        //console.log(searchResponse);
         let data: any = searchResponse;
         let items: any[] = data.data;
         let vids: Video[] = items
@@ -94,7 +94,7 @@ export class VimeoDataService implements IDataService {
 
         }
         let nextPageToken: string = data.nextPageToken;
-        console.log(data);
+        //console.log(data);
         let vids: Video[] = items
           .filter(i => (i.snippet.resourceId.videoId ? true : false))
           .map(it => it.snippet)

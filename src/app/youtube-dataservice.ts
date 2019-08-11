@@ -56,7 +56,7 @@ export class YoutubeDataService implements IDataService {
           query
       )
       .subscribe(response => {
-        console.log(response);
+        //console.log(response);
         let data: any = response;
         let items: any[] = data.items;
         let vids: Video[] = items
@@ -124,7 +124,7 @@ export class YoutubeDataService implements IDataService {
             data.pageInfo.totalResults;
         }
         let nextPageToken: string = data.nextPageToken;
-        console.log(data);
+        //console.log(data);
         let vids: Video[] = items
           .filter(i =>
             i.snippet.resourceId.videoId && i.snippet.thumbnails ? true : false

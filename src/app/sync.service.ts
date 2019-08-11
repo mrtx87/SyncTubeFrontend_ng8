@@ -10,7 +10,8 @@ import { User } from "./sync-tube/user";
 import {
   HttpClient,
   HttpParams,
-  HttpXsrfTokenExtractor
+  HttpXsrfTokenExtractor,
+  HttpHeaders
 } from "@angular/common/http";
 import { Video } from "./video/video";
 import { CookieService } from "ngx-cookie-service";
@@ -122,41 +123,7 @@ export class SyncService {
     return this.toastr_;
   }
 
-  retrieveToastrMessages() {
-    let that = this;
-    this.http
-      .get(
-        "http://localhost:8080/room/" +
-        this.getRaumId() +
-        "/userId/" +
-        this.getUserId() +
-        "/toastr-messages",
-        {}
-      )
-      .subscribe(function (response) {
-        let incomingToastrMessages: ToastrMessage[] = <ToastrMessage[]>response;
-        for (let itm of incomingToastrMessages) {
-          that.synctubeComponent.toastrMessages.push(itm);
-        }
-        console.log(that.synctubeComponent.toastrMessages);
-      });
-  }
 
-  retrieveChatMessages() {
-    let that = this;
-    this.http
-      .get(
-        "http://localhost:8080/room/" +
-        this.getRaumId() +
-        "/userId/" +
-        this.getUserId() +
-        "/chat-messages",
-        {}
-      )
-      .subscribe(function (response) {
-        that.synctubeComponent.addAllChatMessages(<ChatMessage[]>response);
-      });
-  }
 
   retrieveToastrMessageTypes() {
     let that = this;
@@ -173,7 +140,7 @@ export class SyncService {
       .get("http://localhost:8080/message-types", {})
       .subscribe(function (response) {
         that.messageTypes = <MessageTypes>response;
-        console.log(that.messageTypes);
+        (that.messageTypes);
       });
   }
 
@@ -262,6 +229,7 @@ export class SyncService {
   }
 
   handleCookie(): User {
+
     let user: User;
     if (this.hasCookie()) {
       user = new User();
@@ -326,20 +294,23 @@ export class SyncService {
 
   handleServerResponse(messageFromServer: any) {
     if (messageFromServer.body) {
-      console.log("[RESPONSE FROM SERVER]: " + messageFromServer.body);
+      //console.log("[RESPONSE FROM SERVER]: " + messageFromServer.body);
       let message: Message = JSON.parse(messageFromServer.body);
       this.handleMessage(message);
     }
   }
 
   handleMessage(message: Message) {
+
+    this.displayAsToast(message.toastrMessage);
+
     switch (message.type) {
       case this.messageTypes.CREATE_ROOM:
         this.createClient(message);
         this.replaceUrl(message.raumId);
         this.updateVideo(message);
-        this.getRaumPlaylist(this.getRaumId());
-        console.log(message.users);
+        this.retrieveRaumPlaylist();
+        //console.log(message.users);
         break;
       case this.messageTypes.JOIN_ROOM:
         this.joinReponseMessage = message;
@@ -348,8 +319,8 @@ export class SyncService {
         this.updateVideo(message);
         this.setInitalPlaybackRate(message.currentPlaybackRate);
 
-        this.getRaumPlaylist(this.getRaumId());
-        this.getHistory(this.getRaumId(), this.getUserId());
+        this.retrieveRaumPlaylist();
+        this.retrieveHistory();
         this.retrieveToastrMessages();
         this.retrieveChatMessages();
         break;
@@ -414,7 +385,7 @@ export class SyncService {
         if (message.chatMessage) {
           this.synctubeComponent.chatMessages.push(message.chatMessage);
         }
-        this.getRaumPlaylist(this.getRaumId());
+        this.retrieveRaumPlaylist();
         break;
       case this.messageTypes.REQUEST_SYNC_TIMESTAMP:
         let v: Video = new Video();
@@ -483,7 +454,6 @@ export class SyncService {
         });
         break;
     }
-    this.displayAsToast(message.toastrMessage);
 
     if (message.type == "error") {
       console.log("[ERROR from Server]");
@@ -785,7 +755,7 @@ export class SyncService {
   }
 
   sendChatMessage(message: Message) {
-    console.log("[send chatmessage... " + message + "]");
+    //console.log("[send chatmessage... " + message + "]");
     this.stompClient.send(
       "/app/send/chat-message",
       {},
@@ -794,7 +764,7 @@ export class SyncService {
   }
 
   sendcreateRaum(user: User, raumStatus: Boolean) {
-    console.log("[create Raum...] " + user);
+    //console.log("[create Raum...] " + user);
     this.stompClient.send(
       "/app/send/create-room",
       {},
@@ -812,7 +782,7 @@ export class SyncService {
   }
 
   sendChangeUserName(user: User, raumId: string) {
-    console.log("[change-user-name:] " + user.userName + " " + raumId);
+    //console.log("[change-user-name:] " + user.userName + " " + raumId);
     this.stompClient.send(
       "/app/send/change-user-name",
       {},
@@ -826,7 +796,7 @@ export class SyncService {
     videoId: string,
     timestamp: number
   ) {
-    console.log("[seekto-timestamp:] " + timestamp);
+    //console.log("[seekto-timestamp:] " + timestamp);
     let video: Video = new Video();
     video.videoId = videoId;
     video.timestamp = timestamp;
@@ -838,7 +808,7 @@ export class SyncService {
   }
 
   sendCurrentTimeStamp(user: User, raumId: string, video: Video) {
-    console.log("[seekto-timestamp:] " + video);
+    //console.log("[seekto-timestamp:] " + video);
     this.stompClient.send(
       "/app/send/current-timestamp",
       {},
@@ -847,7 +817,7 @@ export class SyncService {
   }
 
   sendNewVideo(user: User, raumId: string, video: Video) {
-    console.log("[send-new-video:] " + video);
+    //console.log("[send-new-video:] " + video);
     if (video) {
       this.stompClient.send(
         "/app/send/receive-new-video",
@@ -934,7 +904,7 @@ export class SyncService {
   }
 
   sendToggleMuteUser(user: User, raumId: string, assignedUser: User) {
-    console.log(assignedUser);
+    //console.log(assignedUser);
     this.stompClient.send(
       "/app/send/toggle-mute-user",
       {},
@@ -962,7 +932,7 @@ export class SyncService {
           query
         )
         .subscribe(response => {
-          console.log(response);
+          //console.log(response);
           let data: any = response;
           let items: any[] = data.items;
           let vids: Video[] = items
@@ -1024,7 +994,7 @@ export class SyncService {
   
           }
           let nextPageToken: string = data.nextPageToken;
-          console.log(data);
+          //console.log(data);
           let vids: Video[] = items
             .filter(i => (i.snippet.resourceId.videoId ? true : false))
             .map(it => it.snippet)
@@ -1067,7 +1037,7 @@ export class SyncService {
     }
   */
   sendDisconnectMessage(user: User, raumId: string) {
-    console.log("[disconnect-client:] " + user);
+    //console.log("[disconnect-client:] " + user);
     this.stompClient.send(
       "/app/send/disconnect-client",
       {},
@@ -1082,7 +1052,7 @@ export class SyncService {
     video: Video,
     currentTime: number
   ) {
-    console.log("[toggle-play:] " + user);
+    //console.log("[toggle-play:] " + user);
     let message: Message = new Message();
     video.timestamp = currentTime;
     message.video = video;
@@ -1093,7 +1063,7 @@ export class SyncService {
   }
 
   sendAssignAdmin(raumId: string, user: User, assignedUser: User) {
-    console.log("[assign-as-admin:] " + assignedUser);
+    //console.log("[assign-as-admin:] " + assignedUser);
     this.stompClient.send(
       "/app/send/assign-admin",
       {},
@@ -1102,7 +1072,7 @@ export class SyncService {
   }
 
   sendKickUser(raumId: string, user: User, assignedUser: User) {
-    console.log("[kick-user:] " + assignedUser);
+    //console.log("[kick-user:] " + assignedUser);
     this.stompClient.send(
       "/app/send/kick-user",
       {},
@@ -1111,7 +1081,7 @@ export class SyncService {
   }
 
   sendToPublicRoomRequest(raumId: string, user: User) {
-    console.log("[switch-to-public-room:] " + user);
+    //console.log("[switch-to-public-room:] " + user);
     this.stompClient.send(
       '/app/send/to-public-room',
       {},
@@ -1120,7 +1090,7 @@ export class SyncService {
   }
 
   sendToPrivateRoomRequest(raumId: string, user: User) {
-    console.log("[switch-to-private-room:] " + user);
+    //console.log("[switch-to-private-room:] " + user);
     this.stompClient.send(
       "/app/send/to-private-room",
       {},
@@ -1129,7 +1099,7 @@ export class SyncService {
   }
 
   sendRefreshRaumId(raumId: string, user: User) {
-    console.log("[refresh-RaumId:] " + user);
+    //console.log("[refresh-RaumId:] " + user);
     this.stompClient.send(
       "/app/send/refresh-raumid",
       {},
@@ -1137,12 +1107,12 @@ export class SyncService {
     );
   }
 
-  getRaumPlaylist(raumId: string) {
-    // /room/{raumId}/playlist/
+  retrieveRaumPlaylist() {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
     this.http
-      .get("http://localhost:8080/room/" + raumId + "/playlist")
-      .subscribe((playlist: Video[]) => {
-        console.log(playlist);
+      .get("http://localhost:8080/room/" + this.getRaumId() + "/playlist", { headers }).subscribe((playlist: Video[]) => {
+        //console.log(playlist);
         this.synctubeComponent.playlist = playlist;
         if (this.synctubeComponent.playlist.length == 0) {
           //this.stopVideo();
@@ -1150,31 +1120,51 @@ export class SyncService {
       });
   }
 
-  getHistory(raumId: string, userId: string) {
+  retrieveHistory() {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
     this.http
-      .get(
-        "http://localhost:8080/room/" +
-        raumId +
-        "/userId/" +
-        userId +
-        "/history"
-      )
+      .get("http://localhost:8080/room/" + this.getRaumId() + "/history", { headers })
       .subscribe((history: Video[]) => {
-        console.log(history);
+        //console.log(history);
         this.synctubeComponent.history = history;
       });
   }
+
+  retrieveToastrMessages() {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    let that = this;
+    this.http
+      .get("http://localhost:8080/room/" + this.getRaumId() + "/user/" + this.getUserId() + "/toastr-messages", { headers }).subscribe((response: ToastrMessage[]) => {
+        let incomingToastrMessages: ToastrMessage[] = response;
+        for (let itm of incomingToastrMessages) {
+          that.synctubeComponent.toastrMessages.push(itm);
+        }
+        //console.log(that.synctubeComponent.toastrMessages);
+      });
+  }
+
+  retrieveChatMessages() {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    let that = this;
+    this.http.get("http://localhost:8080/room/" + this.getRaumId() + "/user/" + this.getUserId() + "/chat-messages", { headers }).subscribe((response: ChatMessage[]) => {
+      that.synctubeComponent.addAllChatMessages(response);
+    });
+  }
+
 
   sendImportPlaylist(
     raumId: string,
     user: User,
     importedPlaylist: ImportedPlaylist
   ) {
-    console.log(
-      "[import-playlist:] " + user + " | playlist: " + importedPlaylist
-    );
+    //console.log("[import-playlist:] " + user + " | playlist: " + importedPlaylist);
 
     if (importedPlaylist) {
+      const headers = new HttpHeaders()
+        .set("Content-Type", "application/json");
       // /room/{raumId}/playlist/
       importedPlaylist.user = user;
       this.http
@@ -1182,10 +1172,9 @@ export class SyncService {
           "http://localhost:8080/room/" +
           raumId +
           "/playlist",
-          importedPlaylist
-        )
+          importedPlaylist, { headers })
         .subscribe(response => {
-          console.log(response);
+          (response);
         });
     }
   }
@@ -1212,9 +1201,9 @@ export class SyncService {
   }
 
   sendAddVideoToPlaylist(raumId: string, user: User, playlistvideo: Video) {
-    console.log(
-      "[add-video-to-playlist:] " + user + " | video: " + playlistvideo.videoId
-    );
+    // console.log(
+    //   "[add-video-to-playlist:] " + user + " | video: " + playlistvideo.videoId
+    // );
     if (playlistvideo) {
       this.stompClient.send(
         "/app/send/add-video-to-playlist",
@@ -1425,7 +1414,8 @@ export class SyncService {
   }
 
   setCookie(cookie: AppCookie) {
-    this.cookieService.set(SyncService.cookieKey, JSON.stringify(cookie), 30);
+    //name: string, value: string, expires?: number | Date, path?: string, domain?: string, secure?: boolean, sameSite?: 'Lax' | 'Strict' 
+    this.cookieService.set(SyncService.cookieKey, JSON.stringify(cookie), 30, '/');
   }
 
   isLocalUserAdmin(): Boolean {
@@ -1469,7 +1459,6 @@ export class SyncService {
       let andIndex: number = youtubeUrl.search("&");
       if (andIndex > -1) {
         videoId = youtubeUrl.substring(urlIndex + 2, andIndex);
-        console.log("!!!1 " + andIndex + " | " + videoId);
         youtubeUrl = youtubeUrl.substring(andIndex + 1);
 
         let listIndex: number = youtubeUrl.search("list=");
@@ -1481,7 +1470,6 @@ export class SyncService {
           } else {
             listlink = youtubeList;
           }
-          console.log("YTLIST: " + listlink);
         }
 
         let timeStampIndex: number = youtubeUrl.search("t=");
@@ -1497,11 +1485,9 @@ export class SyncService {
           } else {
             timestamp = parseInt(youtubeTimeStamp);
           }
-          console.log("YTTS:" + timestamp);
         }
       } else {
         videoId = youtubeUrl.substring(urlIndex + 2);
-        console.log("!!! " + videoId);
       }
     } else {
       let timeStampIndex: number = youtubeUrl.search("t=");
@@ -1516,7 +1502,6 @@ export class SyncService {
           timestamp = parseInt(youtubeTimeStamp);
         }
         videoId = youtubeUrl.substring(0, timeStampIndex - 1);
-        console.log("YTS:" + timestamp + "videoId: " + videoId);
       }
     }
 

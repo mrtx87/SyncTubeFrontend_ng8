@@ -361,7 +361,7 @@ export class VideoComponent implements OnInit {
         this.getPlayerState() == SyncService.placed ||
         this.getPlayerState() == SyncService.FINISHED
       ) {
-        console.log("playvideo");
+        //console.log("playvideo");
         this.syncService.sendTogglePlay(
           this.syncService.getLocalUser(),
           this.syncService.getRaumId(),
@@ -370,7 +370,7 @@ export class VideoComponent implements OnInit {
           this.getCurrentTime()
         );
       } else if (this.getPlayerState() == SyncService.playing) {
-        console.log("pausevideo");
+        //console.log("pausevideo");
         this.syncService.sendTogglePlay(
           this.syncService.getLocalUser(),
           this.syncService.getRaumId(),
