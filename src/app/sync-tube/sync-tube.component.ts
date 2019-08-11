@@ -1,22 +1,17 @@
-import {
-  Component,
-  OnInit,
-  HostListener,
-  AfterViewChecked,
-  AfterViewInit
-} from "@angular/core";
-import { SyncService } from "../sync.service";
-import { Raum } from "../raum";
+import { AfterViewChecked, AfterViewInit, Component, HostListener, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { Message } from "../message";
+import { Observable } from "rxjs";
 import { ChatMessage } from "../chat-message";
-import { User } from "./user";
+import { Message } from "../message";
+import { Raum } from "../raum";
+import { SupportedApi } from "../supported-api";
+import { SyncService } from "../sync.service";
+import { ToastrMessage } from "../toastr.message";
+import { ImportedPlaylist } from "../video/playlist";
 import { Video } from "../video/video";
 import { SearchQuery } from "./search-query";
-import { ImportedPlaylist } from "../video/playlist";
-import { Observable } from "rxjs";
-import { SupportedApi } from "../supported-api";
-import { ToastrMessage } from "../toastr.message";
+import { User } from "./user";
+import { Constants } from '../constants';
 
 @Component({
   selector: "app-sync-tube",
@@ -121,12 +116,12 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
       switch (event.keyCode) {
         case KEY_CODE.LEFT_ARROW:
           this.syncService.videoComponent.jumpBySeconds(
-            SyncService.TEN_SEC_BACK
+            Constants.TEN_SEC_BACK
           );
           break;
         case KEY_CODE.RIGHT_ARROW:
           this.syncService.videoComponent.jumpBySeconds(
-            SyncService.TEN_SEC_FORTH
+            Constants.TEN_SEC_FORTH
           );
           break;
         case KEY_CODE.BACKSPACE: //to startpage
@@ -134,7 +129,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
           break;
         case KEY_CODE.KEY_A:
           this.syncService.videoComponent.jumpBySeconds(
-            SyncService.TEN_SEC_BACK
+            Constants.TEN_SEC_BACK
           );
           break;
         case KEY_CODE.KEY_S:
@@ -143,7 +138,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
           break;
         case KEY_CODE.KEY_D:
           this.syncService.videoComponent.jumpBySeconds(
-            SyncService.TEN_SEC_FORTH
+            Constants.TEN_SEC_FORTH
           );
           break;
         case KEY_CODE.SPACE:
@@ -157,12 +152,12 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
           break;
         case KEY_CODE.KEY_J:
           this.syncService.videoComponent.jumpBySeconds(
-            SyncService.FIVE_SEC_BACK
+            Constants.FIVE_SEC_BACK
           );
           break;
         case KEY_CODE.KEY_L:
           this.syncService.videoComponent.jumpBySeconds(
-            SyncService.FIVE_SEC_FORTH
+            Constants.FIVE_SEC_FORTH
           );
           break;
         case KEY_CODE.PERIOD: // increase playback rate
@@ -452,10 +447,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
 
   openPlaylistLink(video_: Video) {
     if (video_.playlistId) {
-      this.importedPlaylist = new ImportedPlaylist();
-      this.hasImportedPlaylist = false;
-      this.searchResults = [];
-
+      this.importedPlaylist = new ImportedPlaylist(); this.hasImportedPlaylist = false; this.searchResults = [];
       this.syncService.currentDataService.searchPlaylist(
         video_.playlistId,
         false,
@@ -471,10 +463,6 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
 
   updatePlaylist(playlist: Video[]) {
     this.playlist = playlist;
-  }
-
-  parseYoutubeUrl(url: string): Video {
-    return this.syncService.parseYoutubeUrl(url);
   }
 
   getChatInputfield(): any {
@@ -590,7 +578,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
   }
 
   toKick(designatedUser: User) {
-    console.log("KICKINGUSER:" + designatedUser);
+    //console.log("KICKINGUSER:" + designatedUser);
     this.kickingUser = designatedUser;
   }
 

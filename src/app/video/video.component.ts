@@ -12,6 +12,7 @@ import { YoutubeVideoService } from "../youtube.video.service";
 import { VimeoVideoService } from "../vimeo.video.service";
 import { DailymotionVideoService } from "../dailymotion.video.service";
 import { IVideoService } from "../ivideo.service";
+import { Constants } from '../constants';
 declare const DM: any;
 declare const Vimeo: any;
 
@@ -63,7 +64,7 @@ export class VideoComponent implements OnInit {
     setInterval(function() {
       var state = that.syncService.currentVideoService.getPlayerState();
       if (that.getReceivedPlayerState() !== state) {
-        if (state === SyncService.FINISHED) {
+        if (state === Constants.FINISHED) {
           that.syncService.synctubeComponent.receivedPlayerState = state;
           that.syncService.sendAutoNextPlaylistVideo(
             that.getLocalUser(),
@@ -246,7 +247,7 @@ export class VideoComponent implements OnInit {
     let wait = setInterval(function() {
       if (
         that.syncService.currentVideoService.getPlayerState() ==
-        SyncService.playing
+        Constants.PLAYING
       ) {
         that.setVideoDuration();
         that.togglePlayVideo(that.getReceivedPlayerState());
@@ -335,14 +336,14 @@ export class VideoComponent implements OnInit {
 
   timer: any;
   togglePlayVideo(playerState: number) {
-    if (playerState == SyncService.playing) {
+    if (playerState == Constants.PLAYING) {
       this.playVideo();
       this.isPlaying = true;
       let that = this;
       this.updateVideoContinously(that);
       return;
     }
-    if (playerState == SyncService.paused) {
+    if (playerState == Constants.PAUSED) {
       this.pauseVideo();
       this.isPlaying = false;
       clearInterval(this.timer);
@@ -357,24 +358,24 @@ export class VideoComponent implements OnInit {
   triggerTogglePlay(): void {
     if (this.isLocalUserAdmin() && this.getCurrentVideo()) {
       if (
-        this.getPlayerState() == SyncService.paused ||
-        this.getPlayerState() == SyncService.placed ||
-        this.getPlayerState() == SyncService.FINISHED
+        this.getPlayerState() == Constants.PAUSED ||
+        this.getPlayerState() == Constants.PLACED ||
+        this.getPlayerState() == Constants.FINISHED
       ) {
         //console.log("playvideo");
         this.syncService.sendTogglePlay(
           this.syncService.getLocalUser(),
           this.syncService.getRaumId(),
-          SyncService.playing,
+          Constants.PLAYING,
           this.getCurrentVideo(),
           this.getCurrentTime()
         );
-      } else if (this.getPlayerState() == SyncService.playing) {
+      } else if (this.getPlayerState() == Constants.PLAYING) {
         //console.log("pausevideo");
         this.syncService.sendTogglePlay(
           this.syncService.getLocalUser(),
           this.syncService.getRaumId(),
-          SyncService.paused,
+          Constants.PAUSED,
           this.getCurrentVideo(),
           this.getCurrentTime()
         );

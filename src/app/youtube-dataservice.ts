@@ -7,8 +7,8 @@ import {
 } from "@angular/common/http";
 import { SyncTubeComponent } from "./sync-tube/sync-tube.component";
 import { ImportedPlaylist } from "./video/playlist";
-import { SupportedApiType } from "./supported-api-type";
 import { SearchQuery } from "./sync-tube/search-query";
+import { Constants } from './constants';
 
 export class YoutubeDataService implements IDataService {
   id: number;
@@ -50,7 +50,7 @@ export class YoutubeDataService implements IDataService {
   ) {
     this.http
       .get(
-        "https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&key=" +
+        "https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=" + Constants.MAX_RESULTS + "&key=" +
           this.APIKEY +
           "&q=" +
           query
@@ -109,7 +109,7 @@ export class YoutubeDataService implements IDataService {
   ) {
     this.http
       .get(
-        "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50" +
+        "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=" + Constants.MAX_RESULTS +
           (nextPageToken ? "&pageToken=" + nextPageToken : "") +
           "&key=" +
           this.APIKEY +

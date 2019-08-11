@@ -32,6 +32,7 @@ import { ToastrMessageTypes } from "./toastr.message.types";
 import { MessageTypes } from "./message.types";
 import { ToastrMessage } from "./toastr.message";
 import { AppCookie } from "./app.cookie";
+import { Constants } from './constants';
 
 @Injectable({
   providedIn: "root"
@@ -52,20 +53,9 @@ export class SyncService {
   toastrMessageTypes: ToastrMessageTypes;
   messageTypes: MessageTypes;
 
-  //PLAYERSTATES
-  static notStarted: number = -1;
-  static FINISHED: number = 0;
-  static playing: number = 1;
-  static paused: number = 2;
-  static buffering: number = 3;
-  static placed: number = 5; //video platziert
-  // jump rates for video.components
-  static FIVE_SEC_FORTH: number = 5;
-  static FIVE_SEC_BACK: number = -5;
-  static TEN_SEC_FORTH: number = 10;
-  static TEN_SEC_BACK: number = -10;
 
-  static cookieKey: string = "U_COOKIE";
+
+
 
   private _selectedVideoApi: Number;
   supportedApis: SupportedApi[];
@@ -310,7 +300,6 @@ export class SyncService {
         this.replaceUrl(message.raumId);
         this.updateVideo(message);
         this.retrieveRaumPlaylist();
-        //console.log(message.users);
         break;
       case this.messageTypes.JOIN_ROOM:
         this.joinReponseMessage = message;
@@ -318,7 +307,6 @@ export class SyncService {
         this.replaceUrl(message.raumId);
         this.updateVideo(message);
         this.setInitalPlaybackRate(message.currentPlaybackRate);
-
         this.retrieveRaumPlaylist();
         this.retrieveHistory();
         this.retrieveToastrMessages();
@@ -388,14 +376,14 @@ export class SyncService {
         this.retrieveRaumPlaylist();
         break;
       case this.messageTypes.REQUEST_SYNC_TIMESTAMP:
-        let v: Video = new Video();
-        v.videoId = this.getVideo().videoId;
-        v.timestamp = this.getCurrentTime();
-        this.sendCurrentTimeStamp(this.getLocalUser(), this.getRaumId(), v);
+        let syncVideo: Video = new Video();
+        syncVideo.videoId = this.getVideo().videoId;
+        syncVideo.timestamp = this.getCurrentTime();
+        this.sendCurrentTimeStamp(this.getLocalUser(), this.getRaumId(), syncVideo);
         break;
       case this.messageTypes.REMOVE_VIDEO_PLAYLIST:
         this.synctubeComponent.playlist = this.getLocalPlaylist().filter(
-          vid => vid.id !== message.playlistVideo.id
+          videoToRemove => videoToRemove.id !== message.playlistVideo.id
         );
         this.updateVideo(message);
         this.switchVideo(message);
@@ -650,7 +638,7 @@ export class SyncService {
       this.loadVideoById({
         videoId: message.video.videoId,
         startSeconds: message.video.timestamp,
-        autoplay: message.playerState != SyncService.playing ? false : true
+        autoplay: message.playerState != Constants.PLAYING ? false : true
       });
       this.videoComponent.currentTimeProgressbar = message.video.timestamp;
       this.videoComponent.currentDisplayedTime = message.video.timestamp;
@@ -658,7 +646,7 @@ export class SyncService {
 
       let that = this;
       let wait = setInterval(function () {
-        if (that.getPlayerState() == SyncService.playing) {
+        if (that.getPlayerState() == Constants.PLAYING) {
           that.setVideoDuration();
           that.setPlaybackRates();
           that.setPlaybackRate(message.currentPlaybackRate);
@@ -920,122 +908,6 @@ export class SyncService {
     );
   }
 
-  /*
-    searchQuery(query: string, normalQuery: boolean, timestamp?: number) {
-      let params: HttpParams = new HttpParams();
-      params.append("q", query);
-      this.http
-        .get(
-          "https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&key=" +
-          '' +
-          "&q=" +
-          query
-        )
-        .subscribe(response => {
-          //console.log(response);
-          let data: any = response;
-          let items: any[] = data.items;
-          let vids: Video[] = items
-            .filter(
-              i =>
-                i.id.kind === "youtube#playlist" || i.id.kind === "youtube#video"
-            )
-            .map(item => {
-              let video: Video = new Video();
-              if (item.id.kind === "youtube#playlist") {
-                video.isPlaylistLink = true;
-                video.playlistId = item.id.playlistId;
-              } else {
-                video.videoId = item.id.videoId;
-              }
-  
-              if (item.snippet.thumbnails.high) {
-                video.thumbnail = item.snippet.thumbnails.high.url;
-              } else if (item.snippet.thumbnails.medium) {
-                video.thumbnail = item.snippet.thumbnails.medium.url;
-              } else {
-                video.thumbnail = item.snippet.thumbnails.default.url;
-              }
-              video.title = item.snippet.title;
-              video.description = item.snippet.description;
-              video.publishedAt = item.snippet.publishedAt;
-              return video;
-            });
-          if (normalQuery) {
-            this.synctubeComponent.searchResults = vids;
-          } else {
-            let vid: Video = vids[0];
-            if (timestamp) {
-              vid.timestamp = timestamp;
-            }
-            this.synctubeComponent.searchResults = [vid];
-          }
-        });
-    }
-  
-    searchPlaylist(query: string, mode: boolean, nextPageToken?: string, title?: string) {
-      let params: HttpParams = new HttpParams();
-      params.append("q", query);
-      this.http
-        .get(
-          "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50" +
-          (nextPageToken ? "&pageToken=" + nextPageToken : "") +
-          "&key=" +
-          '' +
-          "&playlistId=" +
-          query
-        )
-        .subscribe(response => {
-          let data: any = response;
-          let items: any[] = data.items;
-          if (this.synctubeComponent.importedPlaylist) {
-            this.synctubeComponent.importedPlaylist.size =
-              data.pageInfo.totalResults;
-  
-          }
-          let nextPageToken: string = data.nextPageToken;
-          //console.log(data);
-          let vids: Video[] = items
-            .filter(i => (i.snippet.resourceId.videoId ? true : false))
-            .map(it => it.snippet)
-            .map(item => {
-              let video: Video = new Video();
-              video.videoId = item.resourceId.videoId;
-              video.title = item.title;
-              video.description = item.description;
-              video.publishedAt = item.publishedAt;
-  
-              if (item.snippet.thumbnails.high) {
-                video.thumbnail = item.snippet.thumbnails.high.url;
-              } else if (item.snippet.thumbnails.medium) {
-                video.thumbnail = item.snippet.thumbnails.medium.url;
-              } else {
-                video.thumbnail = item.snippet.thumbnails.default.url;
-              }
-              return video;
-            });
-  
-          if (vids) {
-            for (let vid of vids) {
-              this.synctubeComponent.searchResults.push(vid);
-            }
-            //this.synctubeComponent.searchResults = [...this.synctubeComponent.searchResults, ...vids];
-          }
-  
-          if (nextPageToken) {
-            this.searchPlaylist(query, mode, nextPageToken, title);
-          } else {
-            this.synctubeComponent.importedPlaylist = new ImportedPlaylist();
-            this.synctubeComponent.importedPlaylist.items = this.synctubeComponent.searchResults;
-            this.synctubeComponent.importedPlaylist.size = this.synctubeComponent.importedPlaylist.items.length;
-            if (title) {
-              this.synctubeComponent.importedPlaylist.title = title;
-            }
-            this.synctubeComponent.hasImportedPlaylist = true;
-          }
-        });
-    }
-  */
   sendDisconnectMessage(user: User, raumId: string) {
     //console.log("[disconnect-client:] " + user);
     this.stompClient.send(
@@ -1184,9 +1056,6 @@ export class SyncService {
     user: User,
     playlistVideo: Video
   ) {
-    console.log(
-      "[remove-video-from-playlist:] " + user + " | video: " + playlistVideo
-    );
     if (playlistVideo) {
       this.stompClient.send(
         "/app/send/remove-video-from-playlist",
@@ -1201,9 +1070,6 @@ export class SyncService {
   }
 
   sendAddVideoToPlaylist(raumId: string, user: User, playlistvideo: Video) {
-    // console.log(
-    //   "[add-video-to-playlist:] " + user + " | video: " + playlistvideo.videoId
-    // );
     if (playlistvideo) {
       this.stompClient.send(
         "/app/send/add-video-to-playlist",
@@ -1217,17 +1083,7 @@ export class SyncService {
     }
   }
 
-  sendAddVideoToPlaylistAsNext(
-    raumId: string,
-    user: User,
-    playlistvideo: Video
-  ) {
-    console.log(
-      "[add-video-to-playlist-asnext:] " +
-      user +
-      " | video: " +
-      playlistvideo.videoId
-    );
+  sendAddVideoToPlaylistAsNext(raumId: string, user: User, playlistvideo: Video) {
     if (playlistvideo) {
       this.stompClient.send(
         "/app/send/add-video-to-playlist-asnext",
@@ -1246,12 +1102,6 @@ export class SyncService {
     user: User,
     playlistvideo: Video
   ) {
-    console.log(
-      "[add-video-to-playlist-ascurrent:] " +
-      user +
-      " | video: " +
-      playlistvideo.videoId
-    );
     if (playlistvideo) {
       this.stompClient.send(
         "/app/send/add-video-to-playlist-ascurrent",
@@ -1266,7 +1116,6 @@ export class SyncService {
   }
 
   sendRequestSyncTimestamp() {
-    console.log("[request-sync-timestamp]");
     this.stompClient.send(
       "/app/send/request-sync-timestamp",
       {},
@@ -1394,28 +1243,23 @@ export class SyncService {
     this.videoComponent.toggleDisplayOptions();
   }
 
-  /*
-  setSize(width: number, height: number) {
-    this.videoComponent.setSize(width, height);
-  }*/
-
   toggleFullscreen() {
     this.videoComponent.toggleDisplayFullscreen();
   }
 
   getCookie(): AppCookie {
     if (this.hasCookie()) {
-      return JSON.parse(this.cookieService.get(SyncService.cookieKey));
+      return JSON.parse(this.cookieService.get(Constants.COOKIE_KEY));
     }
   }
 
   hasCookie(): boolean {
-    return this.cookieService.check(SyncService.cookieKey);
+    return this.cookieService.check(Constants.COOKIE_KEY);
   }
 
   setCookie(cookie: AppCookie) {
     //name: string, value: string, expires?: number | Date, path?: string, domain?: string, secure?: boolean, sameSite?: 'Lax' | 'Strict' 
-    this.cookieService.set(SyncService.cookieKey, JSON.stringify(cookie), 30, '/');
+    this.cookieService.set(Constants.COOKIE_KEY, JSON.stringify(cookie), 30, '/');
   }
 
   isLocalUserAdmin(): Boolean {
@@ -1444,74 +1288,4 @@ export class SyncService {
     this.videoComponent.startDisplayingSeconds();
   }
 
-  parseYoutubeUrl(url: string): Video {
-    //https://www.youtube.com/watch?v=luQ0JWcrsWg&feature=youtu.be&list=PLuUrokoVSxlfUJuJB_D8j_wsFR4exaEmy&t=81
-    //https://youtu.be/AmAy0KABoX0
-
-    let youtubeUrl: string = url;
-    let result: string[] = youtubeUrl.split("/");
-    youtubeUrl = result[result.length - 1];
-    let videoId: string;
-    let listlink: string;
-    let timestamp: number;
-    let urlIndex: number = youtubeUrl.search("v=");
-    if (urlIndex > -1) {
-      let andIndex: number = youtubeUrl.search("&");
-      if (andIndex > -1) {
-        videoId = youtubeUrl.substring(urlIndex + 2, andIndex);
-        youtubeUrl = youtubeUrl.substring(andIndex + 1);
-
-        let listIndex: number = youtubeUrl.search("list=");
-        if (listIndex > -1) {
-          let youtubeList: string = youtubeUrl.substring(listIndex + 5);
-          andIndex = youtubeList.search("&");
-          if (andIndex > -1) {
-            listlink = youtubeList.substring(listIndex, andIndex);
-          } else {
-            listlink = youtubeList;
-          }
-        }
-
-        let timeStampIndex: number = youtubeUrl.search("t=");
-        if (timeStampIndex > -1) {
-          let youtubeTimeStamp: string = youtubeUrl.substring(
-            timeStampIndex + 2
-          );
-          andIndex = youtubeTimeStamp.search("&");
-          if (andIndex > -1) {
-            timestamp = parseInt(
-              youtubeTimeStamp.substring(timeStampIndex, andIndex)
-            );
-          } else {
-            timestamp = parseInt(youtubeTimeStamp);
-          }
-        }
-      } else {
-        videoId = youtubeUrl.substring(urlIndex + 2);
-      }
-    } else {
-      let timeStampIndex: number = youtubeUrl.search("t=");
-      if (timeStampIndex > -1) {
-        let youtubeTimeStamp: string = youtubeUrl.substring(timeStampIndex + 2);
-        let andIndex = youtubeTimeStamp.search("&");
-        if (andIndex > -1) {
-          timestamp = parseInt(
-            youtubeTimeStamp.substring(timeStampIndex, andIndex)
-          );
-        } else {
-          timestamp = parseInt(youtubeTimeStamp);
-        }
-        videoId = youtubeUrl.substring(0, timeStampIndex - 1);
-      }
-    }
-
-    if (videoId || timestamp || listlink) {
-      let video: Video = new Video();
-      video.videoId = videoId;
-      video.timestamp = timestamp;
-      video.playlistId = listlink;
-      return video;
-    }
-    return null;
-  }
 }
