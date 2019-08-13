@@ -351,7 +351,7 @@ export class SyncService {
       case this.messageTypes.TO_PRIVATE_ROOM:
         this.setRaumStatus(message.raumStatus);
         this.updateClientChat(message);
-        this.setLocalUser(message.user);
+        //this.setLocalUser(message.user);
         break;
       case this.messageTypes.SWITCH_VIDEO:
         this.updateVideo(message);
@@ -400,7 +400,7 @@ export class SyncService {
         break;
       case this.messageTypes.REFRESH_USER_AND_LIST:
         this.updateClientChat(message);
-        this.setLocalUser(message.user);
+        //this.setLocalUser(message.user);
         break;
       case this.messageTypes.REFRESH_USERLIST:
         this.updateClientChat(message);
