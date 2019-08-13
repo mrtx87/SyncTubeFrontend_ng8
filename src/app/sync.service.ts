@@ -314,6 +314,7 @@ export class SyncService {
         break;
       case this.messageTypes.UPDATE_CLIENT:
         this.updateClientChat(message);
+        this.updateLocalUser(message.user);
         break;
       case this.messageTypes.INSERT_NEW_VIDEO:
         this.updateVideo(message);
@@ -419,6 +420,7 @@ export class SyncService {
         this.setPlaybackRate(message.currentPlaybackRate);
         break;
       case this.messageTypes.MUTE_USER: // TODO:
+        this.updateLocalUser(message.user);
         break;
       case this.messageTypes.PARDONED_KICKED_USER:
         // TODO:
@@ -812,6 +814,16 @@ export class SyncService {
         {},
         JSON.stringify({ user: user, raumId: raumId, video: video })
       );
+    }
+  }
+
+  updateLocalUser(user: User) {
+    if (user) {
+      let currentUser = this.getLocalUser();
+      currentUser.userId = user.userId;
+      currentUser.userName = user.userName;
+      currentUser.mute = user.mute;
+      currentUser.admin = user.admin;
     }
   }
 
