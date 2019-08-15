@@ -2,19 +2,26 @@
   <div class="top-panel-left">
     <!--<h3 class="page-title"><a href="http://localhost:4200" style="color:white"> XXXXX</a></h3>-->
     <a href="http://localhost:4200"><img class="s2glogo" src="assets/stream2gether.png" /></a>
-    <select (change)="switchSelectedApi(event)" [(ngModel)]="selectedDataApi" *ngIf="raumId && user.admin">
+    <!-- <select (change)="switchSelectedApi(event)" [(ngModel)]="selectedDataApi" *ngIf="raumId && user.admin">
       <option *ngFor="let supportedApi_ of supportedApis" [ngValue]="supportedApi_">{{supportedApi_.name}} </option>
-    </select>
+    </select> -->
+
+    <div class="select-api-container" (click)="isSelectingApi = !isSelectingApi">
+      <img class="selected-api-icon" src="{{selectedDataApi.iconUrl}}">
+    </div>
+
     <input *ngIf="raumId && user.admin" (keyup.enter)="search()" [(ngModel)]="searchInput" class="user-query"
       type="text" placeholder="Suchen" />
+  </div>
+
+
+
+  <div class="top-panel-right">
+    <h1 class="raumTitle-container">{{ raumTitle }}</h1>
     <div class="room-status-panel">
       <label [hidden]="!raumId || !raumStatus">Private <img class="rsp-lock" src="assets/padlock.svg" /></label>
       <label [hidden]="!raumId || raumStatus">Public <img class="rsp-lock" src="assets/padlock-unlock.svg" /></label>
     </div>
-  </div>
-
-  <div class="top-panel-right">
-    <h1 class="raumTitle-container">{{ raumTitle }}</h1>
   </div>
 </div>
 
@@ -76,7 +83,8 @@
 </div>
 
 
-<div *ngIf="raumId"> <!-- [hidden]="!raumId" *ngIf="raumId"> -->
+<div *ngIf="raumId">
+  <!-- [hidden]="!raumId" *ngIf="raumId"> -->
 
   <!-- Visible when room is created or joined -->
   <div [hidden]="!raumId" [className]="
@@ -374,7 +382,8 @@
           </div>
           <div style="display:flex; width:100%; ">
             <div class="title_description_reset_url_panel mb-1">
-              <div (click)="sendUpdateTitleAndDescription()" [hidden]="!titleOrDescriptionHasChanged()" class="smallText update-btn">update <br> Titel &
+              <div (click)="sendUpdateTitleAndDescription()" [hidden]="!titleOrDescriptionHasChanged()"
+                class="smallText update-btn">update <br> Titel &
                 Beschreibung</div>
             </div>
 
@@ -435,5 +444,11 @@
         {{toastrMessage.createdAt | date: "dd.MM.yyyy hh:mm"}}
       </div>
     </div>
+  </div>
+</div>
+
+<div [hidden]="!isSelectingApi" class="api-icons-container">
+  <div class="api-selection-row" *ngFor="let supportedApi_ of supportedApis">
+    <img class="api-icon" src="{{supportedApi_.iconUrl}}"> {{supportedApi_.name}}
   </div>
 </div>

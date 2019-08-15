@@ -1,8 +1,5 @@
 export class Constants {
 
-
-
-
     //PLAYERSTATES
     static NOTSTARTED: number = -1;
     static FINISHED: number = 0;

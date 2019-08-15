@@ -628,9 +628,6 @@ export class SyncService {
     if (message.currentPlaybackRate) {
       this.setInitalPlaybackRate(message.currentPlaybackRate);
     }
-    if (this.videoComponent) {
-      //this.videoComponent.availableQualitys = this.videoComponent.getAvailableQualityLevels();
-    }
   }
 
   switchVideo(message: Message) {

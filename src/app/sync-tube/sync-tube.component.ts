@@ -25,6 +25,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
   //APIS STUFF
   supportedApis: SupportedApi[];
   selectedDataApi: SupportedApi;
+  isSelectingApi = false;
 
   publicRaum: boolean = false;
   privateRaum: boolean = true;
