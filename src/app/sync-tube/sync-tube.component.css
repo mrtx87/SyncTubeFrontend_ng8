@@ -379,11 +379,8 @@
   transition-duration: 0.3s;
 }
 
-.api-icon:hover {
-  height: 22px;
-  -webkit-transition-duration: 0.3s;
-  transition-duration: 0.3s;
-}
+
+
 
 .select-api-container {
   background-color: var(--color9);
@@ -408,6 +405,12 @@
 .api-selection-row:hover {
   background-color: var(--color3);
   border-radius: 4px;
+}
+
+.api-selection-row:hover img {
+  height: 22px;
+  -webkit-transition-duration: 0.3s;
+  transition-duration: 0.3s;
 }
 
 .api-selection-row-selected {
