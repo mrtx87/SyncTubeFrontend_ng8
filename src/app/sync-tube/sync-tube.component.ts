@@ -354,7 +354,10 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
     );
   }
 
-  switchSelectedApi() { }
+  switchSelectedApi(supportedDataApi_ : SupportedApi) { 
+    this.selectedDataApi = supportedDataApi_;
+    this.isSelectingApi = false;
+  }
 
   clearRoomVars() {
     this.raumId = null;
