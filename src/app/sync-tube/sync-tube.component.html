@@ -448,7 +448,13 @@
 </div>
 
 <div [hidden]="!isSelectingApi" class="api-icons-container">
-  <div class="api-selection-row" *ngFor="let supportedApi_ of supportedApis">
-    <img class="api-icon" src="{{supportedApi_.iconUrl}}"> {{supportedApi_.name}}
+    <img (click)="isSelectingApi = false" style="position:absolute; top:3px; right:3px; width:15px;" src="assets/delete.svg">
+
+  <div class="api-icons-content">
+    <div [className]="(supportedApi_.id == selectedDataApi.id) ? 'api-selection-row-selected' : 'api-selection-row'"
+      *ngFor="let supportedApi_ of supportedApis" (click)="switchSelectedApi(supportedApi_)">
+      <img [className]="(supportedApi_.id == 1) ? 'yt-api-icon' : 'api-icon'" src="{{supportedApi_.iconUrl}}">
+      {{supportedApi_.name}}
+    </div>
   </div>
 </div>
