@@ -48,7 +48,7 @@ export class SyncService {
 
   synctubeComponent: SyncTubeComponent;
   videoComponent: VideoComponent;
-  joinReponseMessage: Message;
+  enterResponseMessage: Message;
 
   toastrMessageTypes: ToastrMessageTypes;
   messageTypes: MessageTypes;
@@ -114,6 +114,33 @@ export class SyncService {
   }
 
 
+  registeredVideoApiCount : number = 0;
+  hasSuccessfullyRegisteredAllVideoApis(supportedApi: SupportedApi) {
+    if(this.dataServices.has(supportedApi.id)) {
+      this.registeredVideoApiCount += 1;
+    }
+
+    if(this.registeredVideoApiCount == this.supportedApis.length) {
+      console.log("succesfully generated all video apis: " + this.registeredVideoApiCount);
+    }
+  }
+
+  readyVideoPlayersCount : number = 0;
+  allVideoPlayersAreReady(supportedApi: SupportedApi) {
+    if(this.dataServices.has(supportedApi.id)) {
+      this.readyVideoPlayersCount += 1;
+    }
+
+    if(this.readyVideoPlayersCount >= this.supportedApis.length) {
+      console.log("success -> all video players are ready:  " + this.readyVideoPlayersCount);
+      //this.switchVideo()
+
+      console.log("load first video");
+      this.switchVideo(this.enterResponseMessage)
+
+    }
+  }
+
 
   retrieveToastrMessageTypes() {
     let that = this;
@@ -172,7 +199,7 @@ export class SyncService {
             );
             this.dataServices.set(SupportedApiType.Youtube, youTubeDataService);
             console.log(
-              "Successfully generated api: " + youTubeDataService.name
+              "Successfully generated data-api: " + youTubeDataService.name
             );
             break;
           case SupportedApiType.Dailymotion:
@@ -187,7 +214,7 @@ export class SyncService {
               dailymotionDataService
             );
             console.log(
-              "Successfully generated api: " + dailymotionDataService.name
+              "Successfully generated data-api: " + dailymotionDataService.name
             );
             break;
           case SupportedApiType.Vimeo:
@@ -198,7 +225,7 @@ export class SyncService {
               supportedApi.name
             );
             this.dataServices.set(SupportedApiType.Vimeo, vimeoDataService);
-            console.log("Successfully generated api: " + vimeoDataService.name);
+            console.log("Successfully generated data-api: " + vimeoDataService.name);
             break;
 
           default:
@@ -296,13 +323,15 @@ export class SyncService {
 
     switch (message.type) {
       case this.messageTypes.CREATE_ROOM:
+        this.enterResponseMessage = message;
         this.createClient(message);
         this.replaceUrl(message.raumId);
         this.updateVideo(message);
+        this.setInitalPlaybackRate(message.currentPlaybackRate);
         this.retrieveRaumPlaylist();
         break;
       case this.messageTypes.JOIN_ROOM:
-        this.joinReponseMessage = message;
+        this.enterResponseMessage = message;
         this.createClient(message);
         this.replaceUrl(message.raumId);
         this.updateVideo(message);
@@ -317,7 +346,6 @@ export class SyncService {
         this.updateLocalUser(message.user);
         break;
       case this.messageTypes.INSERT_NEW_VIDEO:
-        this.updateVideo(message);
         this.switchVideo(message);
         this.synctubeComponent.chatMessages.push(message.chatMessage);
         break;
@@ -335,9 +363,9 @@ export class SyncService {
       case this.messageTypes.TOGGLE_PLAY:
         this.videoComponent.currentDisplayedTime = message.video.timestamp;
         this.videoComponent.currentTimeProgressbar = message.video.timestamp;
+        this.updateVideo(message);
         this.seekTo(message.video.timestamp, true);
         this.togglePlayVideo(message.playerState);
-        this.updateVideo(message);
         break;
       case this.messageTypes.DISCONNECT:
         break;
@@ -355,7 +383,6 @@ export class SyncService {
         //this.setLocalUser(message.user);
         break;
       case this.messageTypes.SWITCH_VIDEO:
-        this.updateVideo(message);
         this.switchVideo(message);
         this.updateHistory(message);
         break;
@@ -632,6 +659,8 @@ export class SyncService {
 
   switchVideo(message: Message) {
     if (message && message.video) {
+
+      this.updateVideo(message);
       this.selectedVideoApi = message.video.api;
       this.setDisplayedIframe();
       this.loadVideoById({
@@ -1137,19 +1166,19 @@ export class SyncService {
   }
 
   getPlayerState(): number {
-    return this.videoComponent.getPlayerState();
+    return this.currentVideoService.getPlayerState();
   }
 
   seekTo(seconds: number, allowSeekAhead: Boolean): void {
-    this.videoComponent.seekTo(seconds, allowSeekAhead);
+    this.currentVideoService.seekTo(seconds, allowSeekAhead);
   }
 
   pauseVideo(): void {
-    this.videoComponent.pauseVideo();
+    this.currentVideoService.pauseVideo();
   }
 
   stopVideo(): void {
-    this.videoComponent.stopVideo();
+    this.currentVideoService.stopVideo();
   }
 
   togglePlayVideo(toggle: number): void {
@@ -1181,15 +1210,15 @@ export class SyncService {
   }
 
   mute(): void {
-    this.videoComponent.mute();
+    this.currentVideoService.mute();
   }
 
   unMute(): void {
-    this.videoComponent.unMute();
+    this.currentVideoService.unMute();
   }
 
   isMuted(): Boolean {
-    return this.videoComponent.isMuted();
+    return this.currentVideoService.isMuted();
   }
 
   togglePlay() { }
@@ -1219,20 +1248,20 @@ export class SyncService {
   }
 
   getVideoDuration(): number {
-    return this.videoComponent.getVideoDuration();
+    return this.currentVideoService.getVideoDuration();
   }
 
   getAvailablePlaybackRates(): Array<number> {
-    return this.videoComponent.getAvailablePlaybackRates();
+    return this.currentVideoService.getAvailablePlaybackRates();
   }
 
   getPlaybackRate(): number {
-    return this.videoComponent.getPlaybackRate();
+    return this.currentVideoService.getPlaybackRate();
   }
 
   setPlaybackRate(rate: number) {
     if (this.videoComponent) {
-      this.videoComponent.setPlaybackRate(rate);
+      this.currentVideoService.setPlaybackRate(rate);
     }
   }
 

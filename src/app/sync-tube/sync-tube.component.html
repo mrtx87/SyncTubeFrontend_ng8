@@ -6,7 +6,7 @@
       <option *ngFor="let supportedApi_ of supportedApis" [ngValue]="supportedApi_">{{supportedApi_.name}} </option>
     </select> -->
 
-    <div class="select-api-container" (click)="isSelectingApi = !isSelectingApi">
+    <div *ngIf="raumId" class="select-api-container" (click)="isSelectingApi = !isSelectingApi">
       <img class="selected-api-icon" src="{{selectedDataApi.iconUrl}}">
     </div>
 
@@ -449,7 +449,7 @@
   </div>
 </div>
 
-<div [hidden]="!isSelectingApi" class="api-icons-container">
+<div *ngIf="raumId" [hidden]="!isSelectingApi" class="api-icons-container">
     <img (click)="isSelectingApi = false" style="position:absolute; top:3px; right:3px; width:15px;" src="assets/delete.svg">
 
   <div class="api-icons-content">
