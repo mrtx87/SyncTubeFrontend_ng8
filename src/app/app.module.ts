@@ -13,6 +13,7 @@ import { ChatMessagePipe } from './chatmessage.pipe';
 import { CookieService } from 'ngx-cookie-service';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FooterComponent } from './footer/footer.component';
 
 
 
@@ -25,7 +26,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     ChatMessagePipe,
     VideoComponent,
     SyncTubeComponent,
-    NoFloatPipe
+    NoFloatPipe,
+    FooterComponent
   ],
   imports: [
     BrowserModule,
