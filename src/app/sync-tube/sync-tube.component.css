@@ -329,13 +329,29 @@
 .user-query {
   width: 50%;
   height: 3vh;
-  margin: 0 10px 0 0;
   border: none;
   background-color: var(--color9);
   color: white;
   padding-left: 8px;
   border-radius: 3px;
 }
+
+
+
+.dm-selection {
+
+  padding: 2px;
+  border-radius: 3px;
+  background-color:var(--color9);
+  border: 1px solid black;
+  margin-left:-75px;
+  color:white;
+}
+
+.dm-selection:hover {
+  background-color:var(--color7);
+}
+
 
 .api-icons-container {
   top: 15vh;
@@ -418,7 +434,7 @@
 .api-selection-row:hover .yt-api-icon {
   width: 23px;
   -webkit-transition-duration: 0.2s;
-  transition-duration: 0.2s;
+  transition-duration: 0.2caterps;
 }
 
 .api-selection-row-selected {

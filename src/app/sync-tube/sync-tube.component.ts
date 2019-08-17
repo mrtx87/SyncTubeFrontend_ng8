@@ -27,6 +27,8 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
   selectedDataApi: SupportedApi;
   isSelectingApi = false;
 
+  dailymotionSearchTypeSelection: string = 'video';
+
   publicRaum: boolean = false;
   privateRaum: boolean = true;
 
@@ -451,7 +453,9 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
 
   openPlaylistLink(video_: Video) {
     if (video_.playlistId) {
-      this.importedPlaylist = new ImportedPlaylist(); this.hasImportedPlaylist = false; this.searchResults = [];
+      this.importedPlaylist = new ImportedPlaylist(); 
+      this.hasImportedPlaylist = false; 
+      this.searchResults = [];
       this.syncService.currentDataService.searchPlaylist(
         video_.playlistId,
         false,

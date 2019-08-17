@@ -240,19 +240,25 @@ export class VideoComponent implements OnInit {
   }
 
   initVimeoPlayer(supportedApi: SupportedApi) {
-    let iframe = document.getElementById(supportedApi.name + "player");
-    let videoPlayer = new Vimeo.Player(iframe, { muted: true, autoplay: true });
+    let div = document.getElementById(supportedApi.name + "player");
+    let videoPlayer = new Vimeo.Player('vimeoplayer', {  id: '213468818', muted: true, autoplay: true });
     let that = this;
+    let vimeoVideoService = new VimeoVideoService(supportedApi, this.syncService, videoPlayer, div);
     this.syncService.videoServices.set(
       supportedApi.id,
-      new VimeoVideoService(supportedApi, this.syncService, videoPlayer, iframe)
+      vimeoVideoService
     );
     this.syncService.hasSuccessfullyRegisteredAllVideoApis(supportedApi);
-    iframe.hidden = true;
+    div.hidden = true;
     videoPlayer.ready().then(function () {
       console.log("onReady: vimeo player ready");
+      vimeoVideoService.iframe = div.firstChild;
+      vimeoVideoService.div = div;
+      vimeoVideoService.videoPlayer = videoPlayer;
+      reframe(div.firstChild);
       that.syncService.allVideoPlayersAreReady(supportedApi);
 
+      
     });
     /*videoPlayer.on('play', function () {
       console.log('Played the video');
@@ -509,7 +515,7 @@ export class VideoComponent implements OnInit {
   }
 
   toggleDisplayPlaybackRates() {
-    if (this.playbackRates.length > 0) {
+    if (this.playbackRates && this.playbackRates.length > 0) {
       this.displayPlaybackRatesOptions = !this.displayPlaybackRatesOptions;
     }
   }

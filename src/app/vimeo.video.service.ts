@@ -8,6 +8,7 @@ export class VimeoVideoService implements IVideoService {
     reframed: boolean;
     name: string;
     iframe: any;
+    div : any;
     videoPlayer: any;
     syncService: SyncService;
     supportedApi: SupportedApi;
@@ -24,10 +25,10 @@ export class VimeoVideoService implements IVideoService {
     }
 
     hide(): void {
-        this.iframe.hidden = true;
+        this.div.hidden = true;
     }
     unHide(): void {
-        this.iframe.hidden = false;
+        this.div.hidden = false;
     }
     isHidden(): boolean {
         return this.iframe.hidden;
@@ -45,7 +46,7 @@ export class VimeoVideoService implements IVideoService {
                 that.reframed = true;
                 reframe(that.iframe);
             }
-            that.syncService.videoComponent.togglePlayVideo(that.syncService.getReceivedPlayerState());
+            that.syncService.togglePlayVideo(that.syncService.getReceivedPlayerState());
         })
     }
     mute(): void {

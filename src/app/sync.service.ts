@@ -53,10 +53,6 @@ export class SyncService {
   toastrMessageTypes: ToastrMessageTypes;
   messageTypes: MessageTypes;
 
-
-
-
-
   private _selectedVideoApi: Number;
   supportedApis: SupportedApi[];
 

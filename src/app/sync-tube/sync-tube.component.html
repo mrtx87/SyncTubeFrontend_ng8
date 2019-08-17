@@ -12,6 +12,10 @@
 
     <input *ngIf="raumId && user.admin" (keyup.enter)="search()" [(ngModel)]="searchInput" class="user-query"
       type="text" placeholder="Suchen" />
+    <select class="dm-selection" *ngIf="selectedDataApi.id == 2" [(ngModel)]="dailymotionSearchTypeSelection">
+      <option class="dm-option"  [ngValue]="'video'">video</option>
+      <option class="dm-option" [ngValue]="'playlist'">playlist</option>
+    </select>
   </div>
 
 
@@ -450,7 +454,8 @@
 </div>
 
 <div *ngIf="raumId" [hidden]="!isSelectingApi" class="api-icons-container">
-    <img (click)="isSelectingApi = false" style="position:absolute; top:3px; right:3px; width:15px;" src="assets/delete.svg">
+  <img (click)="isSelectingApi = false" style="position:absolute; top:3px; right:3px; width:15px;"
+    src="assets/delete.svg">
 
   <div class="api-icons-content">
     <div [className]="(supportedApi_.id == selectedDataApi.id) ? 'api-selection-row-selected' : 'api-selection-row'"

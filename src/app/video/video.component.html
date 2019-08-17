@@ -60,7 +60,7 @@
         </div>
       </div>
       <div class="quality-container">{{currentPlaybackQuality}}</div>
-      <div  (click)="toggleDisplayPlaybackRates()" class="controls-playbackrates"> {{(playbackRates.length > 0) ? currentPlaybackRate : 1}}x
+      <div  (click)="toggleDisplayPlaybackRates()" class="controls-playbackrates"> {{(playbackRates && playbackRates.length > 0) ? currentPlaybackRate : 1}}x
       </div>
       <div (click)="toggleDisplayCinemaMode()" class="controls-cinema">
         <img class="cinema-box" src="assets/kinomodus.svg">
@@ -77,8 +77,9 @@
   <div  [className]="!syncService.synctubeComponent.displayFullscreen ? 'video' : 'video-fullscreen'" id="dailymotionplayer">
   </div>
   <!-- Vimeo video -->
-  <iframe  background="true" autoplay="true" mute="1" loop="false" id="vimeoplayer" src="https://player.vimeo.com/video/213468818?autoplay=1&muted=1" [className]="!syncService.synctubeComponent.displayFullscreen ? 'video' : 'video-fullscreen'" width="500px" height="350px"></iframe>
-
+  <div id="vimeoplayer"></div>
+  <!-- <iframe  background="true" autoplay="true" mute="1" loop="false"  src="https://player.vimeo.com/video/213468818?autoplay=1&muted=1" [className]="!syncService.synctubeComponent.displayFullscreen ? 'video' : 'video-fullscreen'" width="500px" height="350px"></iframe>
+  -->
    <div *ngIf="displaySecondsBack" class="middle-back-seconds-overlay">
     <img src="assets/back10sec.png">
   </div>
