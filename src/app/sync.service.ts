@@ -48,7 +48,7 @@ export class SyncService {
 
   synctubeComponent: SyncTubeComponent;
   videoComponent: VideoComponent;
-  enterResponseMessage: Message;
+  initResponseMessage: Message;
 
   toastrMessageTypes: ToastrMessageTypes;
   messageTypes: MessageTypes;
@@ -136,7 +136,7 @@ export class SyncService {
       //this.switchVideo()
 
       console.log("load first video");
-      this.switchVideo(this.enterResponseMessage)
+      this.switchVideo(this.initResponseMessage)
 
     }
   }
@@ -323,7 +323,7 @@ export class SyncService {
 
     switch (message.type) {
       case this.messageTypes.CREATE_ROOM:
-        this.enterResponseMessage = message;
+        this.initResponseMessage = message;
         this.createClient(message);
         this.replaceUrl(message.raumId);
         this.updateVideo(message);
@@ -331,7 +331,7 @@ export class SyncService {
         this.retrieveRaumPlaylist();
         break;
       case this.messageTypes.JOIN_ROOM:
-        this.enterResponseMessage = message;
+        this.initResponseMessage = message;
         this.createClient(message);
         this.replaceUrl(message.raumId);
         this.updateVideo(message);
