@@ -12,7 +12,7 @@
 
     <input *ngIf="raumId && user.admin" (keyup.enter)="search()" [(ngModel)]="searchInput" class="user-query"
       type="text" placeholder="Suchen" />
-    <select class="dm-selection" *ngIf="selectedDataApi.id == 2" [(ngModel)]="dailymotionSearchTypeSelection">
+    <select class="dm-selection" *ngIf="selectedDataApi && selectedDataApi.id == 2" [(ngModel)]="dailymotionSearchTypeSelection">
       <option class="dm-option"  [ngValue]="'video'">video</option>
       <option class="dm-option" [ngValue]="'playlist'">playlist</option>
     </select>

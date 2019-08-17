@@ -8,7 +8,7 @@ export class Video {
     playlistId?: string;
 
     videoId: string;
-    timestamp: number;
+    timestamp: number = 0;
     title: string;
     description: string;
     publishedAt: Date;
