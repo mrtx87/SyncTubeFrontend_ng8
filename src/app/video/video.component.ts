@@ -161,7 +161,7 @@ export class VideoComponent implements OnInit {
               reframe(e.target.a);
             }
             iframe = e.target.a;
-            let ytVideoService : YoutubeVideoService = this.syncService.videoServices.get(supportedApi.id);
+            let ytVideoService: YoutubeVideoService = this.syncService.videoServices.get(supportedApi.id);
             ytVideoService.videoPlayer = videoPlayer;
             ytVideoService.iframe = iframe;
             /*that.syncService.switchVideo(this.syncService.joinReponseMessage);
@@ -263,6 +263,7 @@ export class VideoComponent implements OnInit {
     });*/
   }
 
+  /*
   processVideoIfLoaded(that: VideoComponent) {
     let wait = setInterval(function () {
       if (
@@ -280,7 +281,7 @@ export class VideoComponent implements OnInit {
         clearInterval(wait);
       }
     }, 3);
-  }
+  }*/
 
   getVideoDuration(): number {
     return this.syncService.currentVideoService.getVideoDuration();
@@ -290,8 +291,8 @@ export class VideoComponent implements OnInit {
     this.timeForSlider = (this.currentTime / this.videoDuration) * 100;
   }
 
-  setVideoDuration() {
-    this.videoDuration = this.getVideoDuration();
+  setProgressbarVideoDuration(duration: number) {
+    this.videoDuration = duration;
   }
 
   getInitalPlaybackRate(): number {
@@ -322,22 +323,6 @@ export class VideoComponent implements OnInit {
     return this.syncService.getReceivedPlayerState();
   }
 
-  updateVideoContinously(that: VideoComponent) {
-    if (that.timer) {
-      clearInterval(that.timer);
-      that.timer = null;
-    }
-    that.timer = setInterval(function () {
-      that.currentTimeProgressbar += 0.01 * that.getPlaybackRate();
-      that.currentDisplayedTime = that.getCurrentTime();
-      that.syncService.synctubeComponent.video.timestamp = that.currentTime;
-    }, 10);
-  }
-
-  stopUpdatingVideo() {
-    clearInterval(this.timer);
-  }
-
   playVideo() {
     this.syncService.currentVideoService.playVideo();
   }
@@ -354,6 +339,7 @@ export class VideoComponent implements OnInit {
     return this.syncService.currentVideoService.getAvailableQualityLevels();
   }
 
+  /*
   timer: any;
   togglePlayVideo(playerState: number) {
     if (playerState == Constants.PLAYING) {
@@ -369,7 +355,7 @@ export class VideoComponent implements OnInit {
       clearInterval(this.timer);
       return;
     }
-  }
+  }*/
 
   isLocalUserAdmin() {
     return this.getLocalUser().admin;
@@ -405,8 +391,7 @@ export class VideoComponent implements OnInit {
 
   onChangeProgressBar() {
     if (this.getCurrentVideo()) {
-      this.currentTimeProgressbar;
-      this.stopUpdatingVideo();
+      this.syncService.stopUpdatingVideo();
       this.syncService.sendSeekToTimestamp(
         this.getLocalUser(),
         this.getRaumId(),
@@ -498,8 +483,8 @@ export class VideoComponent implements OnInit {
      }*/
   }
 
-  setPlaybackRates() {
-    this.playbackRates = this.getAvailablePlaybackRates();
+  setPlaybackRates(rates: number[]) {
+    this.playbackRates = rates;
   }
 
   toggleDisplayOptions() {
@@ -524,7 +509,9 @@ export class VideoComponent implements OnInit {
   }
 
   toggleDisplayPlaybackRates() {
-    this.displayPlaybackRatesOptions = !this.displayPlaybackRatesOptions;
+    if (this.playbackRates.length > 0) {
+      this.displayPlaybackRatesOptions = !this.displayPlaybackRatesOptions;
+    }
   }
 
   time: number = 0;

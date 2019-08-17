@@ -5,7 +5,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class TimePipe implements PipeTransform {
   constructor(private sanitizer: DomSanitizer) { }
   transform(val: number) {
-    if (!val) {
+    if (val) {
       let time = val;
 
       let hrs = ~~(time / 3600);

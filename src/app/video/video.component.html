@@ -60,7 +60,7 @@
         </div>
       </div>
       <div class="quality-container">{{currentPlaybackQuality}}</div>
-      <div (click)="toggleDisplayPlaybackRates()" class="controls-playbackrates"> {{currentPlaybackRate}}x
+      <div  (click)="toggleDisplayPlaybackRates()" class="controls-playbackrates"> {{(playbackRates.length > 0) ? currentPlaybackRate : 1}}x
       </div>
       <div (click)="toggleDisplayCinemaMode()" class="controls-cinema">
         <img class="cinema-box" src="assets/kinomodus.svg">

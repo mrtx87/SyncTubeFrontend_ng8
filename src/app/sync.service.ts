@@ -114,24 +114,24 @@ export class SyncService {
   }
 
 
-  registeredVideoApiCount : number = 0;
+  registeredVideoApiCount: number = 0;
   hasSuccessfullyRegisteredAllVideoApis(supportedApi: SupportedApi) {
-    if(this.dataServices.has(supportedApi.id)) {
+    if (this.dataServices.has(supportedApi.id)) {
       this.registeredVideoApiCount += 1;
     }
 
-    if(this.registeredVideoApiCount == this.supportedApis.length) {
+    if (this.registeredVideoApiCount == this.supportedApis.length) {
       console.log("succesfully generated all video apis: " + this.registeredVideoApiCount);
     }
   }
 
-  readyVideoPlayersCount : number = 0;
+  readyVideoPlayersCount: number = 0;
   allVideoPlayersAreReady(supportedApi: SupportedApi) {
-    if(this.dataServices.has(supportedApi.id)) {
+    if (this.dataServices.has(supportedApi.id)) {
       this.readyVideoPlayersCount += 1;
     }
 
-    if(this.readyVideoPlayersCount >= this.supportedApis.length) {
+    if (this.readyVideoPlayersCount >= this.supportedApis.length) {
       console.log("success -> all video players are ready:  " + this.readyVideoPlayersCount);
       //this.switchVideo()
 
@@ -320,7 +320,8 @@ export class SyncService {
   handleMessage(message: Message) {
 
     this.displayAsToast(message.toastrMessage);
-
+    console.log("[<<< handling response: " + message.type + " <<<]")
+    console.log(message);
     switch (message.type) {
       case this.messageTypes.CREATE_ROOM:
         this.initResponseMessage = message;
@@ -657,6 +658,7 @@ export class SyncService {
     }
   }
 
+  waitForSwitchtingVideo: any;
   switchVideo(message: Message) {
     if (message && message.video) {
 
@@ -673,14 +675,17 @@ export class SyncService {
       this.synctubeComponent.forceScrollToChatBottom = true;
 
       let that = this;
-      let wait = setInterval(function () {
+      if(this.waitForSwitchtingVideo) {
+        this.waitForSwitchtingVideo = null;
+      }
+      this.waitForSwitchtingVideo = setInterval(function () {
         if (that.getPlayerState() == Constants.PLAYING) {
-          that.setVideoDuration();
-          that.setPlaybackRates();
+          that.setProgressbarVideoDuration(that.currentVideoService.getVideoDuration());
+          that.setPlaybackRates(that.currentVideoService.getAvailablePlaybackRates());
           that.setPlaybackRate(message.currentPlaybackRate);
           //      that.getCaptions(that.getVideo());
           that.togglePlayVideo(that.getReceivedPlayerState());
-          clearInterval(wait);
+          clearInterval(that.waitForSwitchtingVideo);
         }
       }, 20);
     }
@@ -1162,7 +1167,7 @@ export class SyncService {
   }
 
   getCurrentTime(): number {
-    return this.videoComponent.getCurrentTime();
+    return this.currentVideoService.getCurrentTime();
   }
 
   getPlayerState(): number {
@@ -1181,20 +1186,59 @@ export class SyncService {
     this.currentVideoService.stopVideo();
   }
 
+  playVideo() {
+    this.currentVideoService.playVideo();
+  }
+
+  /*
   togglePlayVideo(toggle: number): void {
     this.videoComponent.togglePlayVideo(toggle);
+  }*/
+
+  stopUpdatingVideo() {
+    clearInterval(this.timer);
+  }
+
+  updateVideoContinously(that: SyncService) {
+    if (that.timer) {
+      clearInterval(that.timer);
+      that.timer = null;
+    }
+    that.timer = setInterval(function () {
+      that.videoComponent.currentTimeProgressbar += 0.01 * that.getPlaybackRate();
+      that.videoComponent.currentDisplayedTime = that.getCurrentTime();
+      that.synctubeComponent.video.timestamp = that.videoComponent.currentTime;
+    }, 10);
+  }
+
+  timer: any;
+  togglePlayVideo(playerState: number) {
+    if (playerState == Constants.PLAYING) {
+      this.playVideo();
+      this.videoComponent.isPlaying = true;
+      let that = this;
+      this.updateVideoContinously(that);
+      return;
+    }
+    if (playerState == Constants.PAUSED) {
+      this.pauseVideo();
+      this.videoComponent.isPlaying = false;
+      clearInterval(this.timer);
+      return;
+    }
   }
 
   loadVideoById(urlObject: any) {
     this.currentVideoService.loadVideoById(urlObject);
   }
 
-  setVideoDuration() {
-    this.videoComponent.setVideoDuration();
+  setProgressbarVideoDuration(duration: number) {
+    this.videoComponent.setProgressbarVideoDuration(duration);
   }
 
-  setPlaybackRates() {
-    this.videoComponent.setPlaybackRates();
+
+  setPlaybackRates(rates: number[]) {
+    this.videoComponent.setPlaybackRates(rates);
   }
 
   getUserId(): string {

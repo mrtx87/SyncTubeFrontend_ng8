@@ -1,6 +1,7 @@
 import { IVideoService } from './ivideo.service';
 import { SyncService } from './sync.service';
 import { SupportedApi } from './supported-api';
+import { Constants } from './constants';
 
 export class DailymotionVideoService implements IVideoService {
     reframed: boolean;
@@ -77,7 +78,7 @@ export class DailymotionVideoService implements IVideoService {
 
     }
     getPlayerState(): number {
-        return (this.videoPlayer.paused) ? 2 : 1 ; // TODO remove 
+        return (this.videoPlayer.paused) ? Constants.PAUSED : Constants.PLAYING ; // TODO remove 
     }
 
     getAvailableQualityLevels(): string[] {
@@ -97,7 +98,7 @@ export class DailymotionVideoService implements IVideoService {
     }
     getPlaybackRate(): number {
         //console.log('getPlaybackRate: not available')
-        return -1;
+        return 1;
     }
     clearVideo() {
         //     throw new Error("Method not implemented.");
