@@ -336,22 +336,18 @@
   border-radius: 3px;
 }
 
-
-
 .dm-selection {
-
   padding: 2px;
   border-radius: 3px;
-  background-color:var(--color9);
+  background-color: var(--color9);
   border: 1px solid black;
-  margin-left:-75px;
-  color:white;
+  margin-left: -75px;
+  color: white;
 }
 
 .dm-selection:hover {
-  background-color:var(--color7);
+  background-color: var(--color7);
 }
-
 
 .api-icons-container {
   top: 15vh;
@@ -395,9 +391,6 @@
   transition-duration: 0.3s;
 }
 
-
-
-
 .select-api-container {
   background-color: var(--color9);
   position: relative;
@@ -415,7 +408,7 @@
   justify-items: flex-start;
   height: 30px;
   margin-bottom: 2px;
-  width:100px;
+  width: 100px;
 }
 
 .api-selection-row:hover {
@@ -425,7 +418,7 @@
   transition-duration: 0.2s;
 }
 
-.api-selection-row:hover img  {
+.api-selection-row:hover img {
   height: 22px;
   -webkit-transition-duration: 0.2s;
   transition-duration: 0.2s;
@@ -450,7 +443,7 @@
 .selected-api-icon {
   width: 2vw;
   margin: 2px;
-  z-index: 1000;
+  z-index: 0;
 }
 
 .tab {
@@ -1236,23 +1229,44 @@ input[type="range"][orient="vertical"] {
 .prompt {
   width: 100%;
   position: fixed;
-  bottom: 0px;
+  bottom: 50vh;
+  left: 25vw;
   height: 50px;
   background-color: var(--color1);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--color3);
+  width: 50vw;
+  min-width: 600px;
+  border: 2px solid var(--color3);
+  border-radius: 3px;
+}
+
+.prompt-blocking-overlay {
+  z-index: 9999999;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  background-color: rgba(39, 39, 39, 0.34)
 }
 
 .approved-button, .disapproved-button {
-  padding: 5px;
-  width: 100px;
-  background-color: white;
-  border-style: solid;
-  border-width: 1px;
+  width: 35px;
   text-align: center;
-  margin: 0 10px;
+  margin: 2px 10px;
+  -webkit-transition-duration: 0.2s;
+  transition-duration: 0.2s;
+}
+
+.approved-button:hover, .disapproved-button:hover {
+  width: 38px;
+  -webkit-transition-duration: 0.2s;
+  transition-duration: 0.2s;
+  margin: 0 8px;
+
 }
 
 .status-label {
@@ -1436,8 +1450,7 @@ input[type="range"][orient="vertical"] {
   opacity: 0.1;
 }
 
-.import-button:hover {
-}
+.import-button:hover {}
 
 .kicked-users-list-container {
   width: 100%;

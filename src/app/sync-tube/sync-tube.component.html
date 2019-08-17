@@ -12,8 +12,9 @@
 
     <input *ngIf="raumId && user.admin" (keyup.enter)="search()" [(ngModel)]="searchInput" class="user-query"
       type="text" placeholder="Suchen" />
-    <select class="dm-selection" *ngIf="selectedDataApi && selectedDataApi.id == 2" [(ngModel)]="dailymotionSearchTypeSelection">
-      <option class="dm-option"  [ngValue]="'video'">video</option>
+    <select class="dm-selection" *ngIf="selectedDataApi && selectedDataApi.id == 2"
+      [(ngModel)]="dailymotionSearchTypeSelection">
+      <option class="dm-option" [ngValue]="'video'">video</option>
       <option class="dm-option" [ngValue]="'playlist'">playlist</option>
     </select>
   </div>
@@ -426,16 +427,20 @@
 
 </div>
 
-<div *ngIf="designatedAdmin" class="prompt">
-  <h3>Wollen Sie {{ designatedAdmin.userName }} zum Admin ernennen?</h3>
-  <div class="approved-button" (click)="approvedAdmin()">JA</div>
-  <div class="disapproved-button" (click)="disapprovedAdmin()">NEIN</div>
+<div class="prompt-blocking-overlay" *ngIf="designatedAdmin">
+  <div class="prompt">
+    <h3>Wollen Sie {{ designatedAdmin.userName }} zum Admin ernennen?</h3>
+    <img src="assets/check.svg" class="approved-button" (click)="approvedAdmin()">
+    <img src="assets/delete.svg" class="disapproved-button" (click)="disapprovedAdmin()">
+  </div>
 </div>
 
-<div *ngIf="kickingUser" class="prompt">
-  <h3>Wollen Sie {{ kickingUser.userName }} aus dem Raum kicken?</h3>
-  <div class="approved-button" (click)="approvedKick()">JA</div>
-  <div class="disapproved-button" (click)="disapprovedKick()">NEIN</div>
+<div class="prompt-blocking-overlay" *ngIf="kickingUser">
+  <div class="prompt">
+    <h3>Wollen Sie {{ kickingUser.userName }} aus dem Raum kicken?</h3>
+    <img src="assets/check.svg" class="approved-button" (click)="approvedKick()">
+    <img src="assets/delete.svg" class="disapproved-button" (click)="disapprovedKick()">
+  </div>
 </div>
 
 <div [hidden]="!displayToastrHistory" class="toastr-history-container ellipsis">
