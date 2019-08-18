@@ -455,7 +455,10 @@
 </div>
 
 <div [hidden]="!displayToastrHistory" class="toastr-history-container ellipsis">
-  <div style="font-size:3vh;">Event History</div>
+  <div (click)="displayToastrHistory = !displayToastrHistory" class="close-history-button">
+    <img class="close-history-img" src="assets/x-close.svg">
+  </div>
+  <div style="font-size: 3vh; color: white;">Event History</div>
   <div class="toastr-history-toasts">
     <div class="single-toast" *ngFor="let toastrMessage of toastrMessages">
       <div class="single-toast-left ellipsis">
