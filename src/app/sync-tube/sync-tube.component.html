@@ -33,8 +33,8 @@
   <div class="top-panel-right">
     <h1 class="raumTitle-container">{{ raumTitle }}</h1>
     <div class="room-status-panel">
-      <div class="labl" [hidden]="!raumId || !raumStatus"><span>Private</span> <img class="rsp-lock" src="assets/padlock.svg" /></div>
-      <div class="labl" [hidden]="!raumId || raumStatus"><span>Public</span> <img class="rsp-lock" src="assets/padlock-unlock.svg" /></div>
+      <div class="labl" [hidden]="!raumId || !raumStatus"><span>{{ '$private' | tl8 }}</span> <img class="rsp-lock" src="assets/padlock.svg" /></div>
+      <div class="labl" [hidden]="!raumId || raumStatus"><span>{{ '$public' | tl8 }}</span> <img class="rsp-lock" src="assets/padlock-unlock.svg" /></div>
     </div>
   </div>
 </div>
@@ -71,7 +71,7 @@
       </button>
     </div> -->
   <div *ngIf="!raumId">
-    <h2 style="color:white">Public Rooms</h2>
+    <h2 style="color:white">{{ '$public_rooms' | tl8 }}</h2>
     <div *ngIf="publicRaeume" class="public-rooms-container">
       <div (click)="joinRaumById(pRoom.raumId)" class="room-preview" *ngFor="let pRoom of publicRaeume | async">
         <div class="public-room-title ellipsis">#{{ pRoom.raumTitle }}</div>
@@ -120,19 +120,19 @@
               hasImportedPlaylist ? 'import-button' : 'import-button-inactive'
             ">
             <div (click)="sendImportPlaylist()" class="send-chat-button">
-              Playlist importieren
+                {{ '$import_playlist' | tl8 }}
             </div>
           </div>
           <div [className]="
               hasImportedPlaylist ? 'import-button' : 'import-button-inactive'
             ">
-            <div (click)="sendIntegratePlaylist()" class="send-chat-button">in exisierende Playlist integrieren</div>
+            <div (click)="sendIntegratePlaylist()" class="send-chat-button">{{ '$integrate_playlist' | tl8 }}</div>
           </div>
           <h4 *ngIf="importedPlaylist" [hidden]="hasImportedPlaylist">
-            {{ importedPlaylist.size }} Elemente werden geladen...
+            {{ importedPlaylist.size }} {{ '$elements_being_loaded' | tl8 }}
           </h4>
           <h4 *ngIf="importedPlaylist" [hidden]="!hasImportedPlaylist">
-            {{ importedPlaylist.size }} Elemente geladen
+            {{ importedPlaylist.size }} {{ '$elements_loaded' | tl8 }}
           </h4>
         </div>
 
@@ -163,7 +163,7 @@
             </div>
             <div class="search-result-open-playlist">
               <div (click)="openPlaylistLink(video_)" class="open-playlist-button">
-                Playlist öffnen
+                  {{ '$open_playlist' | tl8 }}
               </div>
             </div>
           </div>
@@ -175,17 +175,17 @@
     <div *ngIf="!displayCinemaMode && !displayFullscreen" class="tabs-container">
       <div class="chat-playlist-tabs">
         <div [className]="displayTab == 1 ? 'active_tab' : 'tab'" (click)="displayTab = 1" class="tab">
-          <span>Chat</span>
+          <span>chat</span>
         </div>
         <div [className]="displayTab == 2 ? 'active_tab' : 'tab'" (click)="displayTab = 2" class="tab">
-          <span>Playlist</span>
+          <span>playlist</span>
         </div>
         <div [className]="displayTab == 3 ? 'active_tab' : 'tab'" (click)="displayTab = 3" class="tab">
-          <span>Users</span>
+          <span>{{ '$users' | tl8 }}</span>
         </div>
         <div [className]="displayTab == 4 ? 'active_tab' : 'tab'" (click)="displayTab = 4" *ngIf="user.admin"
           class="tab">
-          <span>Settings</span>
+          <span>{{ '$settings' | tl8 }}</span>
         </div>
       </div>
 
@@ -234,7 +234,7 @@
           <input #chatInput id="chatInput" class="w-100" (keyup.enter)="sendChatMessage()" [(ngModel)]="chatMessageText"
             type="text" placeholder="Eine Nachricht senden" />
           <div (click)="sendChatMessage()" class="send-chat-button">
-            Senden
+              {{ '$send' | tl8 }}
           </div>
         </div>
       </div>
@@ -356,8 +356,8 @@
         <div *ngIf="user.admin" class="admin-panel-container">
           <div *ngIf="raumId" class="raum-toggle">
             <div class="w-80 flex-row">
-              <label class="raum-status-container" [hidden]="!raumStatus">Private</label>
-              <label class="raum-status-container" [hidden]="raumStatus">Public</label>
+              <label class="raum-status-container" [hidden]="!raumStatus">{{ '$private' | tl8 }}</label>
+              <label class="raum-status-container" [hidden]="raumStatus">{{ '$public' | tl8 }}</label>
               <img (mouseenter)="displaySwitchRoomStatusTooltip = true"
                 (mouseleave)="displaySwitchRoomStatusTooltip = false" src="assets/information-button.svg">
             </div>
@@ -369,14 +369,14 @@
           </div>
           <div class="info mb-1">
             <label [hidden]="!raumStatus || !displaySwitchRoomStatusTooltip">
-              Toggle um den Raumstatus öffentlich zu stellen</label>
+                {{ '$switch_room_public_tooltip' | tl8 }}</label>
             <label [hidden]="raumStatus || !displaySwitchRoomStatusTooltip">
-              Toggle um den Raumstatus privat zu stellen</label>
+                {{ '$switch_room_private_tooltip' | tl8 }}</label>
           </div>
 
           <div class="rename-room-title-container">
             <div class="rename-room-title-panel">
-              <label>Raumtitel</label>
+              <label>{{ '$room_title' | tl8 }}</label>
               <img (mouseenter)="displayRenameRoomTitleTooltip = true"
                 (mouseleave)="displayRenameRoomTitleTooltip = false" src="assets/information-button.svg">
             </div>
@@ -384,11 +384,11 @@
               class="input-room-title" type="text" />
           </div>
           <div class="info mb-1">
-            <label [hidden]="!displayRenameRoomTitleTooltip">Hier können Sie den Raumtitel bestimmen.</label>
+            <label [hidden]="!displayRenameRoomTitleTooltip">{{ '$rename_room_title_tooltip' | tl8 }}</label>
           </div>
           <div class="rename-room-description-container">
             <div class="rename-room-description-panel">
-              <label>Beschreibung</label>
+              <label>{{ '$description' | tl8 }}</label>
               <img (mouseenter)="displayEditRoomDescriptionTooltip = true"
                 (mouseleave)="displayEditRoomDescriptionTooltip=false" src="assets/information-button.svg">
             </div>
@@ -397,7 +397,7 @@
               class="input-description"></textarea>
           </div>
           <div class="info">
-            <label [hidden]="!displayEditRoomDescriptionTooltip">Hier können Sie die Raumbeschreibung bestimmen.</label>
+            <label [hidden]="!displayEditRoomDescriptionTooltip">{{ '$rename_room_description_tooltip' | tl8 }}.</label>
           </div>
           <div style="display:flex; width:100%; ">
             <div class="title_description_reset_url_panel mb-1">
@@ -406,7 +406,7 @@
                 Beschreibung</div>
             </div>
 
-            <div *ngIf="user.admin" class="change-url-container" title="refreshes the join url">
+            <div *ngIf="user.admin" class="change-url-container" title="{{ '$refresh_url_tooltip' | tl8 }}">
               <div class="admin-panel-row" (click)="refreshJoinUrl()">
                 <img class="refresh-img" src="assets/refresh.svg" />
                 <label class="w-90">Reset Url</label>
@@ -416,7 +416,7 @@
 
 
 
-          <label class="smallTitle">Kicked Users</label>
+          <label class="smallTitle">{{ '$kicked_users' | tl8 }}</label>
           <div class="kicked-users-list-container">
             <div class="kicked-user-container" *ngFor="let kickedUser of kickedUsers">
               <div class="username-container">
@@ -441,7 +441,7 @@
 
 <div class="prompt-blocking-overlay" *ngIf="designatedAdmin">
   <div class="prompt">
-    <h3>Wollen Sie {{ designatedAdmin.userName }} zum Admin ernennen?</h3>
+    <h3>{{ '$to_admin_question'| tl8 }}</h3>
     <img src="assets/check.svg" class="approved-button" (click)="approvedAdmin()">
     <img src="assets/delete.svg" class="disapproved-button" (click)="disapprovedAdmin()">
   </div>
@@ -449,7 +449,7 @@
 
 <div class="prompt-blocking-overlay" *ngIf="kickingUser">
   <div class="prompt">
-    <h3>Wollen Sie {{ kickingUser.userName }} aus dem Raum kicken?</h3>
+    <h3>{{ '$kick_question' | tl8 }}</h3>
     <img src="assets/check.svg" class="approved-button" (click)="approvedKick()">
     <img src="assets/delete.svg" class="disapproved-button" (click)="disapprovedKick()">
   </div>

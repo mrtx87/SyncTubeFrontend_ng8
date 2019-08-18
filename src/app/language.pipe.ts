@@ -8,10 +8,13 @@ import { LanguagesService } from './languages.service';
 })
 export class LanguagePipe implements PipeTransform {
 
-  constructor(private languageService: LanguagesService) {}
+  constructor(private languageService: LanguagesService) { }
 
   transform(value: any, args?: any): any {
-    return this.languageService.interpolate(value);
+    if (this.languageService) {
+      return this.languageService.interpolate(value);
+    }
+    return value;
   }
 
 }

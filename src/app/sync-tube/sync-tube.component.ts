@@ -14,6 +14,7 @@ import { User } from "./user";
 import { Constants } from '../constants';
 import { LanguagesService } from '../languages.service';
 import { Language } from '../language';
+import { ToastrConfigs } from '../toastr.configs';
 
 @Component({
   selector: "app-sync-tube",
@@ -660,6 +661,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
 
   switchLanguage(lang: Language) {
     this.languageService.selectedLanguageKey = lang.key;
+    this.syncService.toastr.success(this.languageService.interpolate('$switched_lang') + ' '+  lang.key, '', ToastrConfigs.SUCCESS)
   }
 
 }

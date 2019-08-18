@@ -27,7 +27,7 @@ export class LanguagesService {
     return this.LANGUAGE_LIST;
   }
 
-  public get selectedLanguage(): any {
+  private get selectedLanguage(): any {
     return this.LANGUAGES.get(this.selectedLanguageKey);
   }
 
@@ -41,14 +41,15 @@ export class LanguagesService {
 
   constructor(private httpService: HttpClient) {
     this.parseAllLanguageJsons();
+    console.log("parsed all languages")
   }
 
-  parseAllLanguageJsons() {
+  private parseAllLanguageJsons() {
     this.languageList
       .forEach(lang => this.parseLanguageJson(lang.key));
   }
 
-  parseLanguageJson(key: string) {
+  private parseLanguageJson(key: string) {
     this.httpService.get('assets/languages/' + key + '.json').subscribe(
       data => {
         let language = data;
@@ -62,7 +63,7 @@ export class LanguagesService {
   }
 
   interpolate(key: string): string {
-    let resolved: string = this.selectedLanguage[key]
+    let resolved: string = this.selectedLanguage ? this.selectedLanguage[key] : null;
     return resolved ? resolved : key;
   }
 }
