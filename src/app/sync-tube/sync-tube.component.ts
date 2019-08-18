@@ -12,6 +12,8 @@ import { Video } from "../video/video";
 import { SearchQuery } from "./search-query";
 import { User } from "./user";
 import { Constants } from '../constants';
+import { LanguagesService } from '../languages.service';
+import { Language } from '../language';
 
 @Component({
   selector: "app-sync-tube",
@@ -191,9 +193,8 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
     }
   }
 
-  constructor(private syncService: SyncService, private route: ActivatedRoute) {
+  constructor(private syncService: SyncService, private route: ActivatedRoute, private languageService: LanguagesService) {
     this.syncService.registerSyncTubeComponent(this);
-
     this.syncService.retrieveSupportedApis();
 
     this.syncService.connect();
@@ -655,6 +656,10 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
       return true;
     }
     return false;
+  }
+
+  switchLanguage(lang: Language) {
+    this.languageService.selectedLanguageKey = lang.key;
   }
 
 }

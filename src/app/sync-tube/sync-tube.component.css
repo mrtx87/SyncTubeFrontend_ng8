@@ -297,10 +297,18 @@
   color: #ffffff;
 }
 
+.labl {
+  display:flex;
+  align-items: baseline;
+  justify-items: flex-start;
+  justify-content: space-between;
+}
+
 .rsp-lock {
-  height: 30px;
+  height: 22px;
   -webkit-filter: invert(1);
   filter: invert(1);
+  margin-left:5px;
 }
 
 .content-container {
@@ -1591,4 +1599,28 @@ input[type="range"][orient="vertical"] {
   width: 75%;
   min-height: 15%;
   align-items: center;
+}
+
+.languages-container {
+  display:flex;
+  height:25px;
+  position:fixed;
+  top:5px;
+  right:100px;
+  align-items: center;
+}
+
+.lang-icon {
+  width:28px;
+
+}
+
+.lang-icon img{
+  width:20px;
+  -webkit-transition-duration: 0.2s;
+  transition-duration: 0.2s;
+}
+
+.lang-icon:hover img {
+  width:23px;
 }

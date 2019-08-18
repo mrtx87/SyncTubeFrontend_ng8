@@ -13,6 +13,7 @@ import { VimeoVideoService } from "../vimeo.video.service";
 import { DailymotionVideoService } from "../dailymotion.video.service";
 import { IVideoService } from "../ivideo.service";
 import { Constants } from '../constants';
+import { LanguagesService } from '../languages.service';
 declare const DM: any;
 declare const Vimeo: any;
 
@@ -51,7 +52,7 @@ export class VideoComponent implements OnInit {
   timeForSlider: number;
   switchVolumeIcon: number = 1;
 
-  constructor(private syncService: SyncService) {
+  constructor(private syncService: SyncService,  private languages: LanguagesService) {
     this.syncService.registerVideoComponent(this);
   }
 

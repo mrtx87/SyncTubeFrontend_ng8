@@ -33,8 +33,8 @@
   <div class="top-panel-right">
     <h1 class="raumTitle-container">{{ raumTitle }}</h1>
     <div class="room-status-panel">
-      <label [hidden]="!raumId || !raumStatus">Private <img class="rsp-lock" src="assets/padlock.svg" /></label>
-      <label [hidden]="!raumId || raumStatus">Public <img class="rsp-lock" src="assets/padlock-unlock.svg" /></label>
+      <div class="labl" [hidden]="!raumId || !raumStatus"><span>Private</span> <img class="rsp-lock" src="assets/padlock.svg" /></div>
+      <div class="labl" [hidden]="!raumId || raumStatus"><span>Public</span> <img class="rsp-lock" src="assets/padlock-unlock.svg" /></div>
     </div>
   </div>
 </div>
@@ -42,16 +42,16 @@
 <div style="display:flex; flex-direction:column;" *ngIf="revealContent">
   <!--  Visible when no room is created or joined -->
   <div *ngIf="!raumId" class="content-container">
-    <h2 style="color:white">Create a new Room</h2>
+    <h2 style="color:white"> {{ '$create_room' | tl8 }}</h2>
     <div class="create">
       <button (click)="createRaum()" class="button">
-        <h3>New Room</h3>
+        <h3>{{'$new_room' | tl8}} </h3>
       </button>
       <!--<div class="raum-toggle"><label>Private</label><input [(ngModel)]="raumStatus" type="checkbox"></div>-->
       <div class="raum-toggle-startpage">
         <div class="config-raumstatus-container">
-          <span class="largeText" [hidden]="!configRaumStatus">Private</span>
-          <span class="largeText" [hidden]="configRaumStatus">Public</span>
+          <span class="largeText" [hidden]="!configRaumStatus">{{'$private' | tl8}}</span>
+          <span class="largeText" [hidden]="configRaumStatus">{{'$public' | tl8}}</span>
         </div>
         <label class="switch">
           <input (click)="displayConfigToggle()" class="toggle-input" [(ngModel)]="configRaumStatus" type="checkbox" />
@@ -80,13 +80,13 @@
           <img *ngIf="!pRoom.video" class="thumbnail" src="https://i.ytimg.com/vi/UH1ThWZ9hXU/hqdefault.jpg" />
           <div class="public-room-infos">
             <div class="public-room-description ellipsis">
-              <strong>Beschreibung</strong><br />{{ (pRoom.description) ? pRoom.description : 'no room description'}}
+              <strong>{{'$public_rooms_description' | tl8}}</strong><br />{{ (pRoom.description) ? pRoom.description : 'no room description'}}
             </div>
             <div class="public-room-video-title ellipsis">
-              <strong>Videotitel</strong><br />{{ (pRoom.video) ? pRoom.video.title : 'no video title' }}
+              <strong>{{'$video_title' | tl8}}</strong><br />{{ (pRoom.video) ? pRoom.video.title : 'no video title' }}
             </div>
             <div class="public-room-size">
-              <strong>{{ pRoom.size }} Users</strong> | created:
+              <strong>{{ pRoom.size }} {{'$users' | tl8}} </strong> | {{'$created' | tl8}}:
               <strong>{{ pRoom.createdAt }} </strong>
             </div>
           </div>
@@ -470,4 +470,4 @@
   </div>
 </div>
 
-
+<div class="languages-container"><div (click)="switchLanguage(lang)" class="lang-icon" *ngFor="let lang of languageService.languageList"><img  src="{{lang.iconUrl}}"></div> </div>

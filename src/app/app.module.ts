@@ -14,6 +14,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FooterComponent } from './footer/footer.component';
+import { LanguagePipe } from './language.pipe';
 
 
 
@@ -27,7 +28,9 @@ import { FooterComponent } from './footer/footer.component';
     VideoComponent,
     SyncTubeComponent,
     NoFloatPipe,
-    FooterComponent
+    FooterComponent,
+    LanguagePipe,
+    
   ],
   imports: [
     BrowserModule,

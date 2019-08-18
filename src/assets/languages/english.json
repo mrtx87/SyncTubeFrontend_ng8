@@ -1,0 +1,12 @@
+{
+    "$create_room" : "create a new room.",
+    "$private": "private",
+    "$public" : "public",
+    "$new_room": "new room",
+    "$public_rooms" : "public rooms",
+    "$public_rooms_description": "description",
+    "$video_title": "video title",
+    "$users": "users",
+    "$created" : "created",
+    "$no_video_title":"no video title"
+}
