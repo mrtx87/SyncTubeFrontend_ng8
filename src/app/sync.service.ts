@@ -33,6 +33,7 @@ import { MessageTypes } from "./message.types";
 import { ToastrMessage } from "./toastr.message";
 import { AppCookie } from "./app.cookie";
 import { Constants } from './constants';
+import { NoApiDataService } from './noapi.dataservice';
 
 @Injectable({
   providedIn: "root"
@@ -223,7 +224,17 @@ export class SyncService {
             this.dataServices.set(SupportedApiType.Vimeo, vimeoDataService);
             console.log("Successfully generated data-api: " + vimeoDataService.name);
             break;
+            case SupportedApiType.NoApi:
+            
+            this.dataServices.set(SupportedApiType.NoApi, new NoApiDataService(this.http,
+              this.synctubeComponent,
+              SupportedApiType.NoApi,
+              supportedApi.name));
+            console.log("Successfully generated data-api: " + supportedApi.name);
+            break;
 
+
+            
           default:
             break;
         }

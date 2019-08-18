@@ -14,6 +14,7 @@ import { DailymotionVideoService } from "../dailymotion.video.service";
 import { IVideoService } from "../ivideo.service";
 import { Constants } from '../constants';
 import { LanguagesService } from '../languages.service';
+import { NoApiVideoService } from '../noapi.video.service';
 declare const DM: any;
 declare const Vimeo: any;
 
@@ -52,7 +53,7 @@ export class VideoComponent implements OnInit {
   timeForSlider: number;
   switchVolumeIcon: number = 1;
 
-  constructor(private syncService: SyncService,  private languages: LanguagesService) {
+  constructor(private syncService: SyncService, private languages: LanguagesService) {
     this.syncService.registerVideoComponent(this);
   }
 
@@ -130,12 +131,33 @@ export class VideoComponent implements OnInit {
             this.initVimeoPlayer(supportedApi);
           }
           break;
+        case SupportedApiType.NoApi:
+          if (!this.syncService.videoServices.has(SupportedApiType.NoApi)) {
+            this.initNoApiIFrame(supportedApi);
+          }
+          break;
       }
     }
     /*
     let player: HTMLElement = document.getElementById("youtubeplayer");
     console.log(player)
     player.hidden = true;*/
+  }
+
+  initNoApiIFrame(supportedApi: SupportedApi) {
+    let iframe = document.getElementById("noapiplayer");
+
+    this.syncService.videoServices.set(
+      supportedApi.id,
+      new NoApiVideoService(
+        supportedApi,
+        this.syncService,
+        iframe,
+        iframe
+      )
+    );
+    console.log("onReady: nopapi iframe ready");
+    this.syncService.hasSuccessfullyRegisteredAllVideoApis(supportedApi);
   }
 
   initYoutubePlayer(supportedApi: SupportedApi): void {
@@ -165,6 +187,7 @@ export class VideoComponent implements OnInit {
             let ytVideoService: YoutubeVideoService = this.syncService.videoServices.get(supportedApi.id);
             ytVideoService.videoPlayer = videoPlayer;
             ytVideoService.iframe = iframe;
+            //iframe.hidden = true;
             videoPlayer.mute();
             /*that.syncService.switchVideo(this.syncService.joinReponseMessage);
             that.listenForPlayerState();
@@ -243,7 +266,7 @@ export class VideoComponent implements OnInit {
 
   initVimeoPlayer(supportedApi: SupportedApi) {
     let div = document.getElementById(supportedApi.name + "player");
-    let videoPlayer = new Vimeo.Player('vimeoplayer', {  id: '213468818', muted: true, autoplay: true });
+    let videoPlayer = new Vimeo.Player('vimeoplayer', { id: '213468818', muted: true, autoplay: true });
     let that = this;
     let vimeoVideoService = new VimeoVideoService(supportedApi, this.syncService, videoPlayer, div);
     this.syncService.videoServices.set(
@@ -260,7 +283,7 @@ export class VideoComponent implements OnInit {
       reframe(div.firstChild);
       that.syncService.allVideoPlayersAreReady(supportedApi);
 
-      
+
     });
     /*videoPlayer.on('play', function () {
       console.log('Played the video');
