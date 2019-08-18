@@ -405,6 +405,7 @@
   height: 3vh;
   border: 1px solid var(--color9);
   margin-right: -3px;
+  margin-left:10px;
   display: flex;
   align-items: center;
   border-radius: 3px;
@@ -420,7 +421,7 @@
 }
 
 .api-selection-row:hover {
-  background-color: var(--color3);
+  background-color: var(--color4);
   border-radius: 4px;
   -webkit-transition-duration: 0.2s;
   transition-duration: 0.2s;
@@ -439,7 +440,7 @@
 }
 
 .api-selection-row-selected {
-  background-color: var(--color3);
+  background-color: var(--color4);
   display: flex;
   align-items: center;
   justify-items: flex-start;

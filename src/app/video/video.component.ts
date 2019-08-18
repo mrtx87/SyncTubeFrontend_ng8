@@ -165,9 +165,10 @@ export class VideoComponent implements OnInit {
             let ytVideoService: YoutubeVideoService = this.syncService.videoServices.get(supportedApi.id);
             ytVideoService.videoPlayer = videoPlayer;
             ytVideoService.iframe = iframe;
+            videoPlayer.mute();
             /*that.syncService.switchVideo(this.syncService.joinReponseMessage);
             that.listenForPlayerState();
-            that.mute(); //DEBUG */
+             //DEBUG */
 
 
             /*
