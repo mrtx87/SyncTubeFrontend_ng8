@@ -74,21 +74,23 @@
     <h2 style="color:white">{{ '$public_rooms' | tl8 }}</h2>
     <div *ngIf="publicRaeume" class="public-rooms-container">
       <div (click)="joinRaumById(pRoom.raumId)" class="room-preview" *ngFor="let pRoom of publicRaeume | async">
-        <div class="public-room-title ellipsis">#{{ pRoom.raumTitle }}</div>
         <div class="public-room-row">
           <img *ngIf="pRoom.video" class="thumbnail" src="{{pRoom.video.thumbnail}}" />
           <img *ngIf="!pRoom.video" class="thumbnail" src="https://i.ytimg.com/vi/UH1ThWZ9hXU/hqdefault.jpg" />
-          <div class="public-room-infos">
+          <div class="public-room-size">
+            <img class="user-avatar" src="assets/man-user.svg"> <strong>{{ pRoom.size }} <!--{{'$users' | tl8}}--></strong>  - {{'$created' | tl8}}:
+            <strong>{{ pRoom.createdAt }} </strong>
+          </div>
+          <div class="rooms-description">
+            <div class="public-room-title ellipsis"><strong>{{ pRoom.raumTitle }}</strong></div>
+            <div class="public-room-infos">
             <div class="public-room-description ellipsis">
-              <strong>{{'$public_rooms_description' | tl8}}</strong><br />{{ (pRoom.description) ? pRoom.description : 'no room description'}}
+              {{ (pRoom.description) ? pRoom.description : 'no room description'}}
             </div>
             <div class="public-room-video-title ellipsis">
               <strong>{{'$video_title' | tl8}}</strong><br />{{ (pRoom.video) ? pRoom.video.title : 'no video title' }}
             </div>
-            <div class="public-room-size">
-              <strong>{{ pRoom.size }} {{'$users' | tl8}} </strong> | {{'$created' | tl8}}:
-              <strong>{{ pRoom.createdAt }} </strong>
-            </div>
+          </div>
           </div>
         </div>
       </div>

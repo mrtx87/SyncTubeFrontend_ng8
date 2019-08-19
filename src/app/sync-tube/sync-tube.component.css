@@ -61,9 +61,10 @@
   display: flex;
   background-color: var(--color6);
   align-items: center;
-  /*border-radius: 15px;*/
   border: 2px solid var(--color6);
-  height: 250px;
+  height: 200px;
+  padding: 10px;
+  border-radius: 10px;
 }
 
 [hidden] {
@@ -712,15 +713,16 @@ input[type="range"][orient="vertical"] {
 }
 
 .room-preview {
-  background: var(--color6);
+  background: var(--color8);
   width: 23%;
   margin: 10px 1%;
-  height: 200px;
+  max-height: 280px;
   flex-direction: column;
   display: flex;
-  -webkit-transition-duration: 0.4s;
   transition-duration: 0.4s;
   color: white;
+  border-radius: 10px;
+  box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 3px 1px -2px rgba(0,0,0,0.12);
 }
 
 .room-preview:hover {
@@ -733,7 +735,9 @@ input[type="range"][orient="vertical"] {
 }
 
 .public-room-row {
+  position: relative;
   display: flex;
+  flex-direction: column;
   max-width: 100%;
   width: max-content;
 }
@@ -741,24 +745,44 @@ input[type="range"][orient="vertical"] {
 .ellipsis {
   text-overflow: ellipsis;
   /* Required for text-overflow to do anything */
-  white-space: normal;
+  white-space: nowrap;
   overflow: hidden;
+  height: 22px;
 }
 
 .public-room-description {
-  min-height: 90px;
+  min-height: 30px;
   max-height: 90px;
+  font-size: 15px;
 }
 
 .public-room-video-title {
   min-height: 50px;
   max-height: 50px;
+  font-size: 12px;
 }
 
 .public-room-size {
-  min-width: 100%;
+  position: absolute;
+  min-width: 10%;
   min-height: 20px;
   max-height: 20px;
+  z-index: 813;
+  top: 10px;
+  left: 10px;
+  background-color: var(--color8);
+  padding: 0px 5px 0 5px;
+  border-radius: 10px;
+}
+
+.user-avatar{
+  width: 13px;
+  height: auto;
+  position: relative;
+  top: 2px;
+  -webkit-filter: invert(100%) sepia(4%) saturate(16%) hue-rotate(182deg) brightness(99%) contrast(105%);
+  filter: invert(100%) sepia(4%) saturate(16%) hue-rotate(182deg) brightness(99%) contrast(105%);
+  padding: 0px 3px;
 }
 
 .public-room-infos {
@@ -773,14 +797,27 @@ input[type="range"][orient="vertical"] {
 }
 
 .thumbnail {
-  height: 100px;
-  margin: 5px;
+  width: 100%;  
+  max-height: 180px;
+  border-radius: 10px 10px 0px 0px;
+  object-fit: cover;
 }
 
 .thumbnail-chat {
   width: 65px;
   height: auto;
   margin-left: 5px;
+}
+
+.rooms-description {
+  position: relative;
+  top: 5px;
+  left: 2px;
+  width: 93%;
+  display: flex;
+  flex-direction: column;
+  font-size: 15px;
+  margin-left: 10px;
 }
 
 .public-rooms-container {
@@ -1019,6 +1056,7 @@ input[type="range"][orient="vertical"] {
 .search-result-thumbnail {
   width: 100%;
   height: 88px;
+  object-fit: cover;
 }
 
 .search-result-infos {
