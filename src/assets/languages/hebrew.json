@@ -1,0 +1,31 @@
+{
+    "$create_room": "צור חדר חדש", 
+    "$private": "פרטי",
+    "$public": "ציבורי",
+    "$new_room": "חדר חדש",
+    "$public_rooms": "חדרים ציבוריים",
+    "$public_rooms_description": "תיאור",
+    "$description": "תיאור",
+    "$video_title": "שם הסרטון",
+    "$users": "משתמשים",
+    "$created": "נוצר",
+    "$no_video_title": "ללא שם",
+    "$switched_lang": "החלפת את השפה ל",
+    "$import_playlist": "יבא פלייליסט",
+    "$integrate_playlist": "שלב בפלייליסט קיים",
+    "$elements_being_loaded": "הפריט נטען",
+    "$elements_loaded": "הפריט מוכן",
+    "$open_playlist": "פתח פלייליסט",
+    "$settings": "אפשרויות",
+    "$send": "שלח",
+    "$date": "טריך", // will cause problems because of the reading from left to right/right to left
+    "$switch_room_public_tooltip": "שנה מפרטי לציבורי",
+    "$switch_room_private_tooltip": "שנה מציבורי לפרטי",
+    "$room_title": "שם החדר",
+    "$rename_room_title_tooltip": "כאן תוכל לשנות את שם החדר",
+    "$rename_room_description_tooltip": "כאן תוכל לשנות את תיאור החדר",
+    "$kicked_users": "משתמשים שהורחקו",
+    "$to_admin_question": "Promote {{ designatedAdmin.userName }} to admin?", // האם תרצה למנות את {{ designatedAdmin.userName }} למנהל?
+    "$kick_question": "Kick {{ kickingUser.userName }} from the room?", // רוצה להעיף את {{ kickingUser.userName }} מהחדר?
+    "$refresh_url_tooltip": "חדש את הURL ואת הID של החדר"
+}

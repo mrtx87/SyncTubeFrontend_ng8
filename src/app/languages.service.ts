@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Language } from './language';
+import { SyncService } from './sync.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LanguagesService {
+
+  syncService: SyncService;
 
   /***
    * 
@@ -17,7 +20,9 @@ export class LanguagesService {
    * 
    */
 
+
   private LANGUAGE_LIST: Language[] = [new Language('german', 'assets/languages/icons/germany.svg'), new Language('english', 'assets/languages/icons/united-kingdom.svg')];
+
 
   private LANGUAGES: Map<string, any> = new Map<string, any>();
 
@@ -39,8 +44,9 @@ export class LanguagesService {
     return this.selectedLanguageKey_;
   }
 
-  constructor(private httpService: HttpClient) {
+  constructor(syncService: SyncService, private httpService: HttpClient) {
     this.parseAllLanguageJsons();
+    this.syncService = syncService;
     console.log("parsed all languages")
   }
 
@@ -64,6 +70,23 @@ export class LanguagesService {
 
   interpolate(key: string): string {
     let resolved: string = this.selectedLanguage ? this.selectedLanguage[key] : null;
-    return resolved ? resolved : key;
+    if (resolved) {
+      return resolved;
+    }
+    return key
   }
+
+  replaceKeyByValue(text: string): string {
+    if (this.syncService) {
+      let start: number = text.indexOf('{{');
+      let end: number = text.indexOf('}}')
+      if (start && end) {
+        let keyWHandlebars = text.substring(start, end + 1)
+        console.log("!!!!!" + keyWHandlebars)
+        return text.replace(text.substring(start, end).trim(), this.syncService.synctubeComponent[text.substring(start + 2, end - 1)]);
+      }
+    }
+    return text;
+  }
+
 }

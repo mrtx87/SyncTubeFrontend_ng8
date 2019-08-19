@@ -35,7 +35,7 @@ export class NoApiDataService implements IDataService {
 
   retrieveIframe() {
     if(!this.iframe) {
-    this.iframe = document.getElementById("noapiplayer");
+      this.iframe = document.getElementById("noapiplayer");
     }
   }
 

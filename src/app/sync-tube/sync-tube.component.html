@@ -95,7 +95,6 @@
         </div>
       </div>
     </div>
-    <app-footer></app-footer>
 
   </div>
 </div>
@@ -443,7 +442,7 @@
 
 <div class="prompt-blocking-overlay" *ngIf="designatedAdmin">
   <div class="prompt">
-    <h3>{{ '$to_admin_question'| tl8 }}</h3>
+    <h3>{{ 'synctubeComponent$to_admin_question'| tl8 }}</h3>
     <img src="assets/check.svg" class="approved-button" (click)="approvedAdmin()">
     <img src="assets/delete.svg" class="disapproved-button" (click)="disapprovedAdmin()">
   </div>
