@@ -6,7 +6,7 @@
     "$public_rooms": "public rooms",
     "$public_rooms_description": "description",
     "$description": "description",
-    "$video_title": "video title",
+    "$video_title": "current video",
     "$users": "users",
     "$created": "created",
     "$no_video_title": "no video title",
