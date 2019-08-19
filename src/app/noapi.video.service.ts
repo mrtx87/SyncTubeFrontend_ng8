@@ -27,13 +27,14 @@ export class NoApiVideoService implements IVideoService {
     }
 
     hide(): void {
-        if(this.iframe) {
+        if (this.iframe) {
             this.iframe.hidden = true;
-            }    }
+        }
+    }
     unHide(): void {
-        if(this.iframe) {
+        if (this.iframe) {
             this.iframe.hidden = false;
-            }        //reframe(this.iframe);
+        }        //reframe(this.iframe);
     }
     isHidden(): boolean {
         return this.iframe.hidden;
@@ -43,7 +44,7 @@ export class NoApiVideoService implements IVideoService {
         return this.videoPlayer.quality;
     }
     loadVideoById(urlObject: any): void {
-        this.iframe.src= urlObject.videoId;
+        this.iframe.src = urlObject.videoId;
     }
     mute(): void {
         this.videoPlayer.muted = true;
@@ -81,7 +82,7 @@ export class NoApiVideoService implements IVideoService {
 
     }
     getPlayerState(): number {
-        return (this.videoPlayer.paused) ? Constants.PAUSED : Constants.PLAYING ; // TODO remove 
+        return (this.videoPlayer.paused) ? Constants.PAUSED : Constants.PLAYING; // TODO remove 
     }
 
     getAvailableQualityLevels(): string[] {
