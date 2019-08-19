@@ -27,11 +27,13 @@ export class NoApiVideoService implements IVideoService {
     }
 
     hide(): void {
-        this.iframe.hidden = true;
-    }
+        if(this.iframe) {
+            this.iframe.hidden = true;
+            }    }
     unHide(): void {
-        this.iframe.hidden = false;
-        //reframe(this.iframe);
+        if(this.iframe) {
+            this.iframe.hidden = false;
+            }        //reframe(this.iframe);
     }
     isHidden(): boolean {
         return this.iframe.hidden;

@@ -13,6 +13,7 @@ export class LanguagePipe implements PipeTransform {
   transform(value: any, args?: any): any {
     if (this.languageService) {
       return this.languageService.interpolate(value);
+      //TODO
     }
     return value;
   }
