@@ -336,7 +336,7 @@ export class SyncService {
         this.replaceUrl(message.raumId);
         this.updateVideo(message);
         this.setInitalPlaybackRate(message.currentPlaybackRate);
-        this.retrieveRaumPlaylist();
+        //this.retrieveRaumPlaylist();
         break;
       case this.messageTypes.JOIN_ROOM:
         this.initResponseMessage = message;
@@ -410,6 +410,7 @@ export class SyncService {
           this.synctubeComponent.chatMessages.push(message.chatMessage);
         }
         this.retrieveRaumPlaylist();
+        this.synctubeComponent.displayTab = 2;
         break;
       case this.messageTypes.REQUEST_SYNC_TIMESTAMP:
         let syncVideo: Video = new Video();
