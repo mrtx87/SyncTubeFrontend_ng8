@@ -198,6 +198,8 @@
   border: none;
   background-color: var(--color9);
   color: white;
+  border-radius: 3px;
+  padding: 5px;
 }
 
 .change-button {
@@ -850,10 +852,11 @@ input[type="range"][orient="vertical"] {
 .playlist-video-data, .history-video-data {
   display: flex;
   flex-direction: row;
-  width: 100%;
+  width: 68%;
   background-color: var(--color8);
   color: white;
   margin-bottom: 2px;
+  border-radius: 0 10px 10px 0;
 }
 
 .active {
@@ -874,6 +877,10 @@ input[type="range"][orient="vertical"] {
 .playlist-thumbnail, .history-thumbnail {
   height: 80px;
   width: 120px;
+    /* object-fit: none; */
+    /* object-position: 50% 32%; */
+  object-fit: cover;
+  border-radius: 10px 0 0 10px;
 }
 
 .playlist-video-controls, .history-video-controls {
@@ -921,6 +928,7 @@ input[type="range"][orient="vertical"] {
 .playlist-video-content, .history-video-content {
   display: flex;
   height: 82px;
+  padding-bottom: 2px;
 }
 
 .playlist-controls {
