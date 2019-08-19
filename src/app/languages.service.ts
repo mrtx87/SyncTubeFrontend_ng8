@@ -8,7 +8,6 @@ import { SyncService } from './sync.service';
 })
 export class LanguagesService {
 
-  syncService: SyncService;
 
   /***
    * 
@@ -55,9 +54,8 @@ export class LanguagesService {
     return this.selectedLanguageKey_;
   }
 
-  constructor(syncService: SyncService, private httpService: HttpClient) {
+  constructor(private httpService: HttpClient) {
     this.parseAllLanguageJsons();
-    this.syncService = syncService;
     console.log("parsed all languages")
   }
 

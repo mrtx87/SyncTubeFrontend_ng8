@@ -662,6 +662,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
   switchLanguage(lang: Language) {
     this.languageService.selectedLanguageKey = lang.key;
     this.syncService.toastr.success(this.languageService.interpolate('$switched_lang') + ' '+  lang.key, '', ToastrConfigs.SUCCESS)
+    this.syncService.cookieService.set('lang', lang.key, 30);
   }
 
 }

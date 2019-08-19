@@ -34,6 +34,7 @@ import { ToastrMessage } from "./toastr.message";
 import { AppCookie } from "./app.cookie";
 import { Constants } from './constants';
 import { NoApiDataService } from './noapi.dataservice';
+import { LanguagesService } from './languages.service';
 
 @Injectable({
   providedIn: "root"
@@ -97,10 +98,19 @@ export class SyncService {
     return this.videoServices.get(key);
   }
 
+  get cookieService(): CookieService {
+    return this.cookieService_;
+  }
+
+  get languageService() : LanguagesService {
+    return this.languageService_;
+  }
+
   constructor(
     private http: HttpClient,
-    private cookieService: CookieService,
-    private toastr_: ToastrService
+    private cookieService_: CookieService,
+    private toastr_: ToastrService,
+    private languageService_: LanguagesService
   ) {
     this.retrieveMessageTypes();
     this.retrieveToastrMessageTypes();
@@ -252,8 +262,18 @@ export class SyncService {
     this.videoComponent = videoComponent;
   }
 
-  handleCookie(): User {
+  handleCookies(): User {
 
+    //language cookie
+    let lang : string = this.cookieService.get('lang');
+    if(!lang) {
+      this.cookieService.set('lang', 'english', 30);
+      lang = 'english';
+    }
+    this.languageService.selectedLanguageKey = lang;
+
+
+    //identifier cookie
     let user: User;
     if (this.hasCookie()) {
       user = new User();
@@ -290,7 +310,7 @@ export class SyncService {
   }
 
   connect() {
-    let user: User = this.handleCookie();
+    let user: User = this.handleCookies();
     this.setLocalUser(user);
 
     this.ws = new SockJS("http://localhost:8080/socket");
