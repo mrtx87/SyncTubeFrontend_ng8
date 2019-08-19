@@ -440,7 +440,7 @@
 
 <div class="prompt-blocking-overlay" *ngIf="designatedAdmin">
   <div class="prompt">
-    <h3>{{ 'synctubeComponent$to_admin_question'| tl8 }}</h3>
+    <h3>{{ '$to_admin_questionA'| tl8 }} {{ designatedAdmin.userName }} {{ '$to_admin_questionB'| tl8 }}</h3>
     <img src="assets/check.svg" class="approved-button" (click)="approvedAdmin()">
     <img src="assets/delete.svg" class="disapproved-button" (click)="disapprovedAdmin()">
   </div>
@@ -448,8 +448,8 @@
 
 <div class="prompt-blocking-overlay" *ngIf="kickingUser">
   <div class="prompt">
-    <h3>{{ '$kick_question' | tl8 }}</h3>
-    <img src="assets/check.svg" class="approved-button" (click)="approvedKick()">
+      <h3>{{ '$kick_questionA'| tl8 }} {{ kickingUser.userName }} {{ '$kick_questionB'| tl8 }}</h3>
+      <img src="assets/check.svg" class="approved-button" (click)="approvedKick()">
     <img src="assets/delete.svg" class="disapproved-button" (click)="disapprovedKick()">
   </div>
 </div>

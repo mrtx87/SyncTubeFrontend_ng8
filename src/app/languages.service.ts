@@ -70,23 +70,9 @@ export class LanguagesService {
 
   interpolate(key: string): string {
     let resolved: string = this.selectedLanguage ? this.selectedLanguage[key] : null;
-    if (resolved) {
-      return resolved;
-    }
-    return key
+    return resolved ? resolved : key;
   }
 
-  replaceKeyByValue(text: string): string {
-    if (this.syncService) {
-      let start: number = text.indexOf('{{');
-      let end: number = text.indexOf('}}')
-      if (start && end) {
-        let keyWHandlebars = text.substring(start, end + 1)
-        console.log("!!!!!" + keyWHandlebars)
-        return text.replace(text.substring(start, end).trim(), this.syncService.synctubeComponent[text.substring(start + 2, end - 1)]);
-      }
-    }
-    return text;
-  }
+
 
 }

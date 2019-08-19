@@ -25,7 +25,9 @@
     "$rename_room_title_tooltip": "Hier kannst du den Raumtitel ändern",
     "$rename_room_description_tooltip": "Hier kannst du die Raumbeschreibung ändern",
     "$kicked_users": "Gekickte Benutzer",
-    "$to_admin_question": "Wollen Sie {{ designatedAdmin.userName }} zum Admin ernennen?",
-    "$kick_question": "Wollen Sie {{ kickingUser.userName }} aus dem Raum kicken?",
+    "$to_admin_questionA": "Wollen Sie",
+    "$to_admin_questionB": "zum Admin ernennen?",
+    "$kick_questionA": "Wollen Sie",
+    "$kick_questionB": "aus dem Raum kicken?",
     "$refresh_url_tooltip": "Erneuert die URL und ID des Raumes"
 }

@@ -25,7 +25,9 @@
     "$rename_room_title_tooltip": "change room title",
     "$rename_room_description_tooltip": "change room description",
     "$kicked_users": "kicked users",
-    "$to_admin_question": "Promote {{ designatedAdmin.userName }} to admin?",
-    "$kick_question": "Kick {{ kickingUser.userName }} from the room?", 
+    "$to_admin_questionA": "Are you sure you want to assign",
+    "$to_admin_questionB": "as Admin?",
+    "$kick_questionA": "Are you sure you want to kick",
+    "$kick_questionB": "?",
     "$refresh_url_tooltip": "change the url and id of the room"
 }
