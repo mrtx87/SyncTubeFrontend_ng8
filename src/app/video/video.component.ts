@@ -15,7 +15,6 @@ import { LanguagesService } from '../languages.service';
 import { NoApiVideoService } from '../noapi.video.service';
 import { NoApiDataService } from '../noapi.dataservice';
 declare const DM: any;
-declare const Vimeo: any;
 
 @Component({
   selector: "app-video",
@@ -124,12 +123,7 @@ export class VideoComponent implements OnInit {
           if (!this.syncService.videoServices.has(SupportedApiType.Dailymotion)) {
             this.initDailymotionPlayer(supportedApi);
           }
-          break;/*
-        case SupportedApiType.Vimeo:
-          if (!this.syncService.videoServices.has(SupportedApiType.Vimeo)) {
-            this.initVimeoPlayer(supportedApi);
-          }
-          break; */
+          break;
         case SupportedApiType.NoApi:
           if (!this.syncService.videoServices.has(SupportedApiType.NoApi)) {
             this.initNoApiIFrame(supportedApi);

@@ -222,17 +222,7 @@ export class SyncService {
             console.log(
               "Successfully generated data-api: " + dailymotionDataService.name
             );
-            break; /*
-          case SupportedApiType.Vimeo:
-            let vimeoDataService: VimeoDataService = new VimeoDataService(
-              this.http,
-              this.synctubeComponent,
-              SupportedApiType.Vimeo,
-              supportedApi.name
-            );
-            this.dataServices.set(SupportedApiType.Vimeo, vimeoDataService);
-            console.log("Successfully generated data-api: " + vimeoDataService.name);
-            break; */
+            break;
             case SupportedApiType.NoApi:
             
             this.dataServices.set(SupportedApiType.NoApi, new NoApiDataService(this.http,
