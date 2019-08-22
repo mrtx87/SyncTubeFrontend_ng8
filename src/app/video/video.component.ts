@@ -89,8 +89,6 @@ export class VideoComponent implements OnInit {
     }, 10);
   }
 
-  // <script src="https://api.dmcdn.net/all.js"></script>
-
   initScripts() {
     for (let supportedApi of this.syncService.synctubeComponent.supportedApis) {
       if (supportedApi.script) {
@@ -298,24 +296,6 @@ export class VideoComponent implements OnInit {
     return this.syncService.currentVideoService.getAvailableQualityLevels();
   }
 
-  /*
-  timer: any;
-  togglePlayVideo(playerState: number) {
-    if (playerState == Constants.PLAYING) {
-      this.playVideo();
-      this.isPlaying = true;
-      let that = this;
-      this.updateVideoContinously(that);
-      return;
-    }
-    if (playerState == Constants.PAUSED) {
-      this.pauseVideo();
-      this.isPlaying = false;
-      clearInterval(this.timer);
-      return;
-    }
-  }*/
-
   isLocalUserAdmin() {
     return this.getLocalUser().admin;
   }
@@ -327,7 +307,6 @@ export class VideoComponent implements OnInit {
         this.getPlayerState() == Constants.PLACED ||
         this.getPlayerState() == Constants.FINISHED
       ) {
-        //console.log("playvideo");
         this.syncService.sendTogglePlay(
           this.syncService.getLocalUser(),
           this.syncService.getRaumId(),
@@ -336,7 +315,6 @@ export class VideoComponent implements OnInit {
           this.getCurrentTime()
         );
       } else if (this.getPlayerState() == Constants.PLAYING) {
-        //console.log("pausevideo");
         this.syncService.sendTogglePlay(
           this.syncService.getLocalUser(),
           this.syncService.getRaumId(),
