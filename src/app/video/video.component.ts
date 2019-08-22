@@ -7,14 +7,13 @@ import { SupportedApiType } from "../supported-api-type";
 import { SupportedApi } from "../supported-api";
 import { YoutubeDataService } from "../youtube-dataservice";
 import { DailymotionDataService } from "../dailymotion.dataservice";
-import { VimeoDataService } from "../vimeo.dataservice.";
 import { YoutubeVideoService } from "../youtube.video.service";
-import { VimeoVideoService } from "../vimeo.video.service";
 import { DailymotionVideoService } from "../dailymotion.video.service";
 import { IVideoService } from "../ivideo.service";
 import { Constants } from '../constants';
 import { LanguagesService } from '../languages.service';
 import { NoApiVideoService } from '../noapi.video.service';
+import { NoApiDataService } from '../noapi.dataservice';
 declare const DM: any;
 declare const Vimeo: any;
 
@@ -125,12 +124,12 @@ export class VideoComponent implements OnInit {
           if (!this.syncService.videoServices.has(SupportedApiType.Dailymotion)) {
             this.initDailymotionPlayer(supportedApi);
           }
-          break;
+          break;/*
         case SupportedApiType.Vimeo:
           if (!this.syncService.videoServices.has(SupportedApiType.Vimeo)) {
             this.initVimeoPlayer(supportedApi);
           }
-          break;
+          break; */
         case SupportedApiType.NoApi:
           if (!this.syncService.videoServices.has(SupportedApiType.NoApi)) {
             this.initNoApiIFrame(supportedApi);
@@ -138,10 +137,6 @@ export class VideoComponent implements OnInit {
           break;
       }
     }
-    /*
-    let player: HTMLElement = document.getElementById("youtubeplayer");
-    console.log(player)
-    player.hidden = true;*/
   }
 
   initNoApiIFrame(supportedApi: SupportedApi) {
@@ -165,7 +160,7 @@ export class VideoComponent implements OnInit {
     let videoPlayer: any;
     let YT: any;
     let iframe: any;
-    window["onYouTubeIframeAPIReady"] = e => {
+    window["on#IframeAPIReady"] = e => {
       YT = window["YT"];
       this.reframed = false;
       videoPlayer = new window["YT"].Player(supportedApi.name + "player", {
@@ -187,26 +182,10 @@ export class VideoComponent implements OnInit {
             let ytVideoService: YoutubeVideoService = this.syncService.videoServices.get(supportedApi.id);
             ytVideoService.videoPlayer = videoPlayer;
             ytVideoService.iframe = iframe;
-            //iframe.hidden = true;
             videoPlayer.mute();
-            /*that.syncService.switchVideo(this.syncService.joinReponseMessage);
-            that.listenForPlayerState();
-             //DEBUG */
 
 
-            /*
-            that.listenForPlayerState();
-            if (that.syncService.getVideo()) {
-              that.processVideoIfLoaded(that);
-              that.currentTimeProgressbar = this.syncService.getVideo().timestamp;
-              that.syncService.currentVideoService.loadVideoById({
-                videoId: this.syncService.getVideo().videoId,
-                startSeconds: this.syncService.getVideo().timestamp,
-                suggestedQuality: "large"
-              });
-            }*/
-
-            this.syncService.allVideoPlayersAreReady(supportedApi);
+            this.syncService.registerLoadedVideoPlayer(supportedApi);
           }
         }
       });
@@ -248,7 +227,7 @@ export class VideoComponent implements OnInit {
         this.reframed = true;
         reframe(event.target);
       }
-      that.syncService.allVideoPlayersAreReady(supportedApi);
+      that.syncService.registerLoadedVideoPlayer(supportedApi);
 
     });
     this.syncService.videoServices.set(
@@ -264,55 +243,10 @@ export class VideoComponent implements OnInit {
     iframe.hidden = true;
   }
 
-  initVimeoPlayer(supportedApi: SupportedApi) {
-    let div = document.getElementById(supportedApi.name + "player");
-    let videoPlayer = new Vimeo.Player('vimeoplayer', { id: '213468818', muted: true, autoplay: true });
-    let that = this;
-    let vimeoVideoService = new VimeoVideoService(supportedApi, this.syncService, videoPlayer, div);
-    this.syncService.videoServices.set(
-      supportedApi.id,
-      vimeoVideoService
-    );
-    this.syncService.hasSuccessfullyRegisteredAllVideoApis(supportedApi);
-    div.hidden = true;
-    videoPlayer.ready().then(function () {
-      console.log("onReady: vimeo player ready");
-      vimeoVideoService.iframe = div.firstChild;
-      vimeoVideoService.div = div;
-      vimeoVideoService.videoPlayer = videoPlayer;
-      reframe(div.firstChild);
-      that.syncService.allVideoPlayersAreReady(supportedApi);
+  openNoApiWindow() {
+    var newWindow = window.open((<NoApiDataService> this.syncService.currentDataService).currentLink);  
 
-
-    });
-    /*videoPlayer.on('play', function () {
-      console.log('Played the video');
-    });
-
-    videoPlayer.getVideoTitle().then(function (title) {
-      console.log('title:', title);
-    });*/
   }
-
-  /*
-  processVideoIfLoaded(that: VideoComponent) {
-    let wait = setInterval(function () {
-      if (
-        that.syncService.currentVideoService.getPlayerState() ==
-        Constants.PLAYING
-      ) {
-        that.setVideoDuration();
-        that.togglePlayVideo(that.getReceivedPlayerState());
-        if (that.syncService.synctubeComponent.users.length > 1) {
-          that.sendRequestSyncTimestamp();
-        }
-        that.setPlaybackRates();
-        that.availableQualitys = that.getAvailableQualityLevels();
-        that.setPlaybackRate(that.getInitalPlaybackRate());
-        clearInterval(wait);
-      }
-    }, 3);
-  }*/
 
   getVideoDuration(): number {
     return this.syncService.currentVideoService.getVideoDuration();

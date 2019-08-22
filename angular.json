@@ -28,7 +28,6 @@
               "node_modules/ngx-toastr/toastr.css"
             ],
             "scripts": [
-              "src/assets/js/player.js",
               "src/assets/js/all.js"
             ]
           },

@@ -34,7 +34,7 @@ export class NoApiVideoService implements IVideoService {
     unHide(): void {
         if (this.iframe) {
             this.iframe.hidden = false;
-        }        //reframe(this.iframe);
+        }      //  reframe(this.iframe);
     }
     isHidden(): boolean {
         return this.iframe.hidden;

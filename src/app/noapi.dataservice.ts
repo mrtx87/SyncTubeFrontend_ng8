@@ -18,6 +18,8 @@ export class NoApiDataService implements IDataService {
   synctubeComponent: SyncTubeComponent;
   APIKEY: string;
   iframe: any;
+  currentLink: string;
+
 
   constructor(http: HttpClient, synctubeComponent: SyncTubeComponent, type: number, name: string) {
     this.http = http;
@@ -47,7 +49,7 @@ export class NoApiDataService implements IDataService {
     unknownVideo.api = 99;
     unknownVideo.title = 'unknown video'
     this.synctubeComponent.searchResults = [unknownVideo];
-
+    this.currentLink = query;
   }
 
 

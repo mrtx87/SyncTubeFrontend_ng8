@@ -23,7 +23,6 @@ import { SupportedApi } from "./supported-api";
 import { YoutubeDataService } from "./youtube-dataservice";
 import { SupportedApiType } from "./supported-api-type";
 import { DailymotionDataService } from "./dailymotion.dataservice";
-import { VimeoDataService } from "./vimeo.dataservice.";
 import { IVideoService } from "./ivideo.service";
 import { ToastrConfig } from "./toastr.config";
 import { ToastrService } from "ngx-toastr";
@@ -133,7 +132,7 @@ export class SyncService {
   }
 
   readyVideoPlayersCount: number = 0;
-  allVideoPlayersAreReady(supportedApi: SupportedApi) {
+  registerLoadedVideoPlayer(supportedApi: SupportedApi) {
     if (this.dataServices.has(supportedApi.id)) {
       this.readyVideoPlayersCount += 1;
     }
@@ -223,7 +222,7 @@ export class SyncService {
             console.log(
               "Successfully generated data-api: " + dailymotionDataService.name
             );
-            break;
+            break; /*
           case SupportedApiType.Vimeo:
             let vimeoDataService: VimeoDataService = new VimeoDataService(
               this.http,
@@ -233,7 +232,7 @@ export class SyncService {
             );
             this.dataServices.set(SupportedApiType.Vimeo, vimeoDataService);
             console.log("Successfully generated data-api: " + vimeoDataService.name);
-            break;
+            break; */
             case SupportedApiType.NoApi:
             
             this.dataServices.set(SupportedApiType.NoApi, new NoApiDataService(this.http,

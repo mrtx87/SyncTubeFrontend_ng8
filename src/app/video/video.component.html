@@ -84,10 +84,9 @@
   <!-- Vimeo video -->
   <!-- <div id="vimeoplayer"></div> -->
 
-  <!-- NOAPI 
-  <iframe id="noapiplayer"></iframe>
-   <iframe  background="true" autoplay="true" mute="1" loop="false"  src="https://player.vimeo.com/video/213468818?autoplay=1&muted=1" [className]="!syncService.synctubeComponent.displayFullscreen ? 'video' : 'video-fullscreen'" width="500px" height="350px"></iframe>
-  -->
+  <!-- NOAPI  -->  
+  <div id="noapiplayer"> <span (click)="openNoApiWindow()">No Api Window</span></div>
+  
   <div *ngIf="displaySecondsBack" class="middle-back-seconds-overlay">
     <img src="assets/back10sec.png">
   </div>
