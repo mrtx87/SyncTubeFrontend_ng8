@@ -690,6 +690,7 @@ export class SyncService {
 
       let that = this;
       if (this.waitForSwitchtingVideo) {
+        clearInterval(this.waitForSwitchtingVideo)
         this.waitForSwitchtingVideo = null;
       }
       this.waitForSwitchtingVideo = setInterval(function () {
