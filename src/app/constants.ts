@@ -22,7 +22,7 @@ export class Constants {
     //URLS
 
     //DATA VALUES
-    static displayControlsLength = 2000; //in milliseconds
+    static displayControlsLength = 2000000; //in milliseconds
     
 
 

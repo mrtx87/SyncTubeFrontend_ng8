@@ -288,8 +288,6 @@ input:checked+.slider:before {
   /*background-color: #43434361;*/
   align-items: center;
   height: 4.3vh;
-  margin: 0 auto;
-  padding-top: 2px;
   background-color: #000000d6;
 }
 

@@ -140,7 +140,7 @@ export class SyncService {
       console.log("success -> all video players are ready:  " + this.readyVideoPlayersInitList.size);
       console.log("load first video");
       this.switchVideo(this.initResponseMessage)
-      this.hasBeenInitialized = true;
+      //this.hasBeenInitialized = true;
     }
   }
 
