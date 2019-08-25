@@ -7,7 +7,7 @@ import reframe from "reframe.js";
 
 
 
-export class NoApiVideoService implements IVideoService {
+export class DirectLinkVideoService implements IVideoService {
     reframed: boolean;
     name: string;
     iframe: any;
@@ -17,9 +17,11 @@ export class NoApiVideoService implements IVideoService {
 
     constructor(supportedApi: SupportedApi, synService: SyncService, videoPlayer: any, playerWindow: any) {
         this.iframe = playerWindow;
-        this.videoPlayer = videoPlayer;
+        this.videoPlayer = playerWindow;
         this.syncService = synService;
         this.supportedApi = supportedApi;
+        this.iframe.loop = false;
+        this.iframe.muted = true;
     }
 
     init() {
@@ -29,12 +31,15 @@ export class NoApiVideoService implements IVideoService {
     hide(): void {
         if (this.iframe) {
             this.iframe.hidden = true;
+
         }
     }
+
     unHide(): void {
         if (this.iframe) {
             this.iframe.hidden = false;
-        }        //reframe(this.iframe);
+            //reframe(this.iframe);
+        }        
     }
     isHidden(): boolean {
         return this.iframe.hidden;
@@ -45,12 +50,22 @@ export class NoApiVideoService implements IVideoService {
     }
     loadVideoById(urlObject: any): void {
         this.iframe.src = urlObject.videoId;
+        let that = this;
+        let waitForLoading  = setInterval(function() {
+            if(that.iframe.duration) {
+                that.seekTo(urlObject.startSeconds, true);
+                that.playVideo();
+                clearInterval(waitForLoading);
+            }
+
+        }, 5);
     }
+
     mute(): void {
         this.videoPlayer.muted = true;
     }
     unMute(): void {
-        this.videoPlayer.mute = false;
+        this.videoPlayer.muted = false;
     }
     playVideo() {
         this.videoPlayer.play();
@@ -62,10 +77,11 @@ export class NoApiVideoService implements IVideoService {
         console.log('stopVideo: not available')
     }
     seekTo(seconds: number, allowSeekAhead: Boolean) {
-        this.videoPlayer.seek(seconds);
+        this.videoPlayer.currentTime = seconds;
     }
     setVolume(value: number) {
-        this.videoPlayer.setVolume(value);
+        this.unMute();
+        this.videoPlayer.volume = value/100;
     }
     isMuted(): Boolean {
         return this.videoPlayer.muted;
@@ -82,7 +98,8 @@ export class NoApiVideoService implements IVideoService {
 
     }
     getPlayerState(): number {
-        return (this.videoPlayer.paused) ? Constants.PAUSED : Constants.PLAYING; // TODO remove 
+        
+        return (!this.videoPlayer.paused) ? Constants.PLAYING : Constants.PAUSED; // TODO remove 
     }
 
     getAvailableQualityLevels(): string[] {
@@ -94,15 +111,15 @@ export class NoApiVideoService implements IVideoService {
     }
     getAvailablePlaybackRates(): number[] {
         console.log('getAvailablePlaybackRates: not available')
-        return [];
+        return null;
 
     }
     setPlaybackRate(rate: number) {
-        //console.log('setPlaybackRate: not available')
+        //this.videoPlayer.playbackRate = rate;
     }
     getPlaybackRate(): number {
         //console.log('getPlaybackRate: not available')
-        return 1;
+        return this.videoPlayer.playbackRate;
     }
     clearVideo() {
         //     throw new Error("Method not implemented.");

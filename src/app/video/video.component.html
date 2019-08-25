@@ -1,7 +1,7 @@
 <div [className]="!syncService.synctubeComponent.displayFullscreen ? 'main' : 'main-fullscreen'"
   (keyup.s)="triggerTogglePlay()">
   <!-- OverLay for Click and DblClick-->
-  <div [hidden]="syncService.selectedVideoApi == 99" (mousemove)="startDisplayingAllControls()" (click)="triggerTogglePlay()" (dblclick)="toggleFullscreen()"
+  <div (mousemove)="startDisplayingAllControls()" (click)="triggerTogglePlay()" (dblclick)="toggleFullscreen()"
     [className]="!syncService.synctubeComponent.displayFullscreen ? 'overlay-container' : 'overlay-container-fullscreen'">
   </div>
 
@@ -25,7 +25,7 @@
 
 
   <!-- Video Controls-->
-  <div class="controls-all" [hidden]="!displayAllControls || syncService.selectedVideoApi == 99" (mousemove)="time = 0">
+  <div class="controls-all" [hidden]="!displayAllControls" (mousemove)="time = 0">
     <input [(ngModel)]="currentTimeProgressbar" *ngIf="syncService.synctubeComponent.user.admin"
       (click)="onChangeProgressBar()" type="range" min="0" max="{{videoDuration | noFloat}}" class="bar-slider"
       id="myRange">
@@ -84,10 +84,11 @@
   <!-- Vimeo video -->
   <!-- <div id="vimeoplayer"></div> -->
 
-  <!-- NOAPI 
-  <iframe id="noapiplayer"></iframe>
-   <iframe  background="true" autoplay="true" mute="1" loop="false"  src="https://player.vimeo.com/video/213468818?autoplay=1&muted=1" [className]="!syncService.synctubeComponent.displayFullscreen ? 'video' : 'video-fullscreen'" width="500px" height="350px"></iframe>
-  -->
+  <!-- DirectLink -->
+  <video  width="500px" height="300px" id="directlinkplayer"></video>
+ 
+
+
   <div *ngIf="displaySecondsBack" class="middle-back-seconds-overlay">
     <img src="assets/back10sec.png">
   </div>

@@ -14,7 +14,7 @@ import { DailymotionVideoService } from "../dailymotion.video.service";
 import { IVideoService } from "../ivideo.service";
 import { Constants } from '../constants';
 import { LanguagesService } from '../languages.service';
-import { NoApiVideoService } from '../noapi.video.service';
+import { DirectLinkVideoService } from '../directlink.video.service';
 declare const DM: any;
 declare const Vimeo: any;
 
@@ -107,18 +107,15 @@ export class VideoComponent implements OnInit {
   ngOnInit() {
     this.initScripts();
     this.initVideoPlayers();
-    //this.syncService.switchVideo(this.syncService.joinReponseMessage);
   }
 
   initVideoPlayers() {
-    this.syncService.videoServices = new Map<Number, IVideoService>();
+    this.syncService.videoServices = new Map<string, IVideoService>();
     for (let supportedApi of this.syncService.synctubeComponent.supportedApis) {
-      //this.syncService.videoServices = new Map<Number, IVideoService>();
       switch (supportedApi.id) {
         case SupportedApiType.Youtube:
           if (!this.syncService.videoServices.has(SupportedApiType.Youtube)) {
             this.initYoutubePlayer(supportedApi);
-            //this.syncService.selectedVideoApi = supportedApi.id;
           }
           break;
         case SupportedApiType.Dailymotion:
@@ -126,30 +123,24 @@ export class VideoComponent implements OnInit {
             this.initDailymotionPlayer(supportedApi);
           }
           break;
-        case SupportedApiType.Vimeo:
-          if (!this.syncService.videoServices.has(SupportedApiType.Vimeo)) {
-            this.initVimeoPlayer(supportedApi);
-          }
-          break;
-        case SupportedApiType.NoApi:
-          if (!this.syncService.videoServices.has(SupportedApiType.NoApi)) {
+        case SupportedApiType.DirectLink:
+          if (!this.syncService.videoServices.has(SupportedApiType.DirectLink)) {
             this.initNoApiIFrame(supportedApi);
           }
           break;
       }
     }
-    /*
-    let player: HTMLElement = document.getElementById("youtubeplayer");
-    console.log(player)
-    player.hidden = true;*/
   }
 
   initNoApiIFrame(supportedApi: SupportedApi) {
-    let iframe = document.getElementById("noapiplayer");
-
+    let iframe = document.getElementById("directlinkplayer");
+    if (!this.reframed) {
+      this.reframed = true;
+      reframe(iframe);
+    }
     this.syncService.videoServices.set(
       supportedApi.id,
-      new NoApiVideoService(
+      new DirectLinkVideoService(
         supportedApi,
         this.syncService,
         iframe,
@@ -158,6 +149,7 @@ export class VideoComponent implements OnInit {
     );
     console.log("onReady: nopapi iframe ready");
     this.syncService.hasSuccessfullyRegisteredAllVideoApis(supportedApi);
+    this.syncService.addToLoadedVideoPlayers(supportedApi);
   }
 
   initYoutubePlayer(supportedApi: SupportedApi): void {
@@ -206,7 +198,7 @@ export class VideoComponent implements OnInit {
               });
             }*/
 
-            this.syncService.allVideoPlayersAreReady(supportedApi);
+            this.syncService.addToLoadedVideoPlayers(supportedApi);
           }
         }
       });
@@ -248,7 +240,7 @@ export class VideoComponent implements OnInit {
         this.reframed = true;
         reframe(event.target);
       }
-      that.syncService.allVideoPlayersAreReady(supportedApi);
+      that.syncService.addToLoadedVideoPlayers(supportedApi);
 
     });
     this.syncService.videoServices.set(
@@ -263,56 +255,6 @@ export class VideoComponent implements OnInit {
     this.syncService.hasSuccessfullyRegisteredAllVideoApis(supportedApi);
     iframe.hidden = true;
   }
-
-  initVimeoPlayer(supportedApi: SupportedApi) {
-    let div = document.getElementById(supportedApi.name + "player");
-    let videoPlayer = new Vimeo.Player('vimeoplayer', { id: '213468818', muted: true, autoplay: true });
-    let that = this;
-    let vimeoVideoService = new VimeoVideoService(supportedApi, this.syncService, videoPlayer, div);
-    this.syncService.videoServices.set(
-      supportedApi.id,
-      vimeoVideoService
-    );
-    this.syncService.hasSuccessfullyRegisteredAllVideoApis(supportedApi);
-    div.hidden = true;
-    videoPlayer.ready().then(function () {
-      console.log("onReady: vimeo player ready");
-      vimeoVideoService.iframe = div.firstChild;
-      vimeoVideoService.div = div;
-      vimeoVideoService.videoPlayer = videoPlayer;
-      reframe(div.firstChild);
-      that.syncService.allVideoPlayersAreReady(supportedApi);
-
-
-    });
-    /*videoPlayer.on('play', function () {
-      console.log('Played the video');
-    });
-
-    videoPlayer.getVideoTitle().then(function (title) {
-      console.log('title:', title);
-    });*/
-  }
-
-  /*
-  processVideoIfLoaded(that: VideoComponent) {
-    let wait = setInterval(function () {
-      if (
-        that.syncService.currentVideoService.getPlayerState() ==
-        Constants.PLAYING
-      ) {
-        that.setVideoDuration();
-        that.togglePlayVideo(that.getReceivedPlayerState());
-        if (that.syncService.synctubeComponent.users.length > 1) {
-          that.sendRequestSyncTimestamp();
-        }
-        that.setPlaybackRates();
-        that.availableQualitys = that.getAvailableQualityLevels();
-        that.setPlaybackRate(that.getInitalPlaybackRate());
-        clearInterval(wait);
-      }
-    }, 3);
-  }*/
 
   getVideoDuration(): number {
     return this.syncService.currentVideoService.getVideoDuration();
@@ -369,24 +311,6 @@ export class VideoComponent implements OnInit {
   getAvailableQualityLevels(): string[] {
     return this.syncService.currentVideoService.getAvailableQualityLevels();
   }
-
-  /*
-  timer: any;
-  togglePlayVideo(playerState: number) {
-    if (playerState == Constants.PLAYING) {
-      this.playVideo();
-      this.isPlaying = true;
-      let that = this;
-      this.updateVideoContinously(that);
-      return;
-    }
-    if (playerState == Constants.PAUSED) {
-      this.pauseVideo();
-      this.isPlaying = false;
-      clearInterval(this.timer);
-      return;
-    }
-  }*/
 
   isLocalUserAdmin() {
     return this.getLocalUser().admin;
@@ -552,10 +476,10 @@ export class VideoComponent implements OnInit {
       this.displayAllControls = true;
       let that = this;
       let toastControls = setInterval(function () {
-        if (that.time >= 2000000) {
+        if (that.time >= Constants.displayControlsLength) {
           that.displayAllControls = false;
-          clearInterval(toastControls);
           that.time = 0;
+          clearInterval(toastControls);
         }
         that.time += 25;
       }, 25);
@@ -586,12 +510,12 @@ export class VideoComponent implements OnInit {
   startDisplayingSeconds() {
     this.displaySecondsBack = true;
     let that = this;
-    let secondsBackTimer = setInterval(function () {
+    let secondsOffsetTimer = setInterval(function () {
       that.intervalSeconds += 25;
       if (that.intervalSeconds >= 300) {
         that.displaySecondsBack = false;
         that.intervalSeconds = 0;
-        clearInterval(secondsBackTimer);
+        clearInterval(secondsOffsetTimer);
       }
     }, 25);
   }

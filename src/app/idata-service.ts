@@ -7,7 +7,7 @@ import { SyncTubeComponent } from './sync-tube/sync-tube.component';
 
 export interface IDataService {
 
-    id: number;
+    id: string;
     name: string;
     http: HttpClient;
     synctubeComponent: SyncTubeComponent;

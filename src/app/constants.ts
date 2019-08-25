@@ -20,6 +20,9 @@ export class Constants {
     static COOKIE_KEY: string = "U_COOKIE";
 
     //URLS
+
+    //DATA VALUES
+    static displayControlsLength = 2000; //in milliseconds
     
 
 

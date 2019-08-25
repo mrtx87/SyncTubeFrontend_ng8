@@ -11,16 +11,16 @@ import { SearchQuery } from './sync-tube/search-query';
 export class DailymotionDataService implements IDataService {
 
   nextPageToken: string;
-  id: number;
+  id: string;
   name: string;
   http: HttpClient;
   synctubeComponent: SyncTubeComponent;
   APIKEY: string = "a8f15ba0bbd9f9552be9";
 
-  constructor(http: HttpClient, synctubeComponent: SyncTubeComponent, type: number, name: string) {
+  constructor(http: HttpClient, synctubeComponent: SyncTubeComponent, id: string, name: string) {
     this.http = http;
     this.synctubeComponent = synctubeComponent;
-    this.id = type;
+    this.id = id;
     this.name = name;
   }
 

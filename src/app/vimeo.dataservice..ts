@@ -12,16 +12,16 @@ import { VimeoVideo } from './vimeo.video ';
 export class VimeoDataService implements IDataService {
   
   nextPageToken: string;
-  id: number;
+  id: string;
   name: string;
   http: HttpClient;
   synctubeComponent: SyncTubeComponent;
   APIKEY: string = "be6fcf0320704697342bd26a54557395";
 
-  constructor(http: HttpClient, synctubeComponent: SyncTubeComponent, type: number, name: string) {
+  constructor(http: HttpClient, synctubeComponent: SyncTubeComponent, id: string, name: string) {
     this.http = http;
     this.synctubeComponent = synctubeComponent;
-    this.id = type;
+    this.id = id;
     this.name = name;
   }
 

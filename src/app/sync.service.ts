@@ -33,7 +33,7 @@ import { MessageTypes } from "./message.types";
 import { ToastrMessage } from "./toastr.message";
 import { AppCookie } from "./app.cookie";
 import { Constants } from './constants';
-import { NoApiDataService } from './noapi.dataservice';
+import { DirectLinkDataService } from './directlink.dataservice';
 import { LanguagesService } from './languages.service';
 
 @Injectable({
@@ -55,30 +55,30 @@ export class SyncService {
   toastrMessageTypes: ToastrMessageTypes;
   messageTypes: MessageTypes;
 
-  private _selectedVideoApi: Number;
+  private _selectedVideoApi: string;
   supportedApis: SupportedApi[];
 
-  private _videoServices: Map<Number, IVideoService>;
-  private _dataServices: Map<Number, IDataService>;
+  private _videoServices: Map<string, IVideoService>;
+  private _dataServices: Map<string, IDataService>;
 
-  public get selectedVideoApi(): Number {
+  public get selectedVideoApiId(): string {
     return this._selectedVideoApi;
   }
-  public set selectedVideoApi(value: Number) {
+  public set selectedVideoApiId(value: string) {
     this._selectedVideoApi = value;
   }
 
-  public get videoServices(): Map<Number, IVideoService> {
+  public get videoServices(): Map<string, IVideoService> {
     return this._videoServices;
   }
-  public set videoServices(value: Map<Number, IVideoService>) {
+  public set videoServices(value: Map<string, IVideoService>) {
     this._videoServices = value;
   }
 
-  public get dataServices(): Map<Number, IDataService> {
+  public get dataServices(): Map<string, IDataService> {
     return this._dataServices;
   }
-  public set dataServices(value: Map<Number, IDataService>) {
+  public set dataServices(value: Map<string, IDataService>) {
     this._dataServices = value;
   }
 
@@ -86,15 +86,15 @@ export class SyncService {
     return this.dataServices.get(this.getSelectedDataApi().id);
   }
 
-  getDataServiceByKey(key: Number): IDataService {
+  getDataServiceByKey(key: string): IDataService {
     return this.dataServices.get(key);
   }
 
   get currentVideoService(): IVideoService {
-    return this.videoServices.get(this.selectedVideoApi);
+    return this.videoServices.get(this.selectedVideoApiId);
   }
 
-  getVideoServiceByKey(key: Number): IVideoService {
+  getVideoServiceByKey(key: string): IVideoService {
     return this.videoServices.get(key);
   }
 
@@ -102,7 +102,7 @@ export class SyncService {
     return this.cookieService_;
   }
 
-  get languageService() : LanguagesService {
+  get languageService(): LanguagesService {
     return this.languageService_;
   }
 
@@ -132,19 +132,16 @@ export class SyncService {
     }
   }
 
-  readyVideoPlayersCount: number = 0;
-  allVideoPlayersAreReady(supportedApi: SupportedApi) {
-    if (this.dataServices.has(supportedApi.id)) {
-      this.readyVideoPlayersCount += 1;
-    }
+  hasBeenInitialized: boolean = false;
+  readyVideoPlayersInitList: Map<string, boolean> = new Map<string, boolean>();
+  addToLoadedVideoPlayers(supportedApi: SupportedApi) {
+    this.readyVideoPlayersInitList.set(supportedApi.id, true);
 
-    if (this.readyVideoPlayersCount >= this.supportedApis.length) {
-      console.log("success -> all video players are ready:  " + this.readyVideoPlayersCount);
-      //this.switchVideo()
-
+    if (!this.hasBeenInitialized && this.readyVideoPlayersInitList.size === this.supportedApis.length) {
+      console.log("success -> all video players are ready:  " + this.readyVideoPlayersInitList.size);
       console.log("load first video");
       this.switchVideo(this.initResponseMessage)
-
+      this.hasBeenInitialized = true;
     }
   }
 
@@ -194,7 +191,7 @@ export class SyncService {
 
   buildAvailableDataServices() {
     if (this.supportedApis) {
-      this.dataServices = new Map<Number, IDataService>();
+      this.dataServices = new Map<string, IDataService>();
       for (let supportedApi of this.supportedApis) {
         switch (supportedApi.id) {
           case SupportedApiType.Youtube:
@@ -224,27 +221,17 @@ export class SyncService {
               "Successfully generated data-api: " + dailymotionDataService.name
             );
             break;
-          case SupportedApiType.Vimeo:
-            let vimeoDataService: VimeoDataService = new VimeoDataService(
-              this.http,
+          case SupportedApiType.DirectLink:
+
+            this.dataServices.set(SupportedApiType.DirectLink, new DirectLinkDataService(this.http,
               this.synctubeComponent,
-              SupportedApiType.Vimeo,
-              supportedApi.name
-            );
-            this.dataServices.set(SupportedApiType.Vimeo, vimeoDataService);
-            console.log("Successfully generated data-api: " + vimeoDataService.name);
-            break;
-            case SupportedApiType.NoApi:
-            
-            this.dataServices.set(SupportedApiType.NoApi, new NoApiDataService(this.http,
-              this.synctubeComponent,
-              SupportedApiType.NoApi,
+              SupportedApiType.DirectLink,
               supportedApi.name));
             console.log("Successfully generated data-api: " + supportedApi.name);
             break;
 
 
-            
+
           default:
             break;
         }
@@ -265,8 +252,8 @@ export class SyncService {
   handleCookies(): User {
 
     //language cookie
-    let lang : string = this.cookieService.get('lang');
-    if(!lang) {
+    let lang: string = this.cookieService.get('lang');
+    if (!lang) {
       this.cookieService.set('lang', 'english', 30);
       lang = 'english';
     }
@@ -348,7 +335,6 @@ export class SyncService {
 
     this.displayAsToast(message.toastrMessage);
     console.log("[<<< handling response: " + message.type + " <<<]")
-    console.log(message);
     switch (message.type) {
       case this.messageTypes.CREATE_ROOM:
         this.initResponseMessage = message;
@@ -688,10 +674,11 @@ export class SyncService {
 
   waitForSwitchtingVideo: any;
   switchVideo(message: Message) {
+
     if (message && message.video) {
 
       this.updateVideo(message);
-      this.selectedVideoApi = message.video.api;
+      this.selectedVideoApiId = message.video.api;
       this.setDisplayedIframe();
       this.loadVideoById({
         videoId: message.video.videoId,
@@ -703,17 +690,22 @@ export class SyncService {
       this.synctubeComponent.forceScrollToChatBottom = true;
 
       let that = this;
-      if(this.waitForSwitchtingVideo) {
+      if (this.waitForSwitchtingVideo) {
         this.waitForSwitchtingVideo = null;
       }
       this.waitForSwitchtingVideo = setInterval(function () {
-        if (that.getPlayerState() == Constants.PLAYING) {
+        let currentPlayerState = that.getPlayerState();
+        if (currentPlayerState == Constants.PLAYING) {
           that.setProgressbarVideoDuration(that.currentVideoService.getVideoDuration());
           that.setPlaybackRates(that.currentVideoService.getAvailablePlaybackRates());
           that.setPlaybackRate(message.currentPlaybackRate);
-          //      that.getCaptions(that.getVideo());
           that.togglePlayVideo(that.getReceivedPlayerState());
           clearInterval(that.waitForSwitchtingVideo);
+
+          /* if room is joined we request additional sync */
+          if (message.type = that.messageTypes.JOIN_ROOM) {
+            that.sendRequestSyncTimestamp()
+          }
         }
       }, 20);
     }
@@ -721,7 +713,7 @@ export class SyncService {
 
   setDisplayedIframe() {
     this.videoServices.forEach((videoService: IVideoService) => {
-      if (videoService.supportedApi.id === this.selectedVideoApi) {
+      if (videoService.supportedApi.id === this.selectedVideoApiId) {
         videoService.unHide();
       } else {
         videoService.hide();
@@ -1187,6 +1179,7 @@ export class SyncService {
   }
 
   sendRequestSyncTimestamp() {
+    console.log("REQUEST SYNC")
     this.stompClient.send(
       "/app/send/request-sync-timestamp",
       {},
@@ -1232,11 +1225,13 @@ export class SyncService {
       clearInterval(that.timer);
       that.timer = null;
     }
-    that.timer = setInterval(function () {
-      that.videoComponent.currentTimeProgressbar += 0.01 * that.getPlaybackRate();
-      that.videoComponent.currentDisplayedTime = that.getCurrentTime();
-      that.synctubeComponent.video.timestamp = that.videoComponent.currentTime;
-    }, 10);
+
+    that.timer =
+      setInterval(function () {
+        that.videoComponent.currentTimeProgressbar += 0.01 * that.getPlaybackRate();
+        that.videoComponent.currentDisplayedTime = that.getCurrentTime();
+        that.synctubeComponent.video.timestamp = that.videoComponent.currentDisplayedTime;
+      }, 10);
   }
 
   timer: any;
@@ -1244,8 +1239,7 @@ export class SyncService {
     if (playerState == Constants.PLAYING) {
       this.playVideo();
       this.videoComponent.isPlaying = true;
-      let that = this;
-      this.updateVideoContinously(that);
+      this.updateVideoContinously(this);
       return;
     }
     if (playerState == Constants.PAUSED) {
@@ -1257,7 +1251,9 @@ export class SyncService {
   }
 
   loadVideoById(urlObject: any) {
-    this.currentVideoService.loadVideoById(urlObject);
+    if (this.currentVideoService) {
+      this.currentVideoService.loadVideoById(urlObject);
+    }
   }
 
   setProgressbarVideoDuration(duration: number) {
