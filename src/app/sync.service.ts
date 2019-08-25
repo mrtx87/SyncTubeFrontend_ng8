@@ -34,7 +34,7 @@ import { ToastrMessage } from "./toastr.message";
 import { AppCookie } from "./app.cookie";
 import { Constants } from './constants';
 import { NoApiDataService } from './noapi.dataservice';
-import { LanguagesService } from './languages.service';
+import { LanguagesService } from './languages.service'; 
 
 @Injectable({
   providedIn: "root"
