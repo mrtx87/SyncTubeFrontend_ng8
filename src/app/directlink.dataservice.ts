@@ -9,20 +9,20 @@ import { SearchQuery } from './sync-tube/search-query';
 import { NullTemplateVisitor } from '@angular/compiler';
 
 
-export class NoApiDataService implements IDataService {
+export class DirectLinkDataService implements IDataService {
 
   nextPageToken: string;
-  id: number;
+  id: string;
   name: string;
   http: HttpClient;
   synctubeComponent: SyncTubeComponent;
   APIKEY: string;
   iframe: any;
 
-  constructor(http: HttpClient, synctubeComponent: SyncTubeComponent, type: number, name: string) {
+  constructor(http: HttpClient, synctubeComponent: SyncTubeComponent, id: string, name: string) {
     this.http = http;
     this.synctubeComponent = synctubeComponent;
-    this.id = type;
+    this.id = id;
     this.name = name;
   }
 
@@ -35,7 +35,7 @@ export class NoApiDataService implements IDataService {
 
   retrieveIframe() {
     if(!this.iframe) {
-      this.iframe = document.getElementById("noapiplayer");
+      this.iframe = document.getElementById( SupportedApiType.DirectLink + "player");
     }
   }
 
@@ -44,8 +44,9 @@ export class NoApiDataService implements IDataService {
   searchQuery(query: string, normalQuery: boolean, timestamp?: number) {
     let unknownVideo = new Video();
     unknownVideo.videoId = query;
-    unknownVideo.api = 99;
-    unknownVideo.title = 'unknown video'
+    unknownVideo.api = SupportedApiType.DirectLink;
+    unknownVideo.title = query;
+    unknownVideo.thumbnail = 'assets/video-player.svg';
     this.synctubeComponent.searchResults = [unknownVideo];
 
   }

@@ -41,6 +41,15 @@ export class DailymotionVideoService implements IVideoService {
             autoplay: urlObject.autoplay,
             start: urlObject.startSeconds
         });
+
+        let that = this;
+        let waitForLoading  = setInterval(function() {
+            if(that.getVideoDuration()) {
+                that.syncService.videoComponent.videoDuration = that.getVideoDuration();
+                clearInterval(waitForLoading);
+            }
+
+        }, 5);
     }
     mute(): void {
         this.videoPlayer.muted = true;

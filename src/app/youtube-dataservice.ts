@@ -11,7 +11,7 @@ import { SearchQuery } from "./sync-tube/search-query";
 import { Constants } from './constants';
 
 export class YoutubeDataService implements IDataService {
-  id: number;
+  id: string;
   name: string;
   http: HttpClient;
   synctubeComponent: SyncTubeComponent;
@@ -20,7 +20,7 @@ export class YoutubeDataService implements IDataService {
   constructor(
     http: HttpClient,
     synctubeComponent: SyncTubeComponent,
-    id: number,
+    id: string,
     name: string
   ) {
     this.http = http;

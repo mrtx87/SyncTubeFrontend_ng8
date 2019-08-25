@@ -1,10 +1,10 @@
 export class Video {
 
     id: string;
-    api:number;
-    
+    api: string;
+
     isPlaylistLink?: boolean;
-    thumbnail?: string; 
+    thumbnail?: string;
     playlistId?: string;
 
     videoId: string;
@@ -12,7 +12,7 @@ export class Video {
     title: string;
     description: string;
     publishedAt: Date;
-    hover:boolean = false;
+    hover: boolean = false;
 
     //Debug
 
@@ -24,10 +24,10 @@ export class Video {
         v.description = this.description;
         v.publishedAt = this.publishedAt;
         v.id = this.id;
-        if(this.isPlaylistLink) {
+        if (this.isPlaylistLink) {
             v.isPlaylistLink = this.isPlaylistLink;
         }
-        if(this.thumbnail) {
+        if (this.thumbnail) {
             v.thumbnail = this.thumbnail;
         }
         v.api = this.api;

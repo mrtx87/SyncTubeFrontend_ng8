@@ -1,7 +1,7 @@
 import { SupportedApiType } from './supported-api-type';
 
 export class SupportedApi {
-    id: number;
+    id: string;
     name: string;
     iconUrl: string
     apiKey: string;
