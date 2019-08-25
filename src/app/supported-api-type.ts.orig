@@ -1,0 +1,17 @@
+export class SupportedApiType {
+<<<<<<< HEAD
+        public static Youtube : string = "youtube"
+        public static Dailymotion : string = "dailymotion"
+        public static DirectLink : string = "directlink"
+        
+=======
+        public static Youtube = 1
+        public static Dailymotion = 2
+        public static Facebook = 4
+        public static Instagram = 5
+        public static Twitch = 6
+        public static Soundcloud = 7
+        public static NoApi = 99
+>>>>>>> 8a04e3090e077b68c309ee99be8c8619f5a357fc
+    
+}

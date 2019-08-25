@@ -1,0 +1,104 @@
+<div [className]="!syncService.synctubeComponent.displayFullscreen ? 'main' : 'main-fullscreen'"
+  (keyup.s)="triggerTogglePlay()">
+  <!-- OverLay for Click and DblClick-->
+  <div (mousemove)="startDisplayingAllControls()" (click)="triggerTogglePlay()" (dblclick)="toggleFullscreen()"
+    [className]="!syncService.synctubeComponent.displayFullscreen ? 'overlay-container' : 'overlay-container-fullscreen'">
+  </div>
+
+  <!-- Options -> PlaybackRates Controls-->
+  <div class="playbackrates-container" *ngIf="displayPlaybackRatesOptions && !displayOptions">
+    <div class="videospeed">
+      <div (click)="toggleDisplayPlaybackRates()">
+        Wiedergabegeschwindigkeit </div>
+    </div>
+    <hr width="100%" />
+    <div class="speed-row" *ngFor="let rate of playbackRates">
+      <div class="check-container">
+        <span [hidden]="rate !== currentPlaybackRate">&#10003;</span>
+      </div>
+      <div (click)="sendChangePlaybackRate(rate)" class="speed-text">
+        <span> {{rate}}x </span>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- Video Controls-->
+  <div class="controls-all" [hidden]="!displayAllControls" (mousemove)="time = 0">
+    <input [(ngModel)]="currentTimeProgressbar" *ngIf="syncService.synctubeComponent.user.admin"
+      (click)="onChangeProgressBar()" type="range" min="0" max="{{videoDuration | noFloat}}" class="bar-slider"
+      id="myRange">
+    <div class="controls">
+      <div *ngIf="syncService.synctubeComponent.user.admin" (click)="triggerTogglePlay()" class="play-button">
+        <div [hidden]="isPlaying"> <img src="assets/play-button.svg"></div>
+        <div [hidden]="!isPlaying"> <img src="assets/pause-button.svg"></div>
+      </div>
+      <div *ngIf="syncService.synctubeComponent.user.admin"
+        (click)="syncService.synctubeComponent.sendAutoNextPlaylistVideo()" class="next-button">
+        <img src="assets/play-next-button.svg">
+      </div>
+
+      <div (mouseover)="mouseOverSound()" (click)="toggleMute()" class="controls-sound">
+        <div [hidden]="switchVolumeIcon != 0"> <img class="control-sound-img" src="assets/mute1.svg"></div>
+
+        <div [hidden]="switchVolumeIcon != 1"><img class="control-sound-img" src="assets/unmute1.svg"></div>
+
+        <div [hidden]="switchVolumeIcon != 2"><img class="control-sound-img" src="assets/unmute2.svg"></div>
+
+      </div>
+      <div class="controls-volume">
+        <input [(ngModel)]="volumeValue" (change)="setVolume()" min="0" max="100" type="range" class="volume"
+          orient="horizontal" />
+      </div>
+
+      <div class="controls-time"> {{currentDisplayedTime | hhMMss}}/ {{videoDuration | hhMMss}}</div>
+      <div class="controls-spacer">
+        <div *ngIf="syncService.synctubeComponent.user.admin" class="control-back" (click)="jumpBySeconds(-10)">
+          <img src="assets/back10sec.png">
+        </div>
+        <div *ngIf="syncService.synctubeComponent.user.admin" class="control-forward" (click)="jumpBySeconds(10)">
+          <img src="assets/foward10.png">
+        </div>
+      </div>
+      <div class="quality-container">{{currentPlaybackQuality}}</div>
+      <div (click)="toggleDisplayPlaybackRates()" class="controls-playbackrates">
+        {{(playbackRates && playbackRates.length > 0) ? currentPlaybackRate : 1}}x
+      </div>
+      <div (click)="toggleDisplayCinemaMode()" class="controls-cinema">
+        <img class="cinema-box" src="assets/kinomodus.svg">
+      </div>
+      <div (click)="toggleDisplayFullscreen()" class="controls-fullscreen">
+        <img class="fullscreen-img" src="assets/fullscreen-img.svg"></div>
+    </div>
+  </div>
+
+  <!-- Youtube video -->
+  <div [hidden]="syncService.selectedVideoApi !== 1"
+    [className]="!syncService.synctubeComponent.displayFullscreen ? 'video' : 'video-fullscreen'" id="youtubeplayer">
+  </div>
+  <!-- Dailymotion video -->
+  <div [className]="!syncService.synctubeComponent.displayFullscreen ? 'video' : 'video-fullscreen'"
+    id="dailymotionplayer">
+  </div>
+
+<<<<<<< HEAD
+  <!-- DirectLink -->
+  <video  width="500px" height="300px" id="directlinkplayer"></video>
+ 
+
+
+=======
+  <!-- NOAPI  -->  
+  <div id="noapiplayer"> <span (click)="openNoApiWindow()">No Api Window</span></div>
+  
+>>>>>>> 8a04e3090e077b68c309ee99be8c8619f5a357fc
+  <div *ngIf="displaySecondsBack" class="middle-back-seconds-overlay">
+    <img src="assets/back10sec.png">
+  </div>
+
+  <div *ngIf="displaySecondsForward" class="middle-forward-seconds-overlay">
+    <img src="assets/foward10.png">
+  </div>
+
+</div>
