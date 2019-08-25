@@ -23,7 +23,6 @@ import { SupportedApi } from "./supported-api";
 import { YoutubeDataService } from "./youtube-dataservice";
 import { SupportedApiType } from "./supported-api-type";
 import { DailymotionDataService } from "./dailymotion.dataservice";
-import { VimeoDataService } from "./vimeo.dataservice.";
 import { IVideoService } from "./ivideo.service";
 import { ToastrConfig } from "./toastr.config";
 import { ToastrService } from "ngx-toastr";
