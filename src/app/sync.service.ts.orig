@@ -131,16 +131,28 @@ export class SyncService {
     }
   }
 
+<<<<<<< HEAD
   hasBeenInitialized: boolean = false;
   readyVideoPlayersInitList: Map<string, boolean> = new Map<string, boolean>();
   addToLoadedVideoPlayers(supportedApi: SupportedApi) {
     this.readyVideoPlayersInitList.set(supportedApi.id, true);
+=======
+  readyVideoPlayersCount: number = 0;
+  registerLoadedVideoPlayer(supportedApi: SupportedApi) {
+    if (this.dataServices.has(supportedApi.id)) {
+      this.readyVideoPlayersCount += 1;
+    }
+
+    if (this.readyVideoPlayersCount >= this.supportedApis.length) {
+      console.log("success -> all video players are ready:  " + this.readyVideoPlayersCount);
+      //this.switchVideo()
+>>>>>>> 8a04e3090e077b68c309ee99be8c8619f5a357fc
 
     if (!this.hasBeenInitialized && this.readyVideoPlayersInitList.size === this.supportedApis.length) {
       console.log("success -> all video players are ready:  " + this.readyVideoPlayersInitList.size);
       console.log("load first video");
       this.switchVideo(this.initResponseMessage)
-      //this.hasBeenInitialized = true;
+      this.hasBeenInitialized = true;
     }
   }
 
@@ -220,9 +232,15 @@ export class SyncService {
               "Successfully generated data-api: " + dailymotionDataService.name
             );
             break;
+<<<<<<< HEAD
           case SupportedApiType.DirectLink:
 
             this.dataServices.set(SupportedApiType.DirectLink, new DirectLinkDataService(this.http,
+=======
+            case SupportedApiType.NoApi:
+            
+            this.dataServices.set(SupportedApiType.NoApi, new NoApiDataService(this.http,
+>>>>>>> 8a04e3090e077b68c309ee99be8c8619f5a357fc
               this.synctubeComponent,
               SupportedApiType.DirectLink,
               supportedApi.name));
@@ -690,7 +708,6 @@ export class SyncService {
 
       let that = this;
       if (this.waitForSwitchtingVideo) {
-        clearInterval(this.waitForSwitchtingVideo)
         this.waitForSwitchtingVideo = null;
       }
       this.waitForSwitchtingVideo = setInterval(function () {

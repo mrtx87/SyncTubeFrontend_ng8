@@ -169,7 +169,6 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
         case KEY_CODE.PERIOD: // increase playback rate
           {
             let playBackRates = this.syncService.currentVideoService.getAvailablePlaybackRates();
-            // playBackRates[(playBackRates.length)-1]; // highest
             let currentPlaybackRate: number = this.syncService.currentVideoService.getPlaybackRate();
             if (currentPlaybackRate + 0.25 <= 2) {
               this.syncService.videoComponent.sendChangePlaybackRate(
@@ -230,16 +229,6 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
       );
     }
 
-    /*console.log("SCROLLTOP: " + this.scrollContent.scrollTop)
-    console.log("CLIENTHEIGHT: " + document.documentElement.clientHeight)
-    console.log("CONTAINERHEIGHT: " + this.searchResultsContainer.scrollHeight)
-    */
-
-    /*
-    if (this.scrollChat && this.forceScrollToChatBottom) {
-      this.scrollChat.scrollTop = this.scrollChat.scrollHeight;
-    }*/
-
     if (this.scrollChat && this.forceScrollToChatBottom) {
       this.scrollToBottomOfChat();
       this.forceScrollToChatBottom = false;
@@ -251,9 +240,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
   }
 
   scrollToBottomOfChat() {
-    //if (Math.abs(this.scrollChat.scrollHeight - this.scrollChat.scrollTop) < 100) {
     this.scrollChat.scrollTop = this.scrollChat.scrollHeight + 25;
-    //}
   }
 
   scrollToSearchResults() {
@@ -480,7 +467,6 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
       this.chatInputfield = document.getElementById("chatInput");
 
     }
-    //console.log(this.chatInputfield)
     return this.chatInputfield;
   }
 

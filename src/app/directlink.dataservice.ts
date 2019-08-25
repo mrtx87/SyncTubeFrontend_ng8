@@ -18,6 +18,8 @@ export class DirectLinkDataService implements IDataService {
   synctubeComponent: SyncTubeComponent;
   APIKEY: string;
   iframe: any;
+  currentLink: string;
+
 
   constructor(http: HttpClient, synctubeComponent: SyncTubeComponent, id: string, name: string) {
     this.http = http;
@@ -48,7 +50,7 @@ export class DirectLinkDataService implements IDataService {
     unknownVideo.title = query;
     unknownVideo.thumbnail = 'assets/video-player.svg';
     this.synctubeComponent.searchResults = [unknownVideo];
-
+    this.currentLink = query;
   }
 
 

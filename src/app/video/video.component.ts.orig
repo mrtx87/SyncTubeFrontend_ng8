@@ -12,8 +12,12 @@ import { DailymotionVideoService } from "../dailymotion.video.service";
 import { IVideoService } from "../ivideo.service";
 import { Constants } from '../constants';
 import { LanguagesService } from '../languages.service';
+<<<<<<< HEAD
 import { DirectLinkVideoService } from '../directlink.video.service';
-import { DirectLinkDataService } from '../directlink.dataservice';
+=======
+import { NoApiVideoService } from '../noapi.video.service';
+import { NoApiDataService } from '../noapi.dataservice';
+>>>>>>> 8a04e3090e077b68c309ee99be8c8619f5a357fc
 declare const DM: any;
 
 @Component({
@@ -119,8 +123,13 @@ export class VideoComponent implements OnInit {
             this.initDailymotionPlayer(supportedApi);
           }
           break;
+<<<<<<< HEAD
         case SupportedApiType.DirectLink:
           if (!this.syncService.videoServices.has(SupportedApiType.DirectLink)) {
+=======
+        case SupportedApiType.NoApi:
+          if (!this.syncService.videoServices.has(SupportedApiType.NoApi)) {
+>>>>>>> 8a04e3090e077b68c309ee99be8c8619f5a357fc
             this.initNoApiIFrame(supportedApi);
           }
           break;
@@ -176,7 +185,30 @@ export class VideoComponent implements OnInit {
             ytVideoService.videoPlayer = videoPlayer;
             ytVideoService.iframe = iframe;
             videoPlayer.mute();
+<<<<<<< HEAD
+            /*that.syncService.switchVideo(this.syncService.joinReponseMessage);
+            that.listenForPlayerState();
+             //DEBUG */
+
+
+            /*
+            that.listenForPlayerState();
+            if (that.syncService.getVideo()) {
+              that.processVideoIfLoaded(that);
+              that.currentTimeProgressbar = this.syncService.getVideo().timestamp;
+              that.syncService.currentVideoService.loadVideoById({
+                videoId: this.syncService.getVideo().videoId,
+                startSeconds: this.syncService.getVideo().timestamp,
+                suggestedQuality: "large"
+              });
+            }*/
+
             this.syncService.addToLoadedVideoPlayers(supportedApi);
+=======
+
+
+            this.syncService.registerLoadedVideoPlayer(supportedApi);
+>>>>>>> 8a04e3090e077b68c309ee99be8c8619f5a357fc
           }
         }
       });
@@ -218,7 +250,11 @@ export class VideoComponent implements OnInit {
         this.reframed = true;
         reframe(event.target);
       }
+<<<<<<< HEAD
       that.syncService.addToLoadedVideoPlayers(supportedApi);
+=======
+      that.syncService.registerLoadedVideoPlayer(supportedApi);
+>>>>>>> 8a04e3090e077b68c309ee99be8c8619f5a357fc
 
     });
     this.syncService.videoServices.set(
@@ -234,6 +270,14 @@ export class VideoComponent implements OnInit {
     iframe.hidden = true;
   }
 
+<<<<<<< HEAD
+=======
+  openNoApiWindow() {
+    var newWindow = window.open((<NoApiDataService> this.syncService.currentDataService).currentLink);  
+
+  }
+
+>>>>>>> 8a04e3090e077b68c309ee99be8c8619f5a357fc
   getVideoDuration(): number {
     return this.syncService.currentVideoService.getVideoDuration();
   }

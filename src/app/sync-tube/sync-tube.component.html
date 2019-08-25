@@ -121,7 +121,7 @@
               hasImportedPlaylist ? 'import-button' : 'import-button-inactive'
             ">
             <div (click)="sendImportPlaylist()" class="send-chat-button">
-                {{ '$import_playlist' | tl8 }}
+                {{ '$import_playlist' | tl8 }} 
             </div>
           </div>
           <div [className]="
@@ -135,6 +135,7 @@
           <h4 *ngIf="importedPlaylist" [hidden]="!hasImportedPlaylist">
             {{ importedPlaylist.size }} {{ '$elements_loaded' | tl8 }}
           </h4>
+          <a href="https://www.facebook.com/watch/?v=621793178319916" target="_blank">facebook</a>
         </div>
 
         <ng-template ngFor let-video_ [ngForOf]="searchResults">

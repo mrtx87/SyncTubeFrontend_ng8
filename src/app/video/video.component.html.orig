@@ -82,11 +82,17 @@
     id="dailymotionplayer">
   </div>
 
+<<<<<<< HEAD
   <!-- DirectLink -->
   <video  width="500px" height="300px" id="directlinkplayer"></video>
  
 
 
+=======
+  <!-- NOAPI  -->  
+  <div id="noapiplayer"> <span (click)="openNoApiWindow()">No Api Window</span></div>
+  
+>>>>>>> 8a04e3090e077b68c309ee99be8c8619f5a357fc
   <div *ngIf="displaySecondsBack" class="middle-back-seconds-overlay">
     <img src="assets/back10sec.png">
   </div>
