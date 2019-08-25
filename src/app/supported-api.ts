@@ -6,4 +6,5 @@ export class SupportedApi {
     iconUrl: string
     apiKey: string;
     script: string;
+    //test
 }
