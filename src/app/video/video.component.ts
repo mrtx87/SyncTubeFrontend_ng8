@@ -13,7 +13,7 @@ import { IVideoService } from "../ivideo.service";
 import { Constants } from '../constants';
 import { LanguagesService } from '../languages.service';
 import { DirectLinkVideoService } from '../directlink.video.service';
-import { NoApiDataService } from '../noapi.dataservice';
+import { DirectLinkDataService } from '../directlink.dataservice';
 declare const DM: any;
 
 @Component({
@@ -176,9 +176,6 @@ export class VideoComponent implements OnInit {
             ytVideoService.videoPlayer = videoPlayer;
             ytVideoService.iframe = iframe;
             videoPlayer.mute();
-
-
-            this.syncService.registerLoadedVideoPlayer(supportedApi);
             this.syncService.addToLoadedVideoPlayers(supportedApi);
           }
         }
