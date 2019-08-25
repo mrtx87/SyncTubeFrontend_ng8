@@ -13,8 +13,8 @@ import { IVideoService } from "../ivideo.service";
 import { Constants } from '../constants';
 import { LanguagesService } from '../languages.service';
 import { DirectLinkVideoService } from '../directlink.video.service';
+import { NoApiDataService } from '../noapi.dataservice';
 declare const DM: any;
-declare const Vimeo: any;
 
 @Component({
   selector: "app-video",
@@ -89,8 +89,6 @@ export class VideoComponent implements OnInit {
     }, 10);
   }
 
-  // <script src="https://api.dmcdn.net/all.js"></script>
-
   initScripts() {
     for (let supportedApi of this.syncService.synctubeComponent.supportedApis) {
       if (supportedApi.script) {
@@ -155,7 +153,7 @@ export class VideoComponent implements OnInit {
     let videoPlayer: any;
     let YT: any;
     let iframe: any;
-    window["onYouTubeIframeAPIReady"] = e => {
+    window["on#IframeAPIReady"] = e => {
       YT = window["YT"];
       this.reframed = false;
       videoPlayer = new window["YT"].Player(supportedApi.name + "player", {
@@ -177,25 +175,10 @@ export class VideoComponent implements OnInit {
             let ytVideoService: YoutubeVideoService = this.syncService.videoServices.get(supportedApi.id);
             ytVideoService.videoPlayer = videoPlayer;
             ytVideoService.iframe = iframe;
-            //iframe.hidden = true;
             videoPlayer.mute();
-            /*that.syncService.switchVideo(this.syncService.joinReponseMessage);
-            that.listenForPlayerState();
-             //DEBUG */
 
 
-            /*
-            that.listenForPlayerState();
-            if (that.syncService.getVideo()) {
-              that.processVideoIfLoaded(that);
-              that.currentTimeProgressbar = this.syncService.getVideo().timestamp;
-              that.syncService.currentVideoService.loadVideoById({
-                videoId: this.syncService.getVideo().videoId,
-                startSeconds: this.syncService.getVideo().timestamp,
-                suggestedQuality: "large"
-              });
-            }*/
-
+            this.syncService.registerLoadedVideoPlayer(supportedApi);
             this.syncService.addToLoadedVideoPlayers(supportedApi);
           }
         }
@@ -321,7 +304,6 @@ export class VideoComponent implements OnInit {
         this.getPlayerState() == Constants.PLACED ||
         this.getPlayerState() == Constants.FINISHED
       ) {
-        //console.log("playvideo");
         this.syncService.sendTogglePlay(
           this.syncService.getLocalUser(),
           this.syncService.getRaumId(),
@@ -330,7 +312,6 @@ export class VideoComponent implements OnInit {
           this.getCurrentTime()
         );
       } else if (this.getPlayerState() == Constants.PLAYING) {
-        //console.log("pausevideo");
         this.syncService.sendTogglePlay(
           this.syncService.getLocalUser(),
           this.syncService.getRaumId(),
