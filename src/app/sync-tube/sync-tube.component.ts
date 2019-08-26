@@ -111,6 +111,15 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
   kickingUser: User;
   revealContent: Boolean = false;
 
+  /* Mouse input*/
+
+  /*
+  @HostListener("window:mouseup", ["$event"])
+  mouseEvent(event: MouseEvent){
+    console.log(event)
+  }*/
+  
+
   /* Keyboard controlings */
 
   @HostListener("window:keyup", ["$event"])

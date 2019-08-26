@@ -59,25 +59,38 @@ export class VideoComponent implements OnInit {
     return this.syncService.currentVideoService.videoPlayer;
   }
 
+
+  currentState: number = -999;
   listenForPlayerState() {
     let that = this;
     setInterval(function () {
-      var state = that.syncService.currentVideoService.getPlayerState();
-      if (that.getReceivedPlayerState() !== state) {
-        if (state === Constants.FINISHED) {
-          that.syncService.synctubeComponent.receivedPlayerState = state;
-          that.syncService.sendAutoNextPlaylistVideo(
-            that.getLocalUser(),
-            that.getRaumId(),
-            state
-          );
-        }
-      }
+      if (that.syncService.currentVideoService) {
+        let state: number = that.syncService.currentVideoService.getPlayerState();
 
-      if (that.currentPlaybackQuality !== that.getPlaybackQuality()) {
-        that.currentPlaybackQuality = that.getPlaybackQuality();
+        if (state !== that.currentState) {
+          console.log("state changed from " + that.currentState + " to " + state)
+          that.currentState = state;
+          //TODO TICKET: Werbung bei Videos nicht überspringbar?
+        }
+
+
+        if (that.getReceivedPlayerState() !== state) {
+          if (state === Constants.FINISHED) {
+            that.syncService.synctubeComponent.receivedPlayerState = state;
+            that.syncService.sendAutoNextPlaylistVideo(
+              that.getLocalUser(),
+              that.getRaumId(),
+              state
+            );
+          }
+        }
+
+        if (that.currentPlaybackQuality !== that.getPlaybackQuality()) {
+          that.currentPlaybackQuality = that.getPlaybackQuality();
+        }
+        that.currentPlaybackRate = that.getCurrentPlaybackRate();
+
       }
-      that.currentPlaybackRate = that.getCurrentPlaybackRate();
 
       if (that.volumeValue < 1) {
         that.switchVolumeIcon = 0;
@@ -165,13 +178,16 @@ export class VideoComponent implements OnInit {
           fs: 0
         },
         events: {
-          onReady: e => {
+          'onReady': e => {
             console.log("onReady: youtube player ready");
             if (!this.reframed) {
               this.reframed = true;
               reframe(e.target.a);
             }
             iframe = e.target.a;
+
+            let iframe_: HTMLElement = iframe;
+
             let ytVideoService: YoutubeVideoService = this.syncService.videoServices.get(supportedApi.id);
             ytVideoService.videoPlayer = videoPlayer;
             ytVideoService.iframe = iframe;

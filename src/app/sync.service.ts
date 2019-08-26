@@ -138,6 +138,7 @@ export class SyncService {
     if (!this.hasBeenInitialized && this.readyVideoPlayersInitList.size === this.supportedApis.length) {
       console.log("success -> all video players are ready:  " + this.readyVideoPlayersInitList.size);
       console.log("load first video");
+      this.videoComponent.listenForPlayerState();
       this.switchVideo(this.initResponseMessage)
       //this.hasBeenInitialized = true;
     }
