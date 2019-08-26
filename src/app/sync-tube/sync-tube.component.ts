@@ -535,6 +535,10 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
     //this.displayPrompt = true;
   }
 
+  clearPlaylist() {
+    this.syncService.sendClearPlaylist(this.getUser(), this.getRaumId());
+  }
+
   approvedKick() {
     this.syncService.sendKickUser(this.raumId, this.user, this.kickingUser);
     this.kickingUser = null;

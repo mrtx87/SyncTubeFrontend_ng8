@@ -33,7 +33,7 @@ import { ToastrMessage } from "./toastr.message";
 import { AppCookie } from "./app.cookie";
 import { Constants } from './constants';
 import { DirectLinkDataService } from './directlink.dataservice';
-import { LanguagesService } from './languages.service'; 
+import { LanguagesService } from './languages.service';
 
 @Injectable({
   providedIn: "root"
@@ -135,7 +135,6 @@ export class SyncService {
   readyVideoPlayersInitList: Map<string, boolean> = new Map<string, boolean>();
   addToLoadedVideoPlayers(supportedApi: SupportedApi) {
     this.readyVideoPlayersInitList.set(supportedApi.id, true);
-
     if (!this.hasBeenInitialized && this.readyVideoPlayersInitList.size === this.supportedApis.length) {
       console.log("success -> all video players are ready:  " + this.readyVideoPlayersInitList.size);
       console.log("load first video");
@@ -1176,6 +1175,14 @@ export class SyncService {
         })
       );
     }
+  }
+
+  sendClearPlaylist(user: User, raumId: string) {
+    this.stompClient.send(
+      "/app/send/clear-playlist",
+      {},
+      JSON.stringify({ raumId: raumId, user: user})
+    );
   }
 
   sendRequestSyncTimestamp() {

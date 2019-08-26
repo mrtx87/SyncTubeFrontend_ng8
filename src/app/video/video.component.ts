@@ -153,7 +153,7 @@ export class VideoComponent implements OnInit {
     let videoPlayer: any;
     let YT: any;
     let iframe: any;
-    window["on#IframeAPIReady"] = e => {
+    window["onYouTubeIframeAPIReady"] = e => {
       YT = window["YT"];
       this.reframed = false;
       videoPlayer = new window["YT"].Player(supportedApi.name + "player", {
