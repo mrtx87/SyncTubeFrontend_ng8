@@ -515,6 +515,7 @@
 
 .footer {
   display: flex;
+  justify-content: space-evenly;
   flex-direction: row;
   width: 100%;
   align-items: center;
@@ -586,11 +587,16 @@
   border-radius: 3px;
 }
 
+.send-chat-button img{
+  height: 2.3vh;
+}
+
 .send-chat-button {
-  margin: 0 auto;
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-top: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4vw;
+  height: 3vh;
   border-radius: 3px;
   background-color: var(--color5);
   -webkit-transition-duration: 0.2s;

@@ -240,7 +240,8 @@
           <input #chatInput id="chatInput" class="w-100" (keyup.enter)="sendChatMessage()" [(ngModel)]="chatMessageText"
             type="text" placeholder="Eine Nachricht senden" />
           <div (click)="sendChatMessage()" class="send-chat-button">
-            {{ '$send' | tl8 }}
+            <img src="assets/send-button.svg">
+            <!-- {{ '$send' | tl8 }} -->
           </div>
         </div>
       </div>
