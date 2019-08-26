@@ -239,7 +239,7 @@
         <div class="footer">
           <input #chatInput id="chatInput" class="w-100" (keyup.enter)="sendChatMessage()" [(ngModel)]="chatMessageText"
             type="text" placeholder="Eine Nachricht senden" />
-          <div (click)="sendChatMessage()" class="send-chat-button">
+          <div (click)="sendChatMessage()" class="sendchatbutton">
             <img src="assets/send-button.svg">
             <!-- {{ '$send' | tl8 }} -->
           </div>
@@ -253,7 +253,7 @@
           <!-- <div [className]="!randomOrder ? 'active-playlist-control inorder-container' : 'inorder-container'" (click)="togglePlaylistRunningOrder()"> <img src="assets/playlist.svg"> </div>-->
           <div (click)="displayHistory=false" [className]="
           !displayHistory ? 'playlist-controls-left' : 'playlist-controls-left-inactive'">
-          <div class="random-container"> <img src="assets/garbage.svg"> </div>
+          <div class="clear-container" (click) = "clearPlaylist()"> <img src="assets/garbage_white.svg"> </div>
 
             <div class="random-container" (click)="togglePlaylistRunningOrder()">
               <img [hidden]="randomOrder" src="assets/shuffle.svg" class="playlist-button-off" />

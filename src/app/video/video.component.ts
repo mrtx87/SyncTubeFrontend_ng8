@@ -59,7 +59,6 @@ export class VideoComponent implements OnInit {
     return this.syncService.currentVideoService.videoPlayer;
   }
 
-
   currentState: number = -999;
   listenForPlayerState() {
     let that = this;
