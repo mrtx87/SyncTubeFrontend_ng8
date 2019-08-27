@@ -253,8 +253,9 @@
           <!-- <div [className]="!randomOrder ? 'active-playlist-control inorder-container' : 'inorder-container'" (click)="togglePlaylistRunningOrder()"> <img src="assets/playlist.svg"> </div>-->
           <div (click)="displayHistory=false" [className]="
           !displayHistory ? 'playlist-controls-left' : 'playlist-controls-left-inactive'">
-          <div class="clear-container" (click)="toClearPlaylist=true"> <img src="assets/garbage_white.svg"> </div>
-
+            <div style="width:stretch; display:flex; justify-content: flex-start;">
+              <div class="clear-container" (click)="toClearPlaylist=true"> <img src="assets/garbage_white.svg"> </div>
+            </div>
             <div class="random-container" (click)="togglePlaylistRunningOrder()">
               <img [hidden]="randomOrder" src="assets/shuffle.svg" class="playlist-button-off" />
               <img [hidden]="!randomOrder" src="assets/shuffle.svg" class="playlist-button-on" />
@@ -464,12 +465,12 @@
 </div>
 
 <div class="prompt-blocking-overlay" *ngIf="toClearPlaylist">
-    <div class="prompt">
-      <h3>{{ '$clear_questionA'| tl8 }}</h3>
-      <img src="assets/check.svg" class="approved-button" (click)="approvedClear()">
-      <img src="assets/delete.svg" class="disapproved-button" (click)="disapprovedClear()">
-    </div>
+  <div class="prompt">
+    <h3>{{ '$clear_questionA'| tl8 }}</h3>
+    <img src="assets/check.svg" class="approved-button" (click)="approvedClear()">
+    <img src="assets/delete.svg" class="disapproved-button" (click)="disapprovedClear()">
   </div>
+</div>
 
 <div [hidden]="!displayToastrHistory" class="toastr-history-container ellipsis">
   <div (click)="displayToastrHistory = !displayToastrHistory" class="close-history-button">
