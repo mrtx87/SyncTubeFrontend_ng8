@@ -69,6 +69,7 @@ export class YoutubeDataService implements IDataService {
             if (item.id.kind === "youtube#playlist") {
               video.isPlaylistLink = true;
               video.playlistId = item.id.playlistId;
+              video.playlistSize = item.length;
             } else {
               video.videoId = item.id.videoId;
             }

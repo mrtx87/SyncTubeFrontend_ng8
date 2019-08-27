@@ -165,7 +165,7 @@
               <img class="search-result-thumbnail" src="{{ video_.thumbnail }}" />
             </div>
             <div class="search-result-infos">
-              <span>{{ video_.title }} </span>
+              <span>{{ video_.title }} </span> <span>{{ video_?.playlistSize }}</span>
             </div>
             <div class="search-result-open-playlist">
               <div (click)="openPlaylistLink(video_)" class="open-playlist-button">
@@ -197,7 +197,7 @@
 
       <div [hidden]="displayTab != 1" class="chat-messages-container">
         <div class="top-chat-container">
-          <img (click)="displayToastrHistory = !displayToastrHistory" src="assets/star.svg" class="star-img" />
+          <img (click)="displayToastrHistory = !displayToastrHistory" src="assets/menu2.svg" class="star-img" />
         </div>
         <div #scrollChat *ngIf="user" class="scrollable-content" id="scrollChat">
           <div [className]="
@@ -250,12 +250,12 @@
   randomOrder: number;-->
       <div [hidden]="displayTab != 2" class="playlist-container">
         <div *ngIf="user.admin" class="playlist-controls">
+          <div style="width:5vw; display:flex; justify-content: flex-start;">
+            <div class="clear-container" (click)="toClearPlaylist=true"> <img src="assets/garbage_white.svg"> </div>
+          </div>
           <!-- <div [className]="!randomOrder ? 'active-playlist-control inorder-container' : 'inorder-container'" (click)="togglePlaylistRunningOrder()"> <img src="assets/playlist.svg"> </div>-->
           <div (click)="displayHistory=false" [className]="
           !displayHistory ? 'playlist-controls-left' : 'playlist-controls-left-inactive'">
-            <div style="width:stretch; display:flex; justify-content: flex-start;">
-              <div class="clear-container" (click)="toClearPlaylist=true"> <img src="assets/garbage_white.svg"> </div>
-            </div>
             <div class="random-container" (click)="togglePlaylistRunningOrder()">
               <img [hidden]="randomOrder" src="assets/shuffle.svg" class="playlist-button-off" />
               <img [hidden]="!randomOrder" src="assets/shuffle.svg" class="playlist-button-on" />

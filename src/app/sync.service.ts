@@ -51,8 +51,8 @@ export class SyncService {
   videoComponent: VideoComponent;
   initResponseMessage: Message;
 
-  toastrMessageTypes: ToastrMessageTypes;
-  messageTypes: MessageTypes;
+  toastrMessageTypes: any;
+  messageTypes: any;
 
   private _selectedVideoApi: string;
   supportedApis: SupportedApi[];
@@ -150,7 +150,7 @@ export class SyncService {
     this.http
       .get("http://localhost:8080/toastr-message-types", {})
       .subscribe(function (response) {
-        that.toastrMessageTypes = <ToastrMessageTypes>response;
+        that.toastrMessageTypes = <any> response;
       });
   }
 
@@ -159,7 +159,7 @@ export class SyncService {
     this.http
       .get("http://localhost:8080/message-types", {})
       .subscribe(function (response) {
-        that.messageTypes = <MessageTypes>response;
+        that.messageTypes = <any> response;
         (that.messageTypes);
       });
   }
@@ -625,6 +625,13 @@ export class SyncService {
               toastrMessage.message,
               "User Update:",
               ToastrConfigs.INFO
+            );
+            break;
+          case this.toastrMessageTypes.DELETED_PLAYLIST:
+            this.toastr.warning(
+              toastrMessage.message,
+              "User Update:",
+              ToastrConfigs.WARNING
             );
             break;
         }
@@ -1182,7 +1189,7 @@ export class SyncService {
     this.stompClient.send(
       "/app/send/clear-playlist",
       {},
-      JSON.stringify({ raumId: raumId, user: user})
+      JSON.stringify({ raumId: raumId, user: user })
     );
   }
 

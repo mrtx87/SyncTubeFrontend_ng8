@@ -4,11 +4,13 @@ export class Video {
     api: string;
 
     isPlaylistLink?: boolean;
-    thumbnail?: string;
     playlistId?: string;
+    playlistSize?: number; 
+
 
     videoId: string;
     timestamp: number = 0;
+    thumbnail?: string;
     title: string;
     description: string;
     publishedAt: Date;

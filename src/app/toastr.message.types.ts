@@ -19,6 +19,7 @@ export class ToastrMessageTypes {
     CHANGED_USER_NAME: string = "changed-user-name";
     PARDONED_KICKED_USER: string = "pardon-kicked-user";
     ONLY_LOGGING: string = 'only-logging';
+	DELETED_PLAYLIST: string = "deleted-playlist"; 
 
 
 
@@ -42,6 +43,7 @@ export class ToastrMessageTypes {
         'MUTE_USER',
         'CHANGED_USER_NAME',
         'PARDONED_KICKED_USER',
-        'ONLY_LOGGING'];
+        'ONLY_LOGGING',
+        'DELETED_PLAYLIST'];
 
 } 
