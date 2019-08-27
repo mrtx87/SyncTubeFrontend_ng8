@@ -29,5 +29,7 @@
     "$to_admin_questionB": null,
     "$kick_questionA": null,
     "$kick_questionB": null,
+    "$clear_questionA": "wollen sie",
+    "$clear_questionB": "aus dem raum kicken?",
     "$refresh_url_tooltip": null
 }

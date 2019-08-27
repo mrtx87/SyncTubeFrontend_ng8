@@ -109,6 +109,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
   //personen die vom admin gekickt oder zum admin ernannt werden
   designatedAdmin: User;
   kickingUser: User;
+  toClearPlaylist: boolean;
   revealContent: Boolean = false;
 
   /* Mouse input*/
@@ -546,6 +547,15 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
 
   clearPlaylist() {
     this.syncService.sendClearPlaylist(this.getUser(), this.getRaumId());
+  }
+
+  approvedClear() {
+    this.clearPlaylist();
+    this.toClearPlaylist = false;
+  }
+
+  disapprovedClear() {
+    this.toClearPlaylist = false;
   }
 
   approvedKick() {

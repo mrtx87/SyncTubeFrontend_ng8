@@ -29,5 +29,6 @@
     "$to_admin_questionB": "zum admin ernennen?",
     "$kick_questionA": "wollen sie",
     "$kick_questionB": "aus dem raum kicken?",
+    "$clear_questionA": "wollen sie die playlist leeren?",
     "$refresh_url_tooltip": "erneuert die url und id des raumes"
 }
