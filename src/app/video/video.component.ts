@@ -62,7 +62,7 @@ export class VideoComponent implements OnInit {
   currentState: number = -999;
   listenForPlayerState() {
     let that = this;
-    setInterval(function () {
+    let listenForPlayerState = setInterval(function () {
       if (that.syncService.currentVideoService) {
         let state: number = that.syncService.currentVideoService.getPlayerState();
 
@@ -177,6 +177,10 @@ export class VideoComponent implements OnInit {
           fs: 0
         },
         events: {
+          'onStateChange': event => {
+            console.log("EVENT!!!")
+            console.log(event)
+          },
           'onReady': e => {
             console.log("onReady: youtube player ready");
             if (!this.reframed) {

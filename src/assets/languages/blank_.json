@@ -31,5 +31,26 @@
     "$kick_questionB": null,
     "$clear_questionA": "wollen sie",
     "$clear_questionB": "aus dem raum kicken?",
-    "$refresh_url_tooltip": null
+    "$refresh_url_tooltip": null,
+
+    "$created_new_room": "has created the Room",
+    "$has_joined_room": "has joined the Room",
+    "$has_left_room": "has left the room",
+    "$paused_video": "paused video",
+    "$started_video": "started video",
+    "$assigned_admin": "promoted",
+    "$room_to_public": "has changed the Room to Public",
+    "$room_to_private": "has changed the Room to Private",
+    "$user_kicked": "has kicked",
+    "$refresh_room_id": "has updated roomId:",
+    "$added_video": "has added video",
+    "$removed_playlist": "has removed playlist",
+    "$changed_room_description": "has changed room description",
+    "$removed_video": "has removed Video:", 
+    "$has_imported": "has imported",
+    "$has_integrated": "has integrated",
+    "$switched_video": "switched Video to",
+    "$changed_playback_rate": "changed Playbackrate to",
+    "$changed_name": "has changed name to",
+    "$pardoned":"pardoned"
 }

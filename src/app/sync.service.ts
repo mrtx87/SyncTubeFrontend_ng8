@@ -503,134 +503,127 @@ export class SyncService {
         switch (toastrMessage.type) {
           case this.toastrMessageTypes.CREATE_ROOM:
             this.toastr.success(
-              toastrMessage.message,
-              "Raum erstellt:",
+              "",
+              toastrMessage.origin+" "+this.languageService.interpolate("$created_new_room"),
               ToastrConfigs.SUCCESS
             );
             break;
           case this.toastrMessageTypes.JOIN_ROOM:
             this.toastr.info(
-              toastrMessage.message,
-              "Raum beigetreten:",
+              "",
+              toastrMessage.origin+" "+this.languageService.interpolate("$has_joined_room"),
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.DISCONNECT:
             this.toastr.info(
-              toastrMessage.message,
-              "Raum verlassen:",
+              "",
+              toastrMessage.origin+" "+this.languageService.interpolate("$has_left_room"),
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.ASSIGNED_AS_ADMIN:
             this.toastr.success(
-              toastrMessage.message,
-              "zum Admin ernannt:",
+              "",
+              toastrMessage.origin+" "+this.languageService.interpolate("$assigned_admin")+" "+toastrMessage.target,
               ToastrConfigs.SUCCESS
             );
             break;
           case this.toastrMessageTypes.TO_PUBLIC_ROOM:
             this.toastr.info(
-              toastrMessage.message,
-              "Raumstatus:",
+              "",
+              toastrMessage.origin+" "+this.languageService.interpolate("$room_to_public"),
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.TO_PRIVATE_ROOM:
             this.toastr.info(
-              toastrMessage.message,
-              "Raumstatus:",
+              "",
+              toastrMessage.origin+" "+this.languageService.interpolate("$room_to_private"),
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.KICKED_USER:
             this.toastr.error(
-              toastrMessage.message,
-              "You were kicked!",
+              "",
+              toastrMessage.origin+" "+this.languageService.interpolate("$user_kicked"),
               ToastrConfigs.ERROR
             );
             break;
           case this.toastrMessageTypes.UPDATE_KICK_CLIENT:
             this.toastr.warning(
-              toastrMessage.message,
-              "User kicked:",
+              "",
+              toastrMessage.origin+" "+this.languageService.interpolate("$user_kicked")+" "+toastrMessage.target,
               ToastrConfigs.WARNING
             );
             break;
           case this.toastrMessageTypes.REFRESH_ROOM_ID:
             this.toastr.info(
-              toastrMessage.message,
-              "RaumId Update:",
+              "",
+              toastrMessage.origin+" "+this.languageService.interpolate("$refresh_room_id")+" "+toastrMessage.target,
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.ADDED_VIDEO_TO_PLAYLIST:
             this.toastr.info(
-              toastrMessage.message,
-              "Playlist Update:",
+              "",
+              toastrMessage.origin+" "+this.languageService.interpolate("$added_video")+" "+toastrMessage.target,
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.UPDATE_TITLE_AND_DESCRIPTION:
             this.toastr.info(
-              toastrMessage.message,
-              "Raum Update:",
+              "",
+              toastrMessage.origin+" "+this.languageService.interpolate("$changed_room_description")+" "+toastrMessage.target,
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.REMOVE_VIDEO_PLAYLIST:
             this.toastr.info(
-              toastrMessage.message,
-              "Playlist Update:",
+              "",
+              toastrMessage.origin+" "+this.languageService.interpolate("$removed_video")+" "+toastrMessage.target,
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.IMPORTED_PLAYLIST:
             this.toastr.success(
-              toastrMessage.message,
-              "Playlist Update:",
-              ToastrConfigs.SUCCESS
-            );
-            break;
-          case this.toastrMessageTypes.INTEGRATED_PLAYLIST:
-            this.toastr.success(
-              toastrMessage.message,
-              "Playlist Update:",
+              "",
+              toastrMessage.origin+" "+this.languageService.interpolate(toastrMessage.message),
               ToastrConfigs.SUCCESS
             );
             break;
           case this.toastrMessageTypes.CHANGED_PLAYBACK_RATE:
             this.toastr.info(
-              toastrMessage.message,
-              "Playbackrate Update:",
+              "",
+              toastrMessage.origin+" "+this.languageService.interpolate("$changed_playback_rate")+" "+toastrMessage.target,
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.MUTE_USER:
             this.toastr.warning(
-              toastrMessage.message,
-              "User Update:",
+              "",
+              toastrMessage.origin+" "+this.languageService.interpolate(toastrMessage.message)+" "+toastrMessage.target,
               ToastrConfigs.WARNING
             );
             break;
           case this.toastrMessageTypes.CHANGED_USER_NAME:
             this.toastr.info(
-              toastrMessage.message,
-              "User Update:",
+              "",
+              toastrMessage.origin+" "+this.languageService.interpolate("$changed_name")+" "+toastrMessage.target,
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.PARDONED_KICKED_USER:
             this.toastr.info(
-              toastrMessage.message,
-              "User Update:",
+              "",
+              toastrMessage.origin+" "+this.languageService.interpolate("$pardoned")+" "+toastrMessage.target,
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.DELETED_PLAYLIST:
             this.toastr.warning(
-              toastrMessage.message,
-              "User Update:",
+              "",
+              toastrMessage.origin+" "+this.languageService.interpolate("$removed_playlist"),
               ToastrConfigs.WARNING
             );
             break;
