@@ -150,7 +150,7 @@ export class SyncService {
     this.http
       .get("http://localhost:8080/toastr-message-types", {})
       .subscribe(function (response) {
-        that.toastrMessageTypes = <any>response;
+        that.toastrMessageTypes = <any> response;
       });
   }
 
@@ -159,7 +159,7 @@ export class SyncService {
     this.http
       .get("http://localhost:8080/message-types", {})
       .subscribe(function (response) {
-        that.messageTypes = <any>response;
+        that.messageTypes = <any> response;
         (that.messageTypes);
       });
   }
