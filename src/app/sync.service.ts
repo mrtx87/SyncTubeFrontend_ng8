@@ -150,7 +150,7 @@ export class SyncService {
     this.http
       .get("http://localhost:8080/toastr-message-types", {})
       .subscribe(function (response) {
-        that.toastrMessageTypes = <any> response;
+        that.toastrMessageTypes = <any>response;
       });
   }
 
@@ -159,7 +159,7 @@ export class SyncService {
     this.http
       .get("http://localhost:8080/message-types", {})
       .subscribe(function (response) {
-        that.messageTypes = <any> response;
+        that.messageTypes = <any>response;
         (that.messageTypes);
       });
   }
@@ -253,7 +253,7 @@ export class SyncService {
     //language cookie
     let lang: string = this.cookieService.get('lang');
     if (!lang) {
-      this.cookieService.set('lang', 'english', 30);
+      this.cookieService.set('lang', 'english', 30, '/');
       lang = 'english';
     }
     this.languageService.selectedLanguageKey = lang;
@@ -504,126 +504,126 @@ export class SyncService {
           case this.toastrMessageTypes.CREATE_ROOM:
             this.toastr.success(
               "",
-              toastrMessage.origin+" "+this.languageService.interpolate("$created_new_room"),
+              toastrMessage.origin + " " + this.languageService.interpolate("$created_new_room"),
               ToastrConfigs.SUCCESS
             );
             break;
           case this.toastrMessageTypes.JOIN_ROOM:
             this.toastr.info(
               "",
-              toastrMessage.origin+" "+this.languageService.interpolate("$has_joined_room"),
+              toastrMessage.origin + " " + this.languageService.interpolate("$has_joined_room"),
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.DISCONNECT:
             this.toastr.info(
               "",
-              toastrMessage.origin+" "+this.languageService.interpolate("$has_left_room"),
+              toastrMessage.origin + " " + this.languageService.interpolate("$has_left_room"),
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.ASSIGNED_AS_ADMIN:
             this.toastr.success(
               "",
-              toastrMessage.origin+" "+this.languageService.interpolate("$assigned_admin")+" "+toastrMessage.target,
+              toastrMessage.origin + " " + this.languageService.interpolate("$assigned_admin") + " " + toastrMessage.target,
               ToastrConfigs.SUCCESS
             );
             break;
           case this.toastrMessageTypes.TO_PUBLIC_ROOM:
             this.toastr.info(
               "",
-              toastrMessage.origin+" "+this.languageService.interpolate("$room_to_public"),
+              toastrMessage.origin + " " + this.languageService.interpolate("$room_to_public"),
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.TO_PRIVATE_ROOM:
             this.toastr.info(
               "",
-              toastrMessage.origin+" "+this.languageService.interpolate("$room_to_private"),
+              toastrMessage.origin + " " + this.languageService.interpolate("$room_to_private"),
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.KICKED_USER:
             this.toastr.error(
               "",
-              toastrMessage.origin+" "+this.languageService.interpolate("$user_kicked"),
+              toastrMessage.origin + " " + this.languageService.interpolate("$user_kicked"),
               ToastrConfigs.ERROR
             );
             break;
           case this.toastrMessageTypes.UPDATE_KICK_CLIENT:
             this.toastr.warning(
               "",
-              toastrMessage.origin+" "+this.languageService.interpolate("$user_kicked")+" "+toastrMessage.target,
+              toastrMessage.origin + " " + this.languageService.interpolate("$user_kicked") + " " + toastrMessage.target,
               ToastrConfigs.WARNING
             );
             break;
           case this.toastrMessageTypes.REFRESH_ROOM_ID:
             this.toastr.info(
               "",
-              toastrMessage.origin+" "+this.languageService.interpolate("$refresh_room_id")+" "+toastrMessage.target,
+              toastrMessage.origin + " " + this.languageService.interpolate("$refresh_room_id") + " " + toastrMessage.target,
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.ADDED_VIDEO_TO_PLAYLIST:
             this.toastr.info(
               "",
-              toastrMessage.origin+" "+this.languageService.interpolate("$added_video")+" "+toastrMessage.target,
+              toastrMessage.origin + " " + this.languageService.interpolate("$added_video") + " " + toastrMessage.target,
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.UPDATE_TITLE_AND_DESCRIPTION:
             this.toastr.info(
               "",
-              toastrMessage.origin+" "+this.languageService.interpolate("$changed_room_description")+" "+toastrMessage.target,
+              toastrMessage.origin + " " + this.languageService.interpolate("$changed_room_description") + " " + toastrMessage.target,
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.REMOVE_VIDEO_PLAYLIST:
             this.toastr.info(
               "",
-              toastrMessage.origin+" "+this.languageService.interpolate("$removed_video")+" "+toastrMessage.target,
+              toastrMessage.origin + " " + this.languageService.interpolate("$removed_video") + " " + toastrMessage.target,
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.IMPORTED_PLAYLIST:
             this.toastr.success(
               "",
-              toastrMessage.origin+" "+this.languageService.interpolate(toastrMessage.message),
+              toastrMessage.origin + " " + this.languageService.interpolate(toastrMessage.message),
               ToastrConfigs.SUCCESS
             );
             break;
           case this.toastrMessageTypes.CHANGED_PLAYBACK_RATE:
             this.toastr.info(
               "",
-              toastrMessage.origin+" "+this.languageService.interpolate("$changed_playback_rate")+" "+toastrMessage.target,
+              toastrMessage.origin + " " + this.languageService.interpolate("$changed_playback_rate") + " " + toastrMessage.target,
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.MUTE_USER:
             this.toastr.warning(
               "",
-              toastrMessage.origin+" "+this.languageService.interpolate(toastrMessage.message)+" "+toastrMessage.target,
+              toastrMessage.origin + " " + this.languageService.interpolate(toastrMessage.message) + " " + toastrMessage.target,
               ToastrConfigs.WARNING
             );
             break;
           case this.toastrMessageTypes.CHANGED_USER_NAME:
             this.toastr.info(
               "",
-              toastrMessage.origin+" "+this.languageService.interpolate("$changed_name")+" "+toastrMessage.target,
+              toastrMessage.origin + " " + this.languageService.interpolate("$changed_name") + " " + toastrMessage.target,
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.PARDONED_KICKED_USER:
             this.toastr.info(
               "",
-              toastrMessage.origin+" "+this.languageService.interpolate("$pardoned")+" "+toastrMessage.target,
+              toastrMessage.origin + " " + this.languageService.interpolate("$pardoned") + " " + toastrMessage.target,
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.DELETED_PLAYLIST:
             this.toastr.warning(
               "",
-              toastrMessage.origin+" "+this.languageService.interpolate("$removed_playlist"),
+              toastrMessage.origin + " " + this.languageService.interpolate("$removed_playlist"),
               ToastrConfigs.WARNING
             );
             break;
