@@ -36,8 +36,8 @@ export class DirectLinkDataService implements IDataService {
   }
 
   retrieveIframe() {
-    if(!this.iframe) {
-      this.iframe = document.getElementById( SupportedApiType.DirectLink + "player");
+    if (!this.iframe) {
+      this.iframe = document.getElementById(SupportedApiType.DirectLink + "player");
     }
   }
 
@@ -61,12 +61,19 @@ export class DirectLinkDataService implements IDataService {
 
   }
 
-  processInput(input: string): SearchQuery {
-    this.retrieveIframe();
-    let query : SearchQuery = new SearchQuery();
-    query.query = input;
+  containsVideo(input: string): boolean {
+    return input.includes(".mp4") || input.includes(".webm")
+  }
 
-    return query;
+  processInput(input: string): SearchQuery {
+    if (this.synctubeComponent.isUrl(input) && this.containsVideo(input)) {
+      this.retrieveIframe();
+      let query: SearchQuery = new SearchQuery();
+      query.query = input;
+
+      return query;
+    }
+    return null
   }
 
   mapVideo(dmVideo: DailymotionVideo): Video {

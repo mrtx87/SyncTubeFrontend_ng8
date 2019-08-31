@@ -460,9 +460,11 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
     let searchQuery: SearchQuery = this.syncService.currentDataService.processInput(
       this.searchInput
     );
-    this.forceScrollToSearch = this.syncService.currentDataService.search(
-      searchQuery
-    );
+    if (searchQuery) {
+      this.forceScrollToSearch = this.syncService.currentDataService.search(
+        searchQuery
+      );
+    }
   }
 
   getReceivedPlayerState(): number {
