@@ -1352,8 +1352,6 @@
 
 .approved-button:hover, .disapproved-button:hover {
   width: 38px;
-  -webkit-transition-duration: 0.2s;
-  transition-duration: 0.2s;
   margin: 0 8px;
 }
 
