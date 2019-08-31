@@ -1,9 +1,9 @@
 <div [className]="!syncService.synctubeComponent.displayFullscreen ? 'main' : 'main-fullscreen'"
   (keyup.s)="triggerTogglePlay()">
   <!-- OverLay for Click and DblClick-->
-  <!-- <div (mousemove)="startDisplayingAllControls()" (click)="triggerTogglePlay()" (dblclick)="toggleFullscreen()"
+  <div (mousemove)="startDisplayingAllControls()" (click)="triggerTogglePlay()" (dblclick)="toggleFullscreen()"
     [className]="!syncService.synctubeComponent.displayFullscreen ? 'overlay-container' : 'overlay-container-fullscreen'">
-  </div> -->
+  </div>
 
   <!-- Options -> PlaybackRates Controls-->
   <div class="playbackrates-container" *ngIf="displayPlaybackRatesOptions && !displayOptions">
@@ -83,8 +83,8 @@
   </div>
 
   <!-- DirectLink -->
-  <video  width="500px" height="300px" id="directlinkplayer"></video>
- 
+  <video width="500px" height="300px" id="directlinkplayer"></video>
+
 
 
   <div *ngIf="displaySecondsBack" class="middle-back-seconds-overlay">

@@ -119,7 +119,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
   mouseEvent(event: MouseEvent){
     console.log(event)
   }*/
-  
+
 
   /* Keyboard controlings */
 
@@ -355,7 +355,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
     );
   }
 
-  switchSelectedApi(supportedDataApi_ : SupportedApi) { 
+  switchSelectedApi(supportedDataApi_: SupportedApi) {
     this.selectedDataApi = supportedDataApi_;
     this.isSelectingApi = false;
   }
@@ -423,10 +423,40 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
     }
   }
 
+  switchDataApiIfSearchInputApiTypeDiffers() {
+    const input: string = this.searchInput;
+    if (this.isUrl(input)) {
+      let index: number = input.indexOf("//");
+      if (index) {
+        index += 2;
+        const withoutHttpsInput = input.substring(index);
+        if ((withoutHttpsInput.includes("youtube.") || withoutHttpsInput.includes("youtu.be/")) && withoutHttpsInput.includes("/")) {
+          this.selectedDataApi = this.supportedApis[0];
+          return;
+        } else if (withoutHttpsInput.includes("dailymotion.") && withoutHttpsInput.includes("/")) {
+          this.selectedDataApi = this.supportedApis[1];
+          return;
+
+        } else if (withoutHttpsInput.includes("/") && (withoutHttpsInput.includes(".mp4") || withoutHttpsInput.includes(".webm"))) {
+          this.selectedDataApi = this.supportedApis[2];
+          return;
+
+        }
+      }
+    }
+  }
+
+  isUrl(input: string) {
+    return input.startsWith("http://") || input.startsWith("https://");
+  }
+
   search() {
     this.importedPlaylist = new ImportedPlaylist();
     this.hasImportedPlaylist = false;
     this.searchResults = [];
+
+    this.switchDataApiIfSearchInputApiTypeDiffers();
+
     let searchQuery: SearchQuery = this.syncService.currentDataService.processInput(
       this.searchInput
     );
@@ -452,8 +482,8 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
 
   openPlaylistLink(video_: Video) {
     if (video_.playlistId) {
-      this.importedPlaylist = new ImportedPlaylist(); 
-      this.hasImportedPlaylist = false; 
+      this.importedPlaylist = new ImportedPlaylist();
+      this.hasImportedPlaylist = false;
       this.searchResults = [];
       this.syncService.currentDataService.searchPlaylist(
         video_.playlistId,
@@ -670,7 +700,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
 
   switchLanguage(lang: Language) {
     this.languageService.selectedLanguageKey = lang.key;
-    this.syncService.toastr.success(this.languageService.interpolate('$switched_lang') + ' '+  lang.key, '', ToastrConfigs.SUCCESS)
+    this.syncService.toastr.success(this.languageService.interpolate('$switched_lang') + ' ' + lang.key, '', ToastrConfigs.SUCCESS)
     this.syncService.cookieService.set('lang', lang.key, 30);
   }
 

@@ -87,7 +87,7 @@ export class DailymotionVideoService implements IVideoService {
 
     }
     getPlayerState(): number {
-        return (this.videoPlayer.paused) ? Constants.PAUSED : Constants.PLAYING ; // TODO remove 
+        return (this.videoPlayer.ended) ? Constants.FINISHED : ((this.videoPlayer.paused) ? Constants.PAUSED : Constants.PLAYING); // TODO remove 
     }
 
     getAvailableQualityLevels(): string[] {

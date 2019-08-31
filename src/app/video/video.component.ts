@@ -73,7 +73,6 @@ export class VideoComponent implements OnInit {
         }
 
 
-        if (that.getReceivedPlayerState() !== state) {
           if (state === Constants.FINISHED) {
             that.syncService.synctubeComponent.receivedPlayerState = state;
             that.syncService.sendAutoNextPlaylistVideo(
@@ -82,7 +81,6 @@ export class VideoComponent implements OnInit {
               state
             );
           }
-        }
 
         if (that.currentPlaybackQuality !== that.getPlaybackQuality()) {
           that.currentPlaybackQuality = that.getPlaybackQuality();

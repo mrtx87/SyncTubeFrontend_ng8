@@ -18,14 +18,14 @@
     "$open_playlist": "פתח פלייליסט",
     "$settings": "אפשרויות",
     "$send": "שלח",
-    "$date": "טריך", // will cause problems because of the reading from left to right/right to left
+    "$date": "טריך", 
     "$switch_room_public_tooltip": "שנה מפרטי לציבורי",
     "$switch_room_private_tooltip": "שנה מציבורי לפרטי",
     "$room_title": "שם החדר",
     "$rename_room_title_tooltip": "כאן תוכל לשנות את שם החדר",
     "$rename_room_description_tooltip": "כאן תוכל לשנות את תיאור החדר",
     "$kicked_users": "משתמשים שהורחקו",
-    "$to_admin_question": "Promote {{ designatedAdmin.userName }} to admin?", // האם תרצה למנות את {{ designatedAdmin.userName }} למנהל?
-    "$kick_question": "Kick {{ kickingUser.userName }} from the room?", // רוצה להעיף את {{ kickingUser.userName }} מהחדר?
+    "$to_admin_question": "Promote {{ designatedAdmin.userName }} to admin?",
+    "$kick_question": "Kick {{ kickingUser.userName }} from the room?",
     "$refresh_url_tooltip": "חדש את הURL ואת הID של החדר"
 }

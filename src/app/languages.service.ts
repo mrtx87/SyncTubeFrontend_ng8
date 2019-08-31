@@ -22,21 +22,20 @@ export class LanguagesService {
    */
 
 
-  private LANGUAGE_LIST: Language[] = [new Language('german', 'assets/languages/icons/germany.svg'),
+  private LANGUAGE_LIST: Language[] = [
+   new Language('german', 'assets/languages/icons/germany.svg'),
    new Language('english', 'assets/languages/icons/united-kingdom.svg'),
    new Language('turkey', 'assets/languages/icons/turkey.svg'),
    new Language('russia', 'assets/languages/icons/russia.svg'),
    new Language('france', 'assets/languages/icons/france.svg'),
-   new Language('usa', 'assets/languages/icons/united-states-of-america.svg'),
+   new Language('english', 'assets/languages/icons/united-states-of-america.svg'),
    new Language('hebrew', 'assets/languages/icons/israel.svg')
-
-
   ];
 
 
   private LANGUAGES: Map<string, any> = new Map<string, any>();
 
-  private selectedLanguageKey_: string = 'german';
+  private selectedLanguageKey_: string = 'english';
 
   public get languageList(): any {
     return this.LANGUAGE_LIST;
