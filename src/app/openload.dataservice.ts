@@ -2,14 +2,12 @@ import { IDataService } from './idata-service';
 import { Video } from './video/video';
 import { HttpClient, HttpParams, HttpXsrfTokenExtractor } from "@angular/common/http";
 import { SyncTubeComponent } from './sync-tube/sync-tube.component';
-import { ImportedPlaylist } from './video/playlist';
 import { SupportedApiType } from './supported-api-type';
 import { DailymotionVideo } from './dailymotion.video';
 import { SearchQuery } from './sync-tube/search-query';
-import { NullTemplateVisitor } from '@angular/compiler';
 
 
-export class DirectLinkDataService implements IDataService {
+export class OpenloadDataService implements IDataService {
 
   nextPageToken: string;
   id: string;
@@ -37,16 +35,17 @@ export class DirectLinkDataService implements IDataService {
 
   retrieveIframe() {
     if (!this.iframe) {
-      this.iframe = document.getElementById(SupportedApiType.DirectLink + "player");
+      this.iframe = document.getElementById(SupportedApiType.Verystream + "player");
     }
   }
 
 
 
   searchQuery(query: string, normalQuery: boolean, timestamp?: number) {
+
     let unknownVideo = new Video();
     unknownVideo.videoId = query;
-    unknownVideo.api = SupportedApiType.DirectLink;
+    unknownVideo.api = SupportedApiType.Verystream;
     unknownVideo.title = query;
     unknownVideo.thumbnail = 'assets/video-player.svg';
     this.synctubeComponent.searchResults = [unknownVideo];
@@ -66,14 +65,29 @@ export class DirectLinkDataService implements IDataService {
   }
 
   processInput(input: string): SearchQuery {
-    if (this.synctubeComponent.isUrl(input) && this.containsVideo(input)) {
+    if (this.synctubeComponent.isUrl(input)) {
       this.retrieveIframe();
       let query: SearchQuery = new SearchQuery();
       query.query = input;
-
       return query;
     }
     return null
+  }
+
+  extractVideoId(input: string): string {
+    let index: number = input.indexOf("embed/");
+    index = index >= 0 ? index : input.indexOf("/");
+    if (index >= 0) {
+      index += 6;
+      let restUrl = input.substring(index);
+      let endIndex: number = restUrl.indexOf("/");
+      if (endIndex >= 0) {
+        let videoId = restUrl.substring(0, endIndex);
+        return videoId;
+      }
+    }
+
+    return null;
   }
 
   mapVideo(dmVideo: DailymotionVideo): Video {

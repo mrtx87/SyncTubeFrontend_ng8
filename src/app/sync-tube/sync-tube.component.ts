@@ -427,7 +427,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
     const input: string = this.searchInput;
     if (this.isUrl(input)) {
       let index: number = input.indexOf("//");
-      if (index) {
+      if (index >= 0) {
         index += 2;
         const withoutHttpsInput = input.substring(index);
         if ((withoutHttpsInput.includes("youtube.") || withoutHttpsInput.includes("youtu.be/")) && withoutHttpsInput.includes("/")) {
@@ -435,6 +435,14 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
           return;
         } else if (withoutHttpsInput.includes("dailymotion.") && withoutHttpsInput.includes("/")) {
           this.selectedDataApi = this.supportedApis[1];
+          return;
+
+        } else if (withoutHttpsInput.includes("openload.") && withoutHttpsInput.includes("/")) {
+          this.selectedDataApi = this.supportedApis[3];
+          return;
+
+        } else if (withoutHttpsInput.includes("verystream.") && withoutHttpsInput.includes("/")) {
+          this.selectedDataApi = this.supportedApis[4];
           return;
 
         } else if (withoutHttpsInput.includes("/") && (withoutHttpsInput.includes(".mp4") || withoutHttpsInput.includes(".webm"))) {

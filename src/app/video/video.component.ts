@@ -14,6 +14,9 @@ import { Constants } from '../constants';
 import { LanguagesService } from '../languages.service';
 import { DirectLinkVideoService } from '../directlink.video.service';
 import { DirectLinkDataService } from '../directlink.dataservice';
+import { OpenloadVideoService } from '../openload.video.service';
+import { VerystreamDataService } from '../verystream.dataservice';
+import { VerystreamVideoService } from '../verystream.video.service';
 declare const DM: any;
 
 @Component({
@@ -73,14 +76,14 @@ export class VideoComponent implements OnInit {
         }
 
 
-          if (state === Constants.FINISHED) {
-            that.syncService.synctubeComponent.receivedPlayerState = state;
-            that.syncService.sendAutoNextPlaylistVideo(
-              that.getLocalUser(),
-              that.getRaumId(),
-              state
-            );
-          }
+        if (state === Constants.FINISHED) {
+          that.syncService.synctubeComponent.receivedPlayerState = state;
+          that.syncService.sendAutoNextPlaylistVideo(
+            that.getLocalUser(),
+            that.getRaumId(),
+            state
+          );
+        }
 
         if (that.currentPlaybackQuality !== that.getPlaybackQuality()) {
           that.currentPlaybackQuality = that.getPlaybackQuality();
@@ -134,26 +137,80 @@ export class VideoComponent implements OnInit {
             this.initNoApiIFrame(supportedApi);
           }
           break;
+        case SupportedApiType.Openload:
+          if (!this.syncService.videoServices.has(SupportedApiType.Openload)) {
+            this.initOpenloadPlayer(supportedApi);
+          }
+          break;
+        case SupportedApiType.Verystream:
+          if (!this.syncService.videoServices.has(SupportedApiType.Verystream)) {
+            this.initVerystreamPlayer(supportedApi);
+          }
+          break;
       }
     }
   }
 
   initNoApiIFrame(supportedApi: SupportedApi) {
-    let iframe = document.getElementById("directlinkplayer");
+    let videoElem = document.getElementById(supportedApi.id + "player");
     if (!this.reframed) {
       this.reframed = true;
-      reframe(iframe);
+      reframe(videoElem);
     }
     this.syncService.videoServices.set(
       supportedApi.id,
       new DirectLinkVideoService(
         supportedApi,
         this.syncService,
-        iframe,
-        iframe
+        videoElem,
+        videoElem
       )
     );
+
     console.log("onReady: nopapi iframe ready");
+    this.syncService.hasSuccessfullyRegisteredAllVideoApis(supportedApi);
+    this.syncService.addToLoadedVideoPlayers(supportedApi);
+  }
+
+  initOpenloadPlayer(supportedApi: SupportedApi) {
+    let videoElem = document.getElementById(supportedApi.id + "player");
+    this.reframed = false;
+    if (!this.reframed) {
+      this.reframed = true;
+      reframe(videoElem);
+    }
+    this.syncService.videoServices.set(
+      supportedApi.id,
+      new OpenloadVideoService(
+        supportedApi,
+        this.syncService,
+        videoElem,
+        videoElem
+      )
+    );
+    console.log("onReady: " + supportedApi.id + "iframe ready");
+    this.syncService.hasSuccessfullyRegisteredAllVideoApis(supportedApi);
+    this.syncService.addToLoadedVideoPlayers(supportedApi);
+  }
+
+  initVerystreamPlayer(supportedApi: SupportedApi) {
+    let videoElem = document.getElementById(supportedApi.id + "player");
+    this.reframed = false;
+    if (!this.reframed) {
+      this.reframed = true;
+      reframe(videoElem);
+    }
+    this.syncService.videoServices.set(
+      supportedApi.id,
+      new VerystreamVideoService(
+        supportedApi,
+        this.syncService,
+        videoElem,
+        videoElem
+      )
+    );
+
+    console.log("onReady: " + supportedApi.id + "iframe ready");
     this.syncService.hasSuccessfullyRegisteredAllVideoApis(supportedApi);
     this.syncService.addToLoadedVideoPlayers(supportedApi);
   }

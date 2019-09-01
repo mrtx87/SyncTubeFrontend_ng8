@@ -34,6 +34,8 @@ import { AppCookie } from "./app.cookie";
 import { Constants } from './constants';
 import { DirectLinkDataService } from './directlink.dataservice';
 import { LanguagesService } from './languages.service';
+import { OpenloadDataService } from './openload.dataservice';
+import { VerystreamDataService } from './verystream.dataservice';
 
 @Injectable({
   providedIn: "root"
@@ -150,7 +152,7 @@ export class SyncService {
     this.http
       .get("http://localhost:8080/toastr-message-types", {})
       .subscribe(function (response) {
-        that.toastrMessageTypes = <any> response;
+        that.toastrMessageTypes = <any>response;
       });
   }
 
@@ -159,7 +161,7 @@ export class SyncService {
     this.http
       .get("http://localhost:8080/message-types", {})
       .subscribe(function (response) {
-        that.messageTypes = <any> response;
+        that.messageTypes = <any>response;
         (that.messageTypes);
       });
   }
@@ -228,9 +230,21 @@ export class SyncService {
               supportedApi.name));
             console.log("Successfully generated data-api: " + supportedApi.name);
             break;
+          case SupportedApiType.Openload:
 
-
-
+            this.dataServices.set(SupportedApiType.Openload, new OpenloadDataService(this.http,
+              this.synctubeComponent,
+              SupportedApiType.Openload,
+              supportedApi.name));
+            console.log("Successfully generated data-api: " + supportedApi.name);
+            break;
+          case SupportedApiType.Verystream:
+            this.dataServices.set(SupportedApiType.Verystream, new VerystreamDataService(this.http,
+              this.synctubeComponent,
+              SupportedApiType.Verystream,
+              supportedApi.name));
+            console.log("Successfully generated data-api: " + supportedApi.name);
+            break;
           default:
             break;
         }
