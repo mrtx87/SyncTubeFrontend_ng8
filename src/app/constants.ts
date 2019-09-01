@@ -24,8 +24,8 @@ export class Constants {
     //DATA VALUES
     static displayControlsLength = 2000000; //in milliseconds
 
-    //static BASEURL = "http://localhost:8080"; 
-    static BASEURL = "https://tubesync1.herokuapp.com";
+    //static BASEURL: string = "http://localhost:8080"; 
+    static BASEURL: string = "https://tubesync1.herokuapp.com";
 
 
 }
