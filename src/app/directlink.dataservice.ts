@@ -47,7 +47,7 @@ export class DirectLinkDataService implements IDataService {
     let unknownVideo = new Video();
     unknownVideo.videoId = query;
     unknownVideo.api = SupportedApiType.DirectLink;
-    unknownVideo.title = query;
+    unknownVideo.title = "anyvideo";
     unknownVideo.thumbnail = 'assets/video-player.svg';
     this.synctubeComponent.searchResults = [unknownVideo];
     this.currentLink = query;

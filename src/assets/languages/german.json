@@ -31,6 +31,8 @@
     "$kick_questionB": "aus dem raum kicken?",
     "$clear_questionA": "wollen sie die playlist leeren?",
     "$refresh_url_tooltip": "erneuert die url und id des raumes",
+    "$change_video_title":"ändere videotitel",
+
 
     "$created_new_room": "hat einen raum erstellt",
     "$has_joined_room": "ist dem raum beigetreten",

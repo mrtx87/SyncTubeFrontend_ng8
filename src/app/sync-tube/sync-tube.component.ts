@@ -110,7 +110,9 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
   designatedAdmin: User;
   kickingUser: User;
   toClearPlaylist: boolean;
-  revealContent: Boolean = false;
+  revealContent: boolean = false;
+  anyVideoToChangeName: Video;
+  anyVideoNewName: string;
 
   /* Mouse input*/
 
@@ -502,6 +504,12 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
         video_.title
       );
     }
+  }
+
+  changeAnyVideoTitle() {
+    this.anyVideoToChangeName.title = this.anyVideoNewName;
+    this.anyVideoToChangeName = null;
+    this.anyVideoNewName = null;
   }
 
   getPathId(): string {

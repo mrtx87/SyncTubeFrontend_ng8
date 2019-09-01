@@ -46,7 +46,7 @@ export class VerystreamDataService implements IDataService {
     let unknownVideo = new Video();
     unknownVideo.videoId = query;
     unknownVideo.api = SupportedApiType.Verystream;
-    unknownVideo.title = query;
+    unknownVideo.title = "verystreamvideo";
     unknownVideo.thumbnail = 'assets/video-player.svg';
     this.synctubeComponent.searchResults = [unknownVideo];
     this.currentLink = query;

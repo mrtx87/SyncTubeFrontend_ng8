@@ -30,6 +30,8 @@
     "$kick_questionA": "Are you sure you want to kick",
     "$kick_questionB": "?",
     "$refresh_url_tooltip": "change the url and id of the room",
+    "$change_video_title":"change title",
+
 
     "$created_new_room": "has created the Room",
     "$has_joined_room": "has joined the Room",

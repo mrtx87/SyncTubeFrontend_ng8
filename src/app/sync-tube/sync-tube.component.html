@@ -147,10 +147,21 @@
             <div (click)="sendAddVideoToPlaylistAsNext(video_)">
               <img class="search-result-thumbnail" src="{{ video_.thumbnail }}" />
             </div>
-            <div class="search-result-infos">
+            <div *ngIf="video_.api == 'youtube' || video_.api == 'dailymotion'" class="search-result-infos">
               <span (click)="sendAddVideoToPlaylistAsNext(video_)">{{ video_.title }}
               </span>
             </div>
+            <div *ngIf="video_.api != 'youtube' && video_.api != 'dailymotion'" class="search-result-infos">
+              <span (click)="sendAddVideoToPlaylistAsNext(video_)">{{ video_.title }}</span>
+              <div style="width:100%;">
+                <div class="open-playlist-button"
+                  (click)="anyVideoToChangeName = video_; anyVideoNewName = video_.title">
+                  {{ '$change_video_title' | tl8 }}
+                </div>
+              </div>
+
+            </div>
+
             <div class="search-result-video-controls">
               <span class="search-result-date">
                 {{ video_.publishedAt | date: "dd.MM.yyyy" }}</span>
@@ -469,6 +480,14 @@
     <h3>{{ '$clear_questionA'| tl8 }}</h3>
     <img src="assets/check.svg" class="approved-button" (click)="approvedClear()">
     <img src="assets/delete.svg" class="disapproved-button" (click)="disapprovedClear()">
+  </div>
+</div>
+
+<div class="prompt-blocking-overlay" *ngIf="anyVideoToChangeName">
+  <div class="prompt">
+    <h3>Change Title of Video: </h3><input [(ngModel)]="anyVideoNewName">
+    <img src="assets/check.svg" class="approved-button" (click)="changeAnyVideoTitle()">
+    <img src="assets/delete.svg" class="disapproved-button" (click)="anyVideoToChangeName = null">
   </div>
 </div>
 

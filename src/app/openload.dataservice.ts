@@ -45,8 +45,8 @@ export class OpenloadDataService implements IDataService {
 
     let unknownVideo = new Video();
     unknownVideo.videoId = query;
-    unknownVideo.api = SupportedApiType.Verystream;
-    unknownVideo.title = query;
+    unknownVideo.api = SupportedApiType.Openload;
+    unknownVideo.title = 'openloadvideo';
     unknownVideo.thumbnail = 'assets/video-player.svg';
     this.synctubeComponent.searchResults = [unknownVideo];
     this.currentLink = query;
