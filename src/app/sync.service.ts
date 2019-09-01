@@ -150,7 +150,7 @@ export class SyncService {
   retrieveToastrMessageTypes() {
     let that = this;
     this.http
-      .get("http://localhost:8080/toastr-message-types", {})
+      .get(Constants.BASEURL + "/toastr-message-types", {})
       .subscribe(function (response) {
         that.toastrMessageTypes = <any>response;
       });
@@ -159,7 +159,7 @@ export class SyncService {
   retrieveMessageTypes() {
     let that = this;
     this.http
-      .get("http://localhost:8080/message-types", {})
+      .get(Constants.BASEURL + "/message-types", {})
       .subscribe(function (response) {
         that.messageTypes = <any>response;
         (that.messageTypes);
@@ -168,7 +168,7 @@ export class SyncService {
 
   retrieveSupportedApis() {
     this.http
-      .get("http://localhost:8080/supported-apis", {})
+      .get(Constants.BASEURL + "/supported-apis", {})
       .subscribe(response => {
         if (this.synctubeComponent) {
           this.synctubeComponent.supportedApis = <SupportedApi[]>response;
@@ -313,7 +313,7 @@ export class SyncService {
     let user: User = this.handleCookies();
     this.setLocalUser(user);
 
-    this.ws = new SockJS("http://localhost:8080/socket");
+    this.ws = new SockJS(Constants.BASEURL + "/socket");
     this.stompClient = Stomp.over(this.ws);
     let that = this;
 
@@ -803,7 +803,7 @@ export class SyncService {
     console.log("[request public rooms]");
     this.synctubeComponent.publicRaeume = <Observable<Raum[]>>(
       this.http.get(
-        "http://localhost:8080/publicrooms/userId/" + this.getUserId(),
+        Constants.BASEURL + "/publicrooms/userId/" + this.getUserId(),
         {}
       )
     );
@@ -1060,7 +1060,7 @@ export class SyncService {
     const headers = new HttpHeaders()
       .set("Content-Type", "application/json");
     this.http
-      .get("http://localhost:8080/room/" + this.getRaumId() + "/playlist", { headers }).subscribe((playlist: Video[]) => {
+      .get(Constants.BASEURL + "/room/" + this.getRaumId() + "/playlist", { headers }).subscribe((playlist: Video[]) => {
         //console.log(playlist);
         this.synctubeComponent.playlist = playlist;
         if (this.synctubeComponent.playlist.length == 0) {
@@ -1073,7 +1073,7 @@ export class SyncService {
     const headers = new HttpHeaders()
       .set("Content-Type", "application/json");
     this.http
-      .get("http://localhost:8080/room/" + this.getRaumId() + "/history", { headers })
+      .get(Constants.BASEURL + "/room/" + this.getRaumId() + "/history", { headers })
       .subscribe((history: Video[]) => {
         //console.log(history);
         this.synctubeComponent.history = history;
@@ -1085,7 +1085,7 @@ export class SyncService {
       .set("Content-Type", "application/json");
     let that = this;
     this.http
-      .get("http://localhost:8080/room/" + this.getRaumId() + "/user/" + this.getUserId() + "/toastr-messages", { headers }).subscribe((response: ToastrMessage[]) => {
+      .get(Constants.BASEURL + "/room/" + this.getRaumId() + "/user/" + this.getUserId() + "/toastr-messages", { headers }).subscribe((response: ToastrMessage[]) => {
         let incomingToastrMessages: ToastrMessage[] = response;
         for (let itm of incomingToastrMessages) {
           that.synctubeComponent.toastrMessages.push(itm);
@@ -1098,7 +1098,7 @@ export class SyncService {
     const headers = new HttpHeaders()
       .set("Content-Type", "application/json");
     let that = this;
-    this.http.get("http://localhost:8080/room/" + this.getRaumId() + "/user/" + this.getUserId() + "/chat-messages", { headers }).subscribe((response: ChatMessage[]) => {
+    this.http.get(Constants.BASEURL + "/room/" + this.getRaumId() + "/user/" + this.getUserId() + "/chat-messages", { headers }).subscribe((response: ChatMessage[]) => {
       that.synctubeComponent.addAllChatMessages(response);
     });
   }
@@ -1118,7 +1118,8 @@ export class SyncService {
       importedPlaylist.user = user;
       this.http
         .post(
-          "http://localhost:8080/room/" +
+          Constants.BASEURL +
+          "/room/" +
           raumId +
           "/playlist",
           importedPlaylist, { headers })
