@@ -39,7 +39,7 @@ export class OpenloadVideoService implements IVideoService {
         if (this.iframe) {
             this.iframe.hidden = false;
             //reframe(this.iframe);
-        }        
+        }
     }
     isHidden(): boolean {
         return this.iframe.hidden;
@@ -52,8 +52,8 @@ export class OpenloadVideoService implements IVideoService {
         this.iframe.src = urlObject.videoId;
 
         let that = this;
-        let waitForLoading  = setInterval(function() {
-            if(that.iframe.duration) {
+        let waitForLoading = setInterval(function () {
+            if (that.iframe.duration) {
                 that.seekTo(urlObject.startSeconds, true);
                 that.playVideo();
                 clearInterval(waitForLoading);
@@ -82,7 +82,7 @@ export class OpenloadVideoService implements IVideoService {
     }
     setVolume(value: number) {
         this.unMute();
-        this.videoPlayer.volume = value/100;
+        this.videoPlayer.volume = value / 100;
     }
     isMuted(): Boolean {
         return this.videoPlayer.muted;
@@ -99,8 +99,8 @@ export class OpenloadVideoService implements IVideoService {
 
     }
     getPlayerState(): number {
-        
-        return (!this.videoPlayer.paused) ? Constants.PLAYING : Constants.PAUSED; // TODO remove 
+
+        return (this.videoPlayer.ended) ? Constants.FINISHED : ((this.videoPlayer.paused) ? Constants.PAUSED : Constants.PLAYING)
     }
 
     getAvailableQualityLevels(): string[] {

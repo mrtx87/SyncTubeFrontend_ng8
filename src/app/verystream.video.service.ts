@@ -100,7 +100,7 @@ export class VerystreamVideoService implements IVideoService {
     }
     getPlayerState(): number {
 
-        return (!this.videoPlayer.paused) ? Constants.PLAYING : Constants.PAUSED; // TODO remove 
+        return (this.videoPlayer.ended) ? Constants.FINISHED : ((this.videoPlayer.paused) ? Constants.PAUSED : Constants.PLAYING)
     }
 
     getAvailableQualityLevels(): string[] {

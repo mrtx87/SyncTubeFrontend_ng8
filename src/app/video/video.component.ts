@@ -69,13 +69,15 @@ export class VideoComponent implements OnInit {
       if (that.syncService.currentVideoService) {
         let state: number = that.syncService.currentVideoService.getPlayerState();
 
-        if (state === Constants.FINISHED) {
-          that.syncService.synctubeComponent.receivedPlayerState = state;
-          that.syncService.sendAutoNextPlaylistVideo(
-            that.getLocalUser(),
-            that.getRaumId(),
-            state
-          );
+        if (that.getReceivedPlayerState() !== state) {
+          if (state === Constants.FINISHED) {
+            that.syncService.synctubeComponent.receivedPlayerState = state;
+            that.syncService.sendAutoNextPlaylistVideo(
+              that.getLocalUser(),
+              that.getRaumId(),
+              state
+            );
+          }
         }
 
         if (that.currentPlaybackQuality !== that.getPlaybackQuality()) {
