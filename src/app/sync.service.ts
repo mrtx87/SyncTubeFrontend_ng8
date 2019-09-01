@@ -1352,6 +1352,7 @@ export class SyncService {
   setPlaybackRate(rate: number) {
     if (this.videoComponent) {
       this.currentVideoService.setPlaybackRate(rate);
+      this.videoComponent.currentPlaybackRate = rate;
     }
   }
 

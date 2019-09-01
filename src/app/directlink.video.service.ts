@@ -39,7 +39,7 @@ export class DirectLinkVideoService implements IVideoService {
         if (this.iframe) {
             this.iframe.hidden = false;
             //reframe(this.iframe);
-        }        
+        }
     }
     isHidden(): boolean {
         return this.iframe.hidden;
@@ -51,8 +51,8 @@ export class DirectLinkVideoService implements IVideoService {
     loadVideoById(urlObject: any): void {
         this.iframe.src = urlObject.videoId;
         let that = this;
-        let waitForLoading  = setInterval(function() {
-            if(that.iframe.duration) {
+        let waitForLoading = setInterval(function () {
+            if (that.iframe.duration) {
                 that.seekTo(urlObject.startSeconds, true);
                 that.playVideo();
                 clearInterval(waitForLoading);
@@ -81,7 +81,7 @@ export class DirectLinkVideoService implements IVideoService {
     }
     setVolume(value: number) {
         this.unMute();
-        this.videoPlayer.volume = value/100;
+        this.videoPlayer.volume = value / 100;
     }
     isMuted(): Boolean {
         return this.videoPlayer.muted;
@@ -98,7 +98,7 @@ export class DirectLinkVideoService implements IVideoService {
 
     }
     getPlayerState(): number {
-        
+
         return (!this.videoPlayer.paused) ? Constants.PLAYING : Constants.PAUSED; // TODO remove 
     }
 
@@ -111,11 +111,11 @@ export class DirectLinkVideoService implements IVideoService {
     }
     getAvailablePlaybackRates(): number[] {
         console.log('getAvailablePlaybackRates: not available')
-        return null;
+        return [2, 1.75, 1.5, 1.25, 1, 0.75, 0.5, 0.25];
 
     }
     setPlaybackRate(rate: number) {
-        //this.videoPlayer.playbackRate = rate;
+        this.videoPlayer.playbackRate = rate;
     }
     getPlaybackRate(): number {
         //console.log('getPlaybackRate: not available')

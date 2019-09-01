@@ -445,7 +445,7 @@ export class SyncTubeComponent implements OnInit, AfterViewChecked, AfterViewIni
           this.selectedDataApi = this.supportedApis[4];
           return;
 
-        } else if (withoutHttpsInput.includes("/") && (withoutHttpsInput.includes(".mp4") || withoutHttpsInput.includes(".webm"))) {
+        } else if (withoutHttpsInput.includes("/") && (withoutHttpsInput.includes(".mp4") || withoutHttpsInput.includes(".webm") || withoutHttpsInput.includes(".mkv") )) {
           this.selectedDataApi = this.supportedApis[2];
           return;
 

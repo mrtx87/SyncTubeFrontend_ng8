@@ -69,13 +69,6 @@ export class VideoComponent implements OnInit {
       if (that.syncService.currentVideoService) {
         let state: number = that.syncService.currentVideoService.getPlayerState();
 
-        if (state !== that.currentState) {
-          console.log("state changed from " + that.currentState + " to " + state)
-          that.currentState = state;
-          //TODO TICKET: Werbung bei Videos nicht überspringbar?
-        }
-
-
         if (state === Constants.FINISHED) {
           that.syncService.synctubeComponent.receivedPlayerState = state;
           that.syncService.sendAutoNextPlaylistVideo(
@@ -88,17 +81,20 @@ export class VideoComponent implements OnInit {
         if (that.currentPlaybackQuality !== that.getPlaybackQuality()) {
           that.currentPlaybackQuality = that.getPlaybackQuality();
         }
-        that.currentPlaybackRate = that.getCurrentPlaybackRate();
 
+        //update playbackrate
+        //that.currentPlaybackRate = that.syncService.currentVideoService.getPlaybackRate();
+
+        //adapts the icon in relation to the volume
+        if (that.volumeValue < 1) {
+          that.switchVolumeIcon = 0;
+        } else if (that.volumeValue >= 1 && that.volumeValue < 50) {
+          that.switchVolumeIcon = 1;
+        } else if (that.volumeValue > 50) {
+          that.switchVolumeIcon = 2;
+        }
       }
 
-      if (that.volumeValue < 1) {
-        that.switchVolumeIcon = 0;
-      } else if (that.volumeValue >= 1 && that.volumeValue < 50) {
-        that.switchVolumeIcon = 1;
-      } else if (that.volumeValue > 50) {
-        that.switchVolumeIcon = 2;
-      }
     }, 10);
   }
 

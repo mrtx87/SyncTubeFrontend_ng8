@@ -112,11 +112,11 @@ export class OpenloadVideoService implements IVideoService {
     }
     getAvailablePlaybackRates(): number[] {
         console.log('getAvailablePlaybackRates: not available')
-        return null;
+        return [2, 1.75, 1.5, 1.25, 1, 0.75, 0.5, 0.25];
 
     }
     setPlaybackRate(rate: number) {
-        //this.videoPlayer.playbackRate = rate;
+        this.videoPlayer.playbackRate = rate;
     }
     getPlaybackRate(): number {
         //console.log('getPlaybackRate: not available')

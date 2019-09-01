@@ -14,7 +14,7 @@
     <hr width="100%" />
     <div class="speed-row" *ngFor="let rate of playbackRates">
       <div class="check-container">
-        <span [hidden]="rate !== currentPlaybackRate">&#10003;</span>
+        <span [hidden]="rate != currentPlaybackRate">&#10003;</span>
       </div>
       <div (click)="sendChangePlaybackRate(rate)" class="speed-text">
         <span> {{rate}}x </span>

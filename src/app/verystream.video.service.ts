@@ -39,7 +39,7 @@ export class VerystreamVideoService implements IVideoService {
         if (this.iframe) {
             this.iframe.hidden = false;
             //reframe(this.iframe);
-        }        
+        }
     }
     isHidden(): boolean {
         return this.iframe.hidden;
@@ -52,8 +52,8 @@ export class VerystreamVideoService implements IVideoService {
         this.iframe.src = urlObject.videoId;
 
         let that = this;
-        let waitForLoading  = setInterval(function() {
-            if(that.iframe.duration) {
+        let waitForLoading = setInterval(function () {
+            if (that.iframe.duration) {
                 that.seekTo(urlObject.startSeconds, true);
                 that.playVideo();
                 clearInterval(waitForLoading);
@@ -82,7 +82,7 @@ export class VerystreamVideoService implements IVideoService {
     }
     setVolume(value: number) {
         this.unMute();
-        this.videoPlayer.volume = value/100;
+        this.videoPlayer.volume = value / 100;
     }
     isMuted(): Boolean {
         return this.videoPlayer.muted;
@@ -99,7 +99,7 @@ export class VerystreamVideoService implements IVideoService {
 
     }
     getPlayerState(): number {
-        
+
         return (!this.videoPlayer.paused) ? Constants.PLAYING : Constants.PAUSED; // TODO remove 
     }
 
@@ -112,11 +112,11 @@ export class VerystreamVideoService implements IVideoService {
     }
     getAvailablePlaybackRates(): number[] {
         console.log('getAvailablePlaybackRates: not available')
-        return null;
+        return [0.5, 0.75, 1, 1.12, 1.25, 1.5, 2];
 
     }
     setPlaybackRate(rate: number) {
-        //this.videoPlayer.playbackRate = rate;
+        this.videoPlayer.playbackRate = rate;
     }
     getPlaybackRate(): number {
         //console.log('getPlaybackRate: not available')
