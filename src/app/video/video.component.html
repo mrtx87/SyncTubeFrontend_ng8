@@ -3,6 +3,8 @@
   <!-- OverLay for Click and DblClick-->
   <div (mousemove)="startDisplayingAllControls()" (click)="triggerTogglePlay()" (dblclick)="toggleFullscreen()"
     [className]="!syncService.synctubeComponent.displayFullscreen ? 'overlay-container' : 'overlay-container-fullscreen'">
+
+    <div [hidden]="!displayLoadingTip" style="position:absolute; right:50%; top:50%; color:white;"> <h2> Loading Video... </h2></div>
   </div>
 
   <!-- Options -> PlaybackRates Controls-->

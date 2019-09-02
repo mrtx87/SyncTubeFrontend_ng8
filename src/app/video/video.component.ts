@@ -42,6 +42,8 @@ export class VideoComponent implements OnInit {
   currentTimeProgressbar: number;
   currentDisplayedTime: number = 0;
 
+  displayLoadingTip: boolean = false;
+
   public get currentDisplayingTime(): number {
     return this.hasPlayer() ? this.getCurrentTime() : 0;
   }
@@ -132,7 +134,7 @@ export class VideoComponent implements OnInit {
           break;
         case SupportedApiType.DirectLink:
           if (!this.syncService.videoServices.has(SupportedApiType.DirectLink)) {
-            this.initNoApiIFrame(supportedApi);
+            this.initDirectiLinkIframe(supportedApi);
           }
           break;
         case SupportedApiType.Openload:
@@ -149,12 +151,13 @@ export class VideoComponent implements OnInit {
     }
   }
 
-  initNoApiIFrame(supportedApi: SupportedApi) {
+  initDirectiLinkIframe(supportedApi: SupportedApi) {
     let videoElem = document.getElementById(supportedApi.id + "player");
     if (!this.reframed) {
       this.reframed = true;
       reframe(videoElem);
     }
+    this.addEventListenersForLoading(videoElem);
     this.syncService.videoServices.set(
       supportedApi.id,
       new DirectLinkVideoService(
@@ -170,6 +173,17 @@ export class VideoComponent implements OnInit {
     this.syncService.addToLoadedVideoPlayers(supportedApi);
   }
 
+  addEventListenersForLoading(videoElem: any) {
+    let that = this;
+    videoElem.addEventListener("loadstart", function() {
+      that.displayLoadingTip = true;
+    });
+
+    videoElem.addEventListener("loadeddata", function() {
+      that.displayLoadingTip = false;
+    });
+  }
+
   initOpenloadPlayer(supportedApi: SupportedApi) {
     let videoElem = document.getElementById(supportedApi.id + "player");
     this.reframed = false;
@@ -177,6 +191,7 @@ export class VideoComponent implements OnInit {
       this.reframed = true;
       reframe(videoElem);
     }
+    this.addEventListenersForLoading(videoElem);
     this.syncService.videoServices.set(
       supportedApi.id,
       new OpenloadVideoService(
@@ -198,6 +213,7 @@ export class VideoComponent implements OnInit {
       this.reframed = true;
       reframe(videoElem);
     }
+    this.addEventListenersForLoading(videoElem);
     this.syncService.videoServices.set(
       supportedApi.id,
       new VerystreamVideoService(

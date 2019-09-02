@@ -516,6 +516,7 @@ export class SyncService {
         // this.toastr.success("Raum #" + this.getRaumId() + " wurde von " + this.getLocalUser().userName + ' erstellt', 'Raum erstellt:', ToastrConfigs.SUCCESS);
         switch (toastrMessage.type) {
           case this.toastrMessageTypes.CREATE_ROOM:
+            toastrMessage.message = "{{'$created_new_room'| tl8 }}"
             this.toastr.success(
               "",
               toastrMessage.origin + " " + this.languageService.interpolate("$created_new_room"),
@@ -523,121 +524,138 @@ export class SyncService {
             );
             break;
           case this.toastrMessageTypes.JOIN_ROOM:
+              toastrMessage.message = toastrMessage.origin + " " + this.languageService.interpolate("$has_joined_room")
             this.toastr.info(
               "",
-              toastrMessage.origin + " " + this.languageService.interpolate("$has_joined_room"),
+              toastrMessage.message,
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.DISCONNECT:
+              toastrMessage.message = toastrMessage.origin + " " + this.languageService.interpolate("$has_left_room")
             this.toastr.info(
               "",
-              toastrMessage.origin + " " + this.languageService.interpolate("$has_left_room"),
+              toastrMessage.message,
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.ASSIGNED_AS_ADMIN:
+              toastrMessage.message = toastrMessage.origin + " " + this.languageService.interpolate("$assigned_admin") + " " + toastrMessage.target
             this.toastr.success(
               "",
-              toastrMessage.origin + " " + this.languageService.interpolate("$assigned_admin") + " " + toastrMessage.target,
+              toastrMessage.message,
               ToastrConfigs.SUCCESS
             );
             break;
           case this.toastrMessageTypes.TO_PUBLIC_ROOM:
+              toastrMessage.message = toastrMessage.origin + " " + this.languageService.interpolate("$room_to_public")
             this.toastr.info(
               "",
-              toastrMessage.origin + " " + this.languageService.interpolate("$room_to_public"),
+              toastrMessage.message,
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.TO_PRIVATE_ROOM:
+            toastrMessage.message = toastrMessage.origin + " " + this.languageService.interpolate("$room_to_private")
             this.toastr.info(
               "",
-              toastrMessage.origin + " " + this.languageService.interpolate("$room_to_private"),
+              toastrMessage.message,
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.KICKED_USER:
+            toastrMessage.message = toastrMessage.origin + " " + this.languageService.interpolate("$user_kicked")
             this.toastr.error(
               "",
-              toastrMessage.origin + " " + this.languageService.interpolate("$user_kicked"),
+              toastrMessage.message,
               ToastrConfigs.ERROR
             );
             break;
           case this.toastrMessageTypes.UPDATE_KICK_CLIENT:
+              toastrMessage.message = toastrMessage.origin + " " + this.languageService.interpolate("$user_kicked") + " " + toastrMessage.target
             this.toastr.warning(
               "",
-              toastrMessage.origin + " " + this.languageService.interpolate("$user_kicked") + " " + toastrMessage.target,
+              toastrMessage.message,
               ToastrConfigs.WARNING
             );
             break;
           case this.toastrMessageTypes.REFRESH_ROOM_ID:
+              toastrMessage.message = toastrMessage.origin + " " + this.languageService.interpolate("$refresh_room_id") + " " + toastrMessage.target
             this.toastr.info(
               "",
-              toastrMessage.origin + " " + this.languageService.interpolate("$refresh_room_id") + " " + toastrMessage.target,
+              toastrMessage.message,
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.ADDED_VIDEO_TO_PLAYLIST:
+              toastrMessage.message = toastrMessage.origin + " " + this.languageService.interpolate("$added_video") + " " + toastrMessage.target
             this.toastr.info(
               "",
-              toastrMessage.origin + " " + this.languageService.interpolate("$added_video") + " " + toastrMessage.target,
+              toastrMessage.message,
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.UPDATE_TITLE_AND_DESCRIPTION:
+              toastrMessage.message = toastrMessage.origin + " " + this.languageService.interpolate("$changed_room_description") + " " + toastrMessage.target
             this.toastr.info(
               "",
-              toastrMessage.origin + " " + this.languageService.interpolate("$changed_room_description") + " " + toastrMessage.target,
+              toastrMessage.message,
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.REMOVE_VIDEO_PLAYLIST:
+              toastrMessage.message = toastrMessage.origin + " " + this.languageService.interpolate("$removed_video") + " " + toastrMessage.target
             this.toastr.info(
               "",
-              toastrMessage.origin + " " + this.languageService.interpolate("$removed_video") + " " + toastrMessage.target,
+              toastrMessage.message,
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.IMPORTED_PLAYLIST:
+              toastrMessage.message = toastrMessage.origin + " " + this.languageService.interpolate(toastrMessage.message)
             this.toastr.success(
               "",
-              toastrMessage.origin + " " + this.languageService.interpolate(toastrMessage.message),
+              toastrMessage.message,
               ToastrConfigs.SUCCESS
             );
             break;
           case this.toastrMessageTypes.CHANGED_PLAYBACK_RATE:
+              toastrMessage.message = toastrMessage.origin + " " + this.languageService.interpolate("$changed_playback_rate") + " " + toastrMessage.target
             this.toastr.info(
               "",
-              toastrMessage.origin + " " + this.languageService.interpolate("$changed_playback_rate") + " " + toastrMessage.target,
+              toastrMessage.message,
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.MUTE_USER:
+              toastrMessage.message = toastrMessage.origin + " " + this.languageService.interpolate(toastrMessage.message) + " " + toastrMessage.target
             this.toastr.warning(
               "",
-              toastrMessage.origin + " " + this.languageService.interpolate(toastrMessage.message) + " " + toastrMessage.target,
+              toastrMessage.message,
               ToastrConfigs.WARNING
             );
             break;
           case this.toastrMessageTypes.CHANGED_USER_NAME:
+              toastrMessage.message = toastrMessage.origin + " " + this.languageService.interpolate("$changed_name") + " " + toastrMessage.target
             this.toastr.info(
               "",
-              toastrMessage.origin + " " + this.languageService.interpolate("$changed_name") + " " + toastrMessage.target,
+              toastrMessage.message,
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.PARDONED_KICKED_USER:
+              toastrMessage.message = toastrMessage.origin + " " + this.languageService.interpolate("$pardoned") + " " + toastrMessage.target
             this.toastr.info(
               "",
-              toastrMessage.origin + " " + this.languageService.interpolate("$pardoned") + " " + toastrMessage.target,
+              toastrMessage.message,
               ToastrConfigs.INFO
             );
             break;
           case this.toastrMessageTypes.DELETED_PLAYLIST:
+              toastrMessage.message = toastrMessage.origin + " " + this.languageService.interpolate("$removed_playlist")
             this.toastr.warning(
               "",
-              toastrMessage.origin + " " + this.languageService.interpolate("$removed_playlist"),
+              toastrMessage.message,
               ToastrConfigs.WARNING
             );
             break;
@@ -690,6 +708,7 @@ export class SyncService {
 
     if (message && message.video) {
 
+      //this.videoComponent.displayLoadingTip = true;
       this.updateVideo(message);
       this.selectedVideoApiId = message.video.api;
       this.setDisplayedIframe();
@@ -763,10 +782,11 @@ export class SyncService {
   createClient(message: Message) {
     this.synctubeComponent.revealContent = true;
     this.synctubeComponent.user = message.user;
+    this.synctubeComponent.raumTitle = message.raumTitle;
+    this.synctubeComponent.raumId = message.raumId;
     if (message.video) {
       this.synctubeComponent.video = message.video;
     }
-    this.synctubeComponent.raumId = message.raumId;
     this.synctubeComponent.users = message.users;
     this.synctubeComponent.chatMessages = <ChatMessage[]>message.chatMessages;
     this.synctubeComponent.raumStatus = message.raumStatus;

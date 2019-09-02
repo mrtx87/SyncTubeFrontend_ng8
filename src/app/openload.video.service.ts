@@ -77,35 +77,36 @@ export class OpenloadVideoService implements IVideoService {
     stopVideo(): void {
         console.log('stopVideo: not available')
     }
+    
     seekTo(seconds: number, allowSeekAhead: Boolean) {
         this.videoPlayer.currentTime = seconds;
     }
+
     setVolume(value: number) {
         this.unMute();
         this.videoPlayer.volume = value / 100;
     }
+
     isMuted(): Boolean {
         return this.videoPlayer.muted;
-
     }
+
     getVideoDuration(): number {
         //    throw new Error("Method not implemented.");
         return this.videoPlayer.duration;
-
     }
+
     getCurrentTime(): number {
         //    throw new Error("Method not implemented.");
         return this.videoPlayer.currentTime;
-
     }
-    getPlayerState(): number {
 
+    getPlayerState(): number {
         return (this.videoPlayer.ended) ? Constants.FINISHED : ((this.videoPlayer.paused) ? Constants.PAUSED : Constants.PLAYING)
     }
 
     getAvailableQualityLevels(): string[] {
         return this.videoPlayer.qualities;
-
     }
     setPlaybackQuality(suggestedQuality: string) {
         this.videoPlayer.setQuality(suggestedQuality);
